@@ -5,27 +5,33 @@
         <title>Compteur</title>
         <meta name="description" content="">
 
-		<script scr="/socket.io/socket.io.js"></script>
+	 	<script src="/socket.io/socket.io.js"></script>
+	 	<link rel="stylesheet" href="http://solib.hopto.org/counter/css/bootstrap/css/bootstrap.min.css">
+	 	<link rel="stylesheet" href="http://solib.hopto.org/counter/css/custom.css">
+	</head>
+	<body>
+		<div class="container">
+			<center>
+			<h3 id="success"></h3>
+			<h1 id="compteur"></h1>
+			<button id="incrBtn" class="btn btn-primary btn-large">1 click = 1 cookie!</button>
+		</center>
+	</div>
 		<script type="text/javascript">
 			var incrBtn  = document.getElementById("incrBtn")
 			compteur     = document.getElementById("compteur")
-			socket       = io.connect("http://localhost:8080")
+			success      = document.getElementById("success")
+			socket       = io.connect("http://solib.hopto.org:25000")
 
 			socket.on('update', function(data) {
 				compteur.innerHTML = data.val
 			});
-			
-			incrBtn.addEventListener("onclick", function(event) {
+
+			incrBtn.addEventListener("click", function(event) {
 				event.preventDefault()
-				socket.emit('incr')
+				compteur.innerHTML = parseInt(compteur.innerHTML)+1
+				socket.emit('incr', null)
 			});
 		</script>
-	</head>
-	<body>
-		<section role="main">
-			<h2>Compteur</h2>
-			<span id="compteur"></span>
-			<button id="incrBtn">Incrémenter</button>
-		</section>
 	</body>
 </html>

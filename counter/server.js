@@ -1,25 +1,33 @@
-var app  = require("http").createServer(handler).listen(8080)
+var app  = require("http").createServer(handler)
 io       = require('socket.io').listen(app)
+url      = require("url")
 fs       = require('fs')
 file     = "/index.html"
-counter  = 0
+counter  = 0;
+
+app.listen(25000)
 
 function handler(request, response) {
+	var pathname = url.parse(request.url).pathname
+	if (pathname == "/supersecretfunction") {
+		counter = 0
+	}
+
 	fs.readFile(__dirname + file, function(error, data) {
 		if (error) {
 			response.writeHead(500)
 			return response.end("Error loading " + file)
 		}
-
 		response.writeHead(200)
 		response.end(data)
 	});
 }
 
 io.sockets.on("connection", function(socket) {
-	socket.on("incr", function() {
+	socket.emit("update", { val: counter });
+	socket.on("incr", function(data) {
 		counter++
-		socket.emit("update", { val: counter })
+		socket.broadcast.emit("update", { val: counter });
 	});
 });
 
