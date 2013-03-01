@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+       <meta charset="utf-8">
+        <title>Compteur</title>
+        <meta name="description" content="">
+
+		<script scr="/socket.io/socket.io.js"></script>
+		<script type="text/javascript">
+			var incrBtn  = document.getElementById("incrBtn")
+			compteur     = document.getElementById("compteur")
+			socket       = io.connect("http://localhost:8080")
+
+			socket.on('update', function(data) {
+				compteur.innerHTML = data.val
+			});
+			
+			incrBtn.addEventListener("onclick", function(event) {
+				event.preventDefault()
+				socket.emit('incr')
+			});
+		</script>
+	</head>
+	<body>
+		<section role="main">
+			<h2>Compteur</h2>
+			<span id="compteur"></span>
+			<button id="incrBtn">Incrémenter</button>
+		</section>
+	</body>
+</html>
