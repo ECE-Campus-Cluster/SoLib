@@ -1,11 +1,9 @@
-var app  = require("http").createServer(handler)
+var app  = require("http").createServer(handler).listen(25000)
 io       = require('socket.io').listen(app)
 url      = require("url")
 fs       = require('fs')
 file     = "/index.html"
 counter  = 0;
-
-app.listen(25000)
 
 function handler(request, response) {
 	var pathname = url.parse(request.url).pathname

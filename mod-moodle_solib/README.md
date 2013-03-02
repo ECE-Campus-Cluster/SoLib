@@ -1,9 +1,7 @@
-![](favicon.ico)
-# SoLIB
-SoLIB is a social learning application for Moodle. More informations to come in the future.
-
-## moodle-mod_solib
+# moodle-mod_solib
 This is the plugin Moodle requires to run SoLib.
 
-## Who develop it ?
-5 students from ECE Paris.
+## How to use it
+Open your Moodle installation. Create a directory named `solib` at `moodle/mod/solib`. Place all the content of `mod-moodle_solib/` in this new directory. Open your Moodle in a browser, you should now have an alert from Moodle asking you to install the new plugin.
+
+
