@@ -40,25 +40,25 @@ io.sockets.on("connection", function(socket) {
 	connection.query('select timestamp from updates order by timestamp desc limit 1', function(err, rows) {
 		if (err) {
 			console.log("Error connecting to mysql on select statement. Error is: " + err)
-		} else if (rows.length > 0){
-			console.log("Last update is:" + rows[0].timestamp)
-			socket.emit("updatetime", { val: rows[0].timestamp });
+		} else if (rows.length > 0) {
+			console.log(rows[0].timestamp)
+			socket.emit("updatetime", { timestamp: rows[0].timestamp });
 		}
 	});
 	
 	// Increment event
 	socket.on("incr", function(data) {
-		counter++
-		socket.broadcast.emit("updateval", { val: counter });
-		connection.query('insert into updates(timestamp) values(?)', [new Date().getTime()], function(err, result) {
-			if (err) {
+		socket.broadcast.emit("updateval", { val: counter++ });
+		var timestamp = new Date()
+		connection.query('insert into updates(timestamp) values(?)', [timestamp], function(err, result) {
+			if (err)
 				console.log("Error connecting to mysql on insert statement. Error is: " + err)
-			} else {
-				console.log("inserted: " + result.timestamp)
-				socket.broadcast.emit("updatetime", { timestamp: result})
-			}
+			else
+				socket.emit("updatetime", { timestamp: timestamp })
+				console.log(result)
 		});
 	});
+
 });
 
 console.log("Server has started.")

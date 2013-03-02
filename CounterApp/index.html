@@ -6,30 +6,30 @@
         <meta name="description" content="">
 
 	 	<script src="/socket.io/socket.io.js"></script>
-	 	<link rel="stylesheet" href="http://solib.hopto.org/counter/css/bootstrap/css/bootstrap.min.css">
-	 	<link rel="stylesheet" href="http://solib.hopto.org/counter/css/custom.css">
+	 	<link rel="stylesheet" href="http://localhost/Solib/CounterApp/css/bootstrap/css/bootstrap.min.css">
+	 	<link rel="stylesheet" href="http://localhost/Solib/CounterApp/css/custom.css">
 	</head>
 	<body>
 		<div class="container">
 			<center>
 				<h1 id="compteur"></h1>
 				<button id="incrBtn" class="btn btn-primary btn-large">1 click = 1 cookie!</button>
-				<p>Last update: <span id="lastupdate"></span></p>
+				<p id="timestamp">Last update: <span id="lastupdate">...</span></p>
 			</center>
 		</div>
 		<script type="text/javascript">
-			var incrBtn  = document.getElementById("incrBtn")
-			compteur     = document.getElementById("compteur")
-			lastupdate   = document.getElementById("lastupdate")
-			socket       = io.connect("http://localhost:25000")
+			var incrBtn = document.getElementById("incrBtn")
+			compteur    = document.getElementById("compteur")
+			lastupdate  = document.getElementById("lastupdate")
+			socket      = io.connect("http://localhost:25000")
 
 			socket.on('updateval', function(data) {
-				compteur.innerHTML   = data.val
+				compteur.innerHTML = data.val
 			});
 
 			socket.on('updatetime', function(data) {
-				//lastupdate.innerHTML   = data.timestamp
 				console.log(data)
+				lastupdate.innerHTML = new Date(data.timestamp).toUTCString()
 			});
 
 			incrBtn.addEventListener("click", function(event) {

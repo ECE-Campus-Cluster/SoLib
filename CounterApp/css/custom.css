@@ -12,6 +12,6 @@ button#incrBtn {
   width:212px;
 }
 
-#date {
-	font-size: 0.3em;
+#timestamp {
+	margin-top: 10px;
 }
