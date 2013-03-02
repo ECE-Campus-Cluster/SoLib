@@ -1,17 +1,21 @@
 # CounterApp
-This little application is a test using node.js and socket.io to display a synchronized counter between multiple browsers. It requires node.js and socket.io to be installed. 
+This little application is a test using node.js and socket.io to display a synchronized counter between multiple browsers. It requires node.js, socket.io and [node-mysql](http://github.com/felixge/node-mysql) to be installed.
 
 ## How to use it
 1. node.js can be downloaded [here](http://nodejs.org/download/).
-To install socket.io, run the following command in the CounterApp directory: 
+To install socket.io and node-mysql, run the following command in the CounterApp directory: 
 
 ```bash
 npm install socket.io
 ```
 
- You should now have a directory named `node_modules` with socket.io in it.
+```bash
+npm install mysql@2.0.0-alpha7
+```
 
-2. Configure the port you want to use in server.js line 1 and the address and port in index.html line 24.
+ You should now have a directory named `node_modules` with a socket.io and mysql folders in it.
+
+2. Configure your app in congif.js line 1 and the address and port in index.html `io.connection` function. Check also the CSS sources.
 
 3. Run the server with the following command: `node server.js`.
 
