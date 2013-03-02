@@ -3,7 +3,13 @@ This little application is a test using node.js and socket.io to display a synch
 
 ## How to use it
 1. node.js can be downloaded [here](http://nodejs.org/download/).
-To install socket.io, run the following command in the CounterApp directory: `npm install socket.io`. You should now have a directory named `node_modules` with socket.io in it.
+To install socket.io, run the following command in the CounterApp directory: 
+
+```bash
+npm install socket.io
+```
+
+ You should now have a directory named `node_modules` with socket.io in it.
 
 2. Configure the port you want to use in server.js line 1 and the address and port in index.html line 24.
 
