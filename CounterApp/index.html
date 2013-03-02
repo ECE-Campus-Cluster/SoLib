@@ -12,19 +12,24 @@
 	<body>
 		<div class="container">
 			<center>
-				<h3 id="success"></h3>
 				<h1 id="compteur"></h1>
 				<button id="incrBtn" class="btn btn-primary btn-large">1 click = 1 cookie!</button>
+				<p>Last update: <span id="lastupdate"></span></p>
 			</center>
 		</div>
 		<script type="text/javascript">
 			var incrBtn  = document.getElementById("incrBtn")
 			compteur     = document.getElementById("compteur")
-			success      = document.getElementById("success")
-			socket       = io.connect("http://solib.hopto.org:25000")
+			lastupdate   = document.getElementById("lastupdate")
+			socket       = io.connect("http://localhost:25000")
 
-			socket.on('update', function(data) {
-				compteur.innerHTML = data.val
+			socket.on('updateval', function(data) {
+				compteur.innerHTML   = data.val
+			});
+
+			socket.on('updatetime', function(data) {
+				//lastupdate.innerHTML   = data.timestamp
+				console.log(data)
 			});
 
 			incrBtn.addEventListener("click", function(event) {
