@@ -2,6 +2,8 @@
 # SoLib
 SoLib is a social learning application for Moodle developed by 5 students from ECE Paris as a "PPE" (Multidisciplinary Project in Team).
 
+* More details for each part of the application can be found in their related README files.
+
 ## moodle-mod_solib
 The plugin Moodle requires to run SoLib.
 
