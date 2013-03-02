@@ -28,7 +28,6 @@
 			});
 
 			socket.on('updatetime', function(data) {
-				console.log(data)
 				lastupdate.innerHTML = new Date(data.timestamp).toUTCString()
 			});
 

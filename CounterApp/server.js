@@ -38,12 +38,10 @@ io.sockets.on("connection", function(socket) {
 	// On client connection, we must send the actual count value and it last update time
 	socket.emit("updateval", { val: counter });
 	connection.query('select timestamp from updates order by timestamp desc limit 1', function(err, rows) {
-		if (err) {
+		if (err)
 			console.log("Error connecting to mysql on select statement. Error is: " + err)
-		} else if (rows.length > 0) {
-			console.log(rows[0].timestamp)
+		else if (rows.length > 0)
 			socket.emit("updatetime", { timestamp: rows[0].timestamp });
-		}
 	});
 	
 	// Increment event
@@ -55,7 +53,6 @@ io.sockets.on("connection", function(socket) {
 				console.log("Error connecting to mysql on insert statement. Error is: " + err)
 			else
 				socket.emit("updatetime", { timestamp: timestamp })
-				console.log(result)
 		});
 	});
 
