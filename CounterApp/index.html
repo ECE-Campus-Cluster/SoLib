@@ -32,9 +32,13 @@
 			});
 
 			incrBtn.addEventListener("click", function(event) {
-				event.preventDefault()
-				compteur.innerHTML = parseInt(compteur.innerHTML)+1
-				socket.emit('incr', null)
+				// To prevent 'cheating', of course you can remove it since the goal of node.js is to build scalable applications; so you can test to tigger the button with some magic code.
+				if (event.screenX != 0 && event.screenY != 0) {
+					compteur.innerHTML = parseInt(compteur.innerHTML)+1
+					socket.emit('incr', null)
+				} else { 
+					console.log("Cheating is bad.")
+				}
 			});
 		</script>
 	</body>
