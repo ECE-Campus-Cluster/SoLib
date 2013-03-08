@@ -23,6 +23,7 @@ function handler(request, response) {
 		break;
 		case './supersecretfunction':
 			counter = 0
+			filePath = './index.html'
 			console.log("Counter reset.")
 		break;
 	}
@@ -36,12 +37,12 @@ function handler(request, response) {
         break;
     }
 
-	path.exists(filePath, function(exists) {
+	fs.exists(filePath, function(exists) {
         if (exists) {
             fs.readFile(filePath, function(error, content) {
                 if (error) {
                     response.writeHead(500)
-					response.end("Error loading " + file)
+					response.end("Error loading " + filePath)
                 } else {
                     response.writeHead(200, {'Content-Type': contentType });
                     response.end(content, 'utf-8')
@@ -49,7 +50,7 @@ function handler(request, response) {
             });
         } else {
             response.writeHead(404)
-            response.end("Couldn't find " + file)
+            response.end("Couldn't find " + filePath)
         }
     });
 }
