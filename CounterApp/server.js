@@ -1,7 +1,7 @@
 var config = require('./config')
 app        = require('http').createServer(handler).listen(config.port)
 io         = require('socket.io').listen(app)
-url        = require('url')
+path       = require('path')
 fs         = require('fs')
 mysql      = require('./mysql')
 file       = "/index.html"
@@ -13,20 +13,45 @@ db = mysql.connect(config.host, config.database, config.username, config.passwor
 * The function used by node.js to handle a request
 */
 function handler(request, response) {
-	var pathname = url.parse(request.url).pathname
-	if (pathname == "/supersecretfunction") {
-		counter = 0
-		console.log("counter reset")
+	var filePath = '.' + request.url
+	extname      = path.extname(filePath)
+	contentType  = 'text/html'
+	// Special cases
+	switch (filePath) {
+		case './':
+			filePath = './index.html'
+		break;
+		case './supersecretfunction':
+			counter = 0
+			console.log("Counter reset.")
+		break;
 	}
+	// Static files
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript'
+        break;
+        case '.css':
+            contentType = 'text/css'
+        break;
+    }
 
-	fs.readFile(__dirname + file, function(error, data) {
-		if (error) {
-			response.writeHead(500)
-			return response.end("Error loading " + file)
-		}
-		response.writeHead(200)
-		response.end(data)
-	});
+	path.exists(filePath, function(exists) {
+        if (exists) {
+            fs.readFile(filePath, function(error, content) {
+                if (error) {
+                    response.writeHead(500)
+					response.end("Error loading " + file)
+                } else {
+                    response.writeHead(200, {'Content-Type': contentType });
+                    response.end(content, 'utf-8')
+                }
+            });
+        } else {
+            response.writeHead(404)
+            response.end("Couldn't find " + file)
+        }
+    });
 }
 
 // io.socket events
