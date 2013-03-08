@@ -15,7 +15,7 @@ npm install mysql@2.0.0-alpha7
 
  You should now have a directory named `node_modules` with a socket.io and mysql folders in it.
 
-2. Configure your app in congif.js line 1 and the address and port in index.html `io.connection` function. Check also the CSS sources.
+2. Configure your app in config.js and the address and port in the index.html `io.connection` function.
 
 3. Run the server with the following command: `node server.js`.
 
