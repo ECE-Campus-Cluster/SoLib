@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+       <meta charset="utf-8">
+        <title>LiveWall</title>
+
+	 	<script src="/socket.io/socket.io.js"></script>
+	 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+	 	<link type="text/css" rel="stylesheet" href="css/custom.css">
+	</head>
+	<body>
+		<div class="container">
+			<center>
+				<h1>This text is live:</h1>
+				<input id="live-text" name="live-text" type="text">
+			</center>
+		</div>
+		<script type="text/javascript">
+			var socket = io.connect("http://localhost:25000")
+			textfield  = document.getElementById('live-text')
+
+			socket.on('updatetext', function(data) {
+				textfield.value = data.text
+			});
+
+			textfield.addEventListener("keyup", function(event) {
+				socket.emit('changetext', { text: textfield.value })
+			});
+		</script>
+	</body>
+</html>
