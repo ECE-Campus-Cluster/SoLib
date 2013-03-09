@@ -1,4 +1,4 @@
-center {
+/*center {
   margin-top: 200px;
 }
 
@@ -13,4 +13,8 @@ center {
 
 #live-text {
   color:#444;
+}*/
+
+#container {
+  border:solid 1px #ccc;
 }
