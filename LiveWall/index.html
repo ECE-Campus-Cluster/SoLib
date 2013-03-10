@@ -33,6 +33,7 @@
 				width: 940,
 				height: 600
 			});
+			
 			var layer = new Kinetic.Layer()
 			stage.add(layer)
 			
@@ -49,8 +50,32 @@
 					fontFamily: font,
 					fontSize: fontsize,
 					fill: color,
-					draggable: isDraggable
+					draggable: isDraggable,
+					listening: true
 				});
+
+				kText.on('dblclick', function() {
+				  	var wrapper = document.createElement("div")
+				  	wrapper.style.position = "relative"
+				  	wrapper.style.width    = "940px"
+				  	wrapper.style.height   = "600px"
+				  	var input = document.createElement("input")
+				  	input.style.position = "absolute"
+				  	input.style.top      = (this.getX()+14)+"px"
+				  	input.style.left     = (this.getY()-22)+"px"
+				  	input.style.fontSize = this.getFontSize()+"px"
+				  	input.value          = this.getText()
+				  	input.onkeypress     = function(event) {
+					  	if (event.which == 13 || event.keyCode == 13) { // Enter key
+							kText.setText(input.value)
+							wrapper.remove()
+							layer.draw()
+					  	}
+				  	}
+				  	wrapper.appendChild(input)
+				  	layer.getCanvas().getElement().parentNode.appendChild(wrapper)
+				});
+				
 				layer.add(kText)
 				stage.draw()
 			}
