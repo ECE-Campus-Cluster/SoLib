@@ -1,7 +1,4 @@
-/*center {
-  margin-top: 200px;
-}
-
+/* index.html */
 #legend {
   width: 100%;
   height:100px;
@@ -13,8 +10,14 @@
 
 #live-text {
   color:#444;
-}*/
+}
 
+/* kinetic.html */
 #container {
   border:solid 1px #ccc;
+}
+
+/* cgscenegraph.html */
+#thecanvas {
+  background-color: #333;
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	   <meta charset="utf-8">
+		<title>LiveWall</title>
+	 	<script src="http://www.html5canvastutorials.com/libraries/kinetic-v4.3.0-beta2.js"></script>
+	 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+	 	<link type="text/css" rel="stylesheet" href="css/custom.css">
+	</head>
+	<body>
+		<div class="container">
+			<div id="container"></div>
+		</div>
+		<script type="text/javascript">
+			var stage = new Kinetic.Stage({
+				container: 'container',
+				width: 940,
+				height: 600
+			});
+
+			var layer = new Kinetic.Layer()
+			stage.add(layer)
+
+			// Simple test, je ne sais pas s'il faut créer un layer pour chaque texte...
+			addKText("id", 50, 30, "Verdana", 27, "black", true, layer, "Drag me")
+			addKText("id2", 50, 70, "Verdana", 27, "black", true, layer, "Drag me too")
+
+			function addKText(id, x, y, font, fontsize, color, isDraggable, layer, text) {
+				var kText = new Kinetic.Text({
+					text: text,
+					id: id,
+					x: x,
+					y: y,
+					fontFamily: font,
+					fontSize: fontsize,
+					fill: color,
+					draggable: isDraggable,
+					listening: true
+				});
+
+				kText.on('dblclick', function() {
+				  	var wrapper = document.createElement("div")
+				  	wrapper.style.position = "relative"
+				  	wrapper.style.width    = "940px"
+				  	wrapper.style.height   = "600px"
+				  	var input = document.createElement("input")
+				  	input.style.position = "absolute"
+				  	input.style.top      = (this.getX()+14)+"px"
+				  	input.style.left     = (this.getY()-22)+"px"
+				  	input.style.fontSize = this.getFontSize()+"px"
+				  	input.value          = this.getText()
+				  	input.onkeypress     = function(event) {
+					  	if (event.which == 13 || event.keyCode == 13) { // Enter key
+							kText.setText(input.value)
+							wrapper.remove()
+							layer.draw()
+					  	}
+				  	}
+				  	wrapper.appendChild(input)
+				  	layer.getCanvas().getElement().parentNode.appendChild(wrapper)
+				});
+
+				layer.add(kText)
+				stage.draw()
+			}
+		</script>
+	</body>
+</html>
