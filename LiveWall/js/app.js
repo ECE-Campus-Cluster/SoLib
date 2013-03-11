@@ -59,10 +59,10 @@ var App = CGSGScene.extend(
 			textNode.onDblClick = function(event) {
 				textInput = document.createElement("input");		
 				textInput.style.position = "absolute";
-				textInput.style.left = textNode.getAbsoluteLeft() + "px";
-				textInput.style.top = textNode.getAbsoluteTop() + "px";
-				textInput.style.width = textNode.getAbsoluteWidth() + "px";
-				textInput.style.height = textNode.getAbsoluteHeight() + "px";
+				textInput.style.left     = textNode.getAbsoluteLeft() + "px";
+				textInput.style.top      = textNode.getAbsoluteTop() + "px";
+				textInput.style.width    = textNode.getAbsoluteWidth() + "px";
+				textInput.style.height   = textNode.getAbsoluteHeight() + "px";
 							
 				document.body.appendChild(textInput);
 			}
