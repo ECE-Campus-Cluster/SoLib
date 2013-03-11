@@ -43,16 +43,22 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 
-    ?>
-    <html>
-        <head></head>
-        <body>
-            <h1>Hello, welcome to Solib</h1>
-            <h2>You are viewing: <?php echo $solib->name; ?> </h2>
-            <p>You are connected as <?php echo $USER->firstname ." ". $USER->lastname ?> </p>
-        </body>
-    </html>
-    <?
+    require_once(__DIR__."/lib/ElephantIO/Client.php");
+    use ElephantIO\Client as Elephant;
+
+    $elephant = new Elephant('solib.hopto.org:25000', 'socket.io', 1, false, true, true);
+    $elephant->init();
+    $elephant->send(
+        ElephantIOClient::TYPE_EVENT,
+        null,
+        null,
+        json_encode(array('name' => 'connect_from_moodle', 'args' => 'toto'))
+    );
+    $elephant->close();
+
+    $homepage = file_get_contents('http://solib.hopto.org:25000');
+    echo $homepage;
+
 } else {
     $PAGE->set_url('/mod/solib/index.php', array('l'=>$l));
     if (! $solib = $DB->get_record("solib", array("id"=>$l))) {
