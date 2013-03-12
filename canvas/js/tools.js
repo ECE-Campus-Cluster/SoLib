@@ -225,13 +225,21 @@ function displayText(y,x)
 	var tmptext = document.getElementById('comment').value; 
 	var sizeAnnot = tmptext.length;
 	var text = "";
-	for(var i=0; i<sizeAnnot;i = i+10)
+	var numberLines=0;
+	var j=0;
+	for(var i=0; i<sizeAnnot;i=i)
 	{
-		text = text+tmptext.slice(i,i*10)+"<br/>";
+		j=i+20;
+		//we check that we don't cut the world in two
+		while(tmptext.charAt(j)!=" " && j>=i-19 && j<sizeAnnot)
+			j=j-1;
+		text = text+tmptext.slice(i,j)+"<br/>";
+		numberLines++;
+		i=j;
 	}
 
 	sizeAnnot = text.length;
-	var add_div = "<div id='addiv' style='position:absolute;top:"+y+"px;left:"+x+"px;z-index:30; background-color:cyan;width:"+(sizeAnnot*3)+"'>"+text+"</div>";
+	var add_div = "<div id='addiv' style='position:absolute;top:"+y+"px;left:"+x+"px;z-index:30; background-color:cyan;width:"+(sizeAnnot*3)+";height:"+(numberLines*2)+"'>"+text+"</div>";
 
 	
 	// Destroy the textarea, the button and the container
@@ -255,7 +263,6 @@ setTool.clear = function ()
 // Download the image
 setTool.download = function ()
 {
-	var source = paint.getCanvas().toDataURL();
-	Canvas2Image.saveAsPNG(paint.getCanvas());
+	window.location = paint.getCanvas().toDataURL("image/png");
 }
 
