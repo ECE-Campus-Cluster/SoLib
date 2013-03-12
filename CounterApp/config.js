@@ -10,7 +10,7 @@ const username = "root"
 /* database password */
 const password = "root"
 
-/* port the server will be listening on */
+/* port on wich the server will be listening */
 const port = 25000;
 
 module.exports = {
