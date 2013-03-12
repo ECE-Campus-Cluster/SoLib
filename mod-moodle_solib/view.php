@@ -25,6 +25,7 @@
  */
 
 require_once("../../config.php");
+require_once( __DIR__ . "/lib/curl.php");
 
 $id = optional_param('id',0,PARAM_INT);    // Course Module ID, or
 $l = optional_param('l',0,PARAM_INT);     // solib ID
@@ -43,21 +44,13 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 
-    require_once(__DIR__."/lib/ElephantIO/Client.php");
-    use ElephantIO\Client as Elephant;
+    //$page = file_get_contents('http://solib.hopto.org:25000');
+    //echo $page;
 
-    $elephant = new Elephant('solib.hopto.org:25000', 'socket.io', 1, false, true, true);
-    $elephant->init();
-    $elephant->send(
-        ElephantIOClient::TYPE_EVENT,
-        null,
-        null,
-        json_encode(array('name' => 'connect_from_moodle', 'args' => 'toto'))
-    );
-    $elephant->close();
+    $curl = new SCurl();
+    $response = $curl->post('http://solib.hopto.org:8080/user', array('user' => $USER));
 
-    $homepage = file_get_contents('http://solib.hopto.org:25000');
-    echo $homepage;
+    print_r($response);
 
 } else {
     $PAGE->set_url('/mod/solib/index.php', array('l'=>$l));
