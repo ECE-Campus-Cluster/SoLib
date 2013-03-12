@@ -1,0 +1,79 @@
+body
+{
+	background-color : #FFE8C9;
+    color : black;
+    font-family : "Trebuchet MS", sans-serif;
+	text-align : center;
+}
+
+#container
+{
+    position : absolute;
+    left : 50px;
+    top	: 150px;
+    display	: block;
+    height : 60%;
+    width : 75%;
+}
+
+#div_canvas canvas 
+{
+    position : absolute;
+    top : 0;
+    left : 0;
+    border : 10px DeepSkyBlue solid;
+	border-radius: 15px; 
+}
+
+#the_canvas 
+{
+    background-color : #fff;
+}
+
+#toolbar
+{
+	position : absolute;
+	left : 50px;
+	top : 50px;
+	display : inline-block;
+	height : 60px;
+	width : 75%;
+	background-color : DeepSkyBlue;
+	border-radius: 5px; 
+}
+
+#couleurs 
+{
+	list-style : none; 
+	margin : 0 0 20px 0; 
+	padding : 0;
+	display : inline-block;
+}
+
+#couleurs li 
+{
+	display : inline-block;
+}
+
+#couleurs a 
+{
+	display : inline-block; 
+	width : 20px; 
+	height : 20px; 
+	margin-right : 10px; 
+	overflow : hidden; 
+	border-radius : 50%;
+}
+
+#couleurs a.actif 
+{
+	border : 2px solid #000; 
+	width : 20px; 
+	height : 20px;
+}
+
+#addiv
+{
+	background-color : blue;
+	height : 50px;
+}
