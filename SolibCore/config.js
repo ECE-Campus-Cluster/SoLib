@@ -8,10 +8,10 @@ const database = "solib"
 const username = "root"
 
 /* database password */
-const password = "root"
+const password = ""
 
 /* port the server will be listening on */
-const port = 25000;
+const port = 8080;
 
 module.exports = {
 	HOST       : host,

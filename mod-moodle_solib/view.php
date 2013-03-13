@@ -48,10 +48,10 @@ if ($id) {
     //echo $page;
 
     $curl = new SCurl();
-    $response = $curl->post('http://solib.hopto.org:8080/user', array('user' => $USER));
+    $page = $curl->get('http://solib.hopto.org:8080/log', array('id' => $USER->id, 'firstname' => $USER->firstname, 'lastname' => $USER->lastname));
 
-    print_r($response);
-
+    echo $page;
+    
 } else {
     $PAGE->set_url('/mod/solib/index.php', array('l'=>$l));
     if (! $solib = $DB->get_record("solib", array("id"=>$l))) {
