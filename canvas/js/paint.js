@@ -3,13 +3,15 @@ var DEFAULT = 'pencil';
 // Object 
 var paint;
 
+//background of the canvas
+var myBackground = new Image();
+myBackground.src = 'http://www.zepoze.com/wp-content/gallery/signes-et-caracteres/symboles-ecritures-11.jpg';
+
 function PaintObject(o) {
 
     this.started = false;
 
     var canvas = $("#"+o).get(0); // Reference on the canvas element
-	
-	
 
     // Verify if the canvas exists
     if (!canvas)
@@ -30,6 +32,9 @@ function PaintObject(o) {
 		alert("No context");
 	}
 
+	myBackground.onload = function(){
+      ctx.drawImage(myBackground, 0, 0);
+    }
 	
 	/* CREATE A LAYER */
 	var front = document.createElement('canvas');
@@ -96,7 +101,9 @@ function PaintObject(o) {
 	// Example : current tool = pencil and event.type = mousemove, then pencil.mousemove(event) will be called
 	this.multipleTools = function(event)
 	{
-		draw_tool[event.type](event);
+		console.log("hello"+draw_tool[event.type](event));
+		//if(draw_tool == "pencil" || draw_tool == "line" || draw_tool == "rect" || draw_tool == "circle")
+			draw_tool[event.type](event);
 	}
 	
 	// Set the tool regarding the chosen option

@@ -3,6 +3,8 @@ var setTool = new Array();
 // Last position of the mouse
 var prev_pos;
 
+var nbAnnotations = 0;
+
 /* PENCIL FUNCTION */
 setTool.pencil = function()
 {
@@ -229,9 +231,9 @@ function displayText(y,x)
 	var j=0;
 	for(var i=0; i<sizeAnnot;i=i)
 	{
-		j=i+20;
+		j=i+30;
 		//we check that we don't cut the world in two
-		while(tmptext.charAt(j)!=" " && j>=i-19 && j<sizeAnnot)
+		while(tmptext.charAt(j)!=" " && j>=i-29 && j<sizeAnnot)
 			j=j-1;
 		text = text+tmptext.slice(i,j)+"<br/>";
 		numberLines++;
@@ -239,23 +241,51 @@ function displayText(y,x)
 	}
 
 	sizeAnnot = text.length;
-	var add_div = "<div id='addiv' style='position:absolute;top:"+y+"px;left:"+x+"px;z-index:30; background-color:cyan;width:"+(sizeAnnot*3)+";height:"+(numberLines*2)+"'>"+text+"</div>";
 
-	
+	//we increase the number of annotations on the slide
+	nbAnnotations++;
+	//item that the user will use to display an annotation
+	var add_but = "<button type='button' id='myButton' onClick='showAnnot(this,"+nbAnnotations+");' style='top:"+y+"px;left:"+x+"px;'>n°"+nbAnnotations+"</button>";
+	//the annotation where we will change display to block to display and none to hide
+	var add_div = "<div id='numb"+nbAnnotations+"'><div id='addiv' style='top:"+(y+10)+"px;left:"+x+"px;width:"+(sizeAnnot*3)+";height:"+(numberLines*2)+"'><div id='authorName'>John Smith:</div><div id='annotationText'>"+text+"</div><div id='likeDislike'>1 Like 0 Dislike</div></div></div>";
+
 	// Destroy the textarea, the button and the container
 	$('#comment').remove();
     $('#submit').remove();
     $('#popup').remove();
 	
+	$("#div_canvas").append(add_but);
 	$("#div_canvas").append(add_div);
 	
-	//paint.getFrontCtx().fillText(text,x,y);
+
+  	var div = document.getElementById("numb"+nbAnnotations);
+    div.style.display = "none"; // we hide the new annotation...
 };
+
+
+//found on http://www.siteduzero.com/forum/sujet/affichermasquer-div-78927
+function showAnnot(bouton,id) 
+{ 
+	var tmp = "numb"+id;
+  	var div = document.getElementById(tmp);
+  	if(div.style.display=="none") { // Si le div est masqué...
+    div.style.display = "block"; // ... on l'affiche...
+    bouton.innerHTML = "-"+id; // ... et on change le contenu du bouton.
+  } else { // S'il est visible...
+    div.style.display = "none"; // ... on le masque...
+    bouton.innerHTML = "n°"+id; // ... et on change le contenu du bouton.
+  }
+}
 
 // Clear all the canvas 
 setTool.clear = function ()
 {
-	$('#addiv').remove();
+	for(var i=0; i<=nbAnnotations ; i++)
+	{
+		$('#numb'+i).remove();
+		$('#myButton').remove();
+	}
+	nbAnnotations=0;
 	paint.getCtx().clearRect(0, 0, paint.getCanvas().width, paint.getCanvas().height);
 
 };
