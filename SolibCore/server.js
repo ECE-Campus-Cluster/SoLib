@@ -41,7 +41,8 @@ app.get('/log', function (req, res) {
 	req.session.user           = new Object()
 	req.session.user.id        = req.param('id')
 	req.session.user.firstname = req.param('firstname')
-	req.session.user.lasname   = req.param('lastname')
+	req.session.user.lastname  = req.param('lastname')
+	req.session.user.sockets   = new Array()
 	//sio.sockets.emit('listusers', { users: users }); // sends to all clients
   	res.render('index.html')
 });
@@ -70,9 +71,21 @@ sio.configure(function () {
 /* socket.io events */
 sio.on('connection', function (socket) {
 	var session = socket.handshake.session
-	session.user.socket = socket.id
-	
-	solibSessions.addUser(session.user) // now we have the socket so we add the session to our storage
-	console.log(solibSessions.connectedUsers)
-	//socket.emit("updateval", { val: counter });
+	session.user.newsocket = socket.id // the socket used for THIS connection
+
+	socket.emit("listusers", { users: solibSessions.connectedUsers }); // send to new client on connection
+
+	solibSessions.addUser(session.user, function () { //add if new user or add socket if new browser tab
+		socket.broadcast.emit("listusers", { users: solibSessions.connectedUsers }); // sends to all clients except the new connection
+	});
+
+	/* disconnect event */
+	socket.on('disconnect', function () {
+	    solibSessions.removeSocket(session.user, socket.id, function (lastsocket, user) {
+	    	if (lastsocket) {
+	    		solibSessions.removeUser(session.user)
+	    		sio.sockets.emit("deluser", { user: user }); // send to all clients
+	    	}
+	    });
+	});
 });
