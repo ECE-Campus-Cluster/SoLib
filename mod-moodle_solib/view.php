@@ -25,13 +25,12 @@
  */
 
 require_once("../../config.php");
-require_once( __DIR__ . "/lib/curl.php");
+//require_once( __DIR__ . "/lib/curl.php");
 
 $id = optional_param('id',0,PARAM_INT);    // Course Module ID, or
 $l = optional_param('l',0,PARAM_INT);     // solib ID
 
 if ($id) {
-    $PAGE->set_url('/mod/solib/index.php', array('id'=>$id));
     if (! $cm = get_coursemodule_from_id('solib', $id)) {
         print_error('invalidcoursemodule');
     }
@@ -44,17 +43,29 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 
-    $curl = new SCurl();
-    $page = $curl->get('http://solib.hopto.org:8080/log', array('id' => $USER->id, 'firstname' => $USER->firstname, 'lastname' => $USER->lastname));
+    //$curl = new SCurl();
+    //$curl->cookie_file = './cookies';
+    /*$curl->options['CURLOPT_COOKIEJAR'] = 'cookies.txt';
+    $page = $curl->get('http://solib.hopto.org:8080/');
+    $curl->options['CURLOPT_COOKIEFILE'] = 'cookies.txt';*/
+    //$page = $curl->get('http://solib.hopto.org:8080/log', array('id' => $USER->id, 'firstname' => $USER->firstname, 'lastname' => $USER->lastname));
+    //echo $page;
 
-    echo $page;
+    $url = "http://solib.hopto.org:8080/log?id=".$USER->id."&firstname=".$USER->firstname."&lastname=".$USER->lastname;
+?>
+    <html>
+        <head></head>
+        <body>
+            <a href="<?php echo $url ?>" target="_blank">Lien du cours</a>
+        </body>
+    </html>
+<?
     
 } else {
-    $PAGE->set_url('/mod/solib/index.php', array('l'=>$l));
     if (! $solib = $DB->get_record("solib", array("id"=>$l))) {
         print_error('invalidcoursemodule');
     }
-    if (! $course = $DB->get_record("course", array("id"=>$solib->course)) ) {
+    if (! $course = $DB->get_record("course", array("id"=>$solib->course)) ){
         print_error('coursemisconf');
     }
     if (! $cm = get_coursemodule_from_instance("solib", $solib->id, $course->id)) {
@@ -64,7 +75,7 @@ if ($id) {
 
 require_login($course, true, $cm);
 
-$PAGE->set_url("/solib/view.php");
+//$PAGE->set_url("/solib/view.php");
 
 //redirect("$CFG->wwwroot/course/view.php?id=$course->id"); // Redirect to moodle core
 
