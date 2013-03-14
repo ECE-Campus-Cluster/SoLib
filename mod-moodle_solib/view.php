@@ -44,9 +44,6 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 
-    //$page = file_get_contents('http://solib.hopto.org:25000');
-    //echo $page;
-
     $curl = new SCurl();
     $page = $curl->get('http://solib.hopto.org:8080/log', array('id' => $USER->id, 'firstname' => $USER->firstname, 'lastname' => $USER->lastname));
 
@@ -57,7 +54,7 @@ if ($id) {
     if (! $solib = $DB->get_record("solib", array("id"=>$l))) {
         print_error('invalidcoursemodule');
     }
-    if (! $course = $DB->get_record("course", array("id"=>$solib->course)) ){
+    if (! $course = $DB->get_record("course", array("id"=>$solib->course)) ) {
         print_error('coursemisconf');
     }
     if (! $cm = get_coursemodule_from_instance("solib", $solib->id, $course->id)) {
