@@ -6,8 +6,10 @@ app      = express()
 ejs      = require('ejs')
 io       = require('socket.io')
 config   = require('./config')
-//sessions = require('./sessions').Sessions
+solibSessions = require('./sessions')
 const hashStore = 'solib_secret'
+
+solibSessions = new solibSessions.SolibSessions();
 
 /* session & cookies express side */
 var sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 })
@@ -35,10 +37,11 @@ server.listen(app.get('port'), function() {
 });
 
 app.get('/log', function (req, res) {
+	// we build the user object but we are still waiting the socket id, so we wait for soccket.on('connection')
+	req.session.user           = new Object()
 	req.session.user.id        = req.param('id')
 	req.session.user.firstname = req.param('firstname')
 	req.session.user.lasname   = req.param('lastname')
-	//users.push(user)
 	//sio.sockets.emit('listusers', { users: users }); // sends to all clients
   	res.render('index.html')
 });
@@ -67,6 +70,9 @@ sio.configure(function () {
 /* socket.io events */
 sio.on('connection', function (socket) {
 	var session = socket.handshake.session
-	session.socket = socket.id
+	session.user.socket = socket.id
+	
+	solibSessions.addUser(session.user) // now we have the socket so we add the session to our storage
+	console.log(solibSessions.connectedUsers)
 	//socket.emit("updateval", { val: counter });
 });
