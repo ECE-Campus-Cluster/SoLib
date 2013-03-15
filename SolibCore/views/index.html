@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+       <meta charset="utf-8">
+        <title>Solib</title>
+        <link rel="icon" href="favicon.ico"> 
+	 	<script src="/socket.io/socket.io.js"></script>
+	 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
+	 	<link rel="stylesheet" href="css/custom.css">
+	</head>
+	<body>
+		<div class="container">
+			<center>
+				<h4>Connected users:</h4>
+				<table id="users">
+				</table>
+			</center>
+		</div>
+		<script type="text/javascript">
+			var users = document.getElementById("users")
+			socket    = io.connect("http://solib.hopto.org:8080")
+
+			socket.on('list_users', function (data) {
+				users.innerHTML = ''
+				for (var i=0 ; i<data.users.length ; i++) {
+					var tr = document.createElement('tr')
+					tr.id = data.users[i].id
+					tr.innerHTML = data.users[i].firstname + " " + data.users[i].lastname
+					users.appendChild(tr)
+				}
+			});
+
+			socket.on('user_disconnected', function (data) {
+				document.getElementById(data.user.id).remove();
+			});
+		</script>
+	</body>
+</html>
