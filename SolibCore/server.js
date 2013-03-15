@@ -22,6 +22,7 @@ app.configure(function () {
 	app.use(express.bodyParser()) // for req.param
 	app.use(express.methodOverride())
 	app.use(express.cookieParser())
+	app.use(express.static(__dirname + '/views'));
 	app.use(express.session({
 		store: sessionStore,
 		key: 'sid',
