@@ -43,20 +43,14 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 
-    //$curl = new SCurl();
-    //$curl->cookie_file = './cookies';
-    /*$curl->options['CURLOPT_COOKIEJAR'] = 'cookies.txt';
-    $page = $curl->get('http://solib.hopto.org:8080/');
-    $curl->options['CURLOPT_COOKIEFILE'] = 'cookies.txt';*/
-    //$page = $curl->get('http://solib.hopto.org:8080/log', array('id' => $USER->id, 'firstname' => $USER->firstname, 'lastname' => $USER->lastname));
-    //echo $page;
-
     $url = "http://solib.hopto.org:8080/log?id=".$USER->id."&firstname=".$USER->firstname."&lastname=".$USER->lastname;
 ?>
     <html>
         <head></head>
         <body>
-            <a href="<?php echo $url ?>" target="_blank">Lien du cours</a>
+            <a href="<?php echo $url ?>" target="_blank">Connect to Solib</a>
+            <br />
+            <a href="http://solib.hopto.org:8080/log?id=67&firstname=Jean&lastname=Luc" target="_blank">Connect to Solib with fake account (for tests)</a>
         </body>
     </html>
 <?

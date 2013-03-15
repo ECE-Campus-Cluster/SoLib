@@ -71,20 +71,16 @@ sio.configure(function () {
 /* socket.io events */
 sio.on('connection', function (socket) {
 	var session = socket.handshake.session
-	session.user.newsocket = socket.id // the socket used for THIS connection
-
-	socket.emit("listusers", { users: solibSessions.connectedUsers }); // send to new client on connection
-
-	solibSessions.addUser(session.user, function () { //add if new user or add socket if new browser tab
-		socket.broadcast.emit("listusers", { users: solibSessions.connectedUsers }); // sends to all clients except the new connection
+	solibSessions.addUser(session.user, socket.id, function () {
+		sio.sockets.emit("list_users", { users: solibSessions.connectedUsers }); // send to all clients
 	});
 
 	/* disconnect event */
 	socket.on('disconnect', function () {
-	    solibSessions.removeSocket(session.user, socket.id, function (lastsocket, user) {
+	    solibSessions.removeSocket(socket.id, function (lastsocket, user) {
 	    	if (lastsocket) {
 	    		solibSessions.removeUser(session.user)
-	    		sio.sockets.emit("deluser", { user: user }); // send to all clients
+	    		socket.broadcast.emit("user_disconnected", { user: user });
 	    	}
 	    });
 	});
