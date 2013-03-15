@@ -25,12 +25,12 @@
  */
 
 // Seems to be required for Moodle display in settings
-$string['labeltext'] = 'Toto';
-$string['modulename'] = 'Solib';
-$string['modulename_help'] = 'Le plugin de Solib, vous permettant de créer une instance Solib.';
-$string['modulename_link'] = 'mod/solib/view';
-$string['modulenameplural'] = 'Solib';
+$string['labeltext']            = 'Toto';
+$string['modulename']           = 'Solib';
+$string['modulename_help']      = 'Le plugin de Solib, vous permettant de créer une instance Solib.';
+$string['modulename_link']      = 'mod/solib/view';
+$string['modulenameplural']     = 'Solib';
 $string['pluginadministration'] = 'Administration Solib';
-$string['pluginname'] = 'Solib';
+$string['pluginname']           = 'Solib';
 
 $string['solibnewcoursename'] = 'Nom de l\'instance Solib';

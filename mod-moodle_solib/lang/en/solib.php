@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'label', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'solib', language 'en',
  *
  * @package    mod
  * @subpackage solib
@@ -25,12 +25,12 @@
  */
 
 // Seems to be required for Moodle display in settings
-$string['labeltext'] = 'Toto';
-$string['modulename'] = 'Solib';
-$string['modulename_help'] = 'The Solib plugin.';
-$string['modulename_link'] = 'mod/solib/view';
-$string['modulenameplural'] = 'Solib';
+$string['labeltext']            = 'Toto';
+$string['modulename']           = 'Solib';
+$string['modulename_help']      = 'The Solib plugin.';
+$string['modulename_link']      = 'mod/solib/view';
+$string['modulenameplural']     = 'Solib';
 $string['pluginadministration'] = 'Solib administration';
-$string['pluginname'] = 'Solib';
+$string['pluginname']           = 'Solib';
 
 $string['solibnewcoursename'] = 'Solib instance\'s name';
