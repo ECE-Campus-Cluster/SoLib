@@ -20,14 +20,18 @@ function Sessions()
 	* @return {Array}
 	*/
 	this.addUser = function (user, socketID, callback) {
+		var isPresent = false;
 		for (var i=0 ; i<this.connectedUsers.length ; i++) {
 			// Is already present so we just add the socket id
-			if (this.connectedUsers[i].id == user.id)
-				return this.connectedUsers[i].sockets.push(socketID)
+			if (this.connectedUsers[i].id == user.id) {
+				this.connectedUsers[i].sockets.push(socketID)
+				isPresent = true;
+			}
 		}
-		user.sockets.push(socketID)
-		this.connectedUsers.push(user)
-
+		if (!isPresent) {
+			user.sockets.push(socketID)
+			this.connectedUsers.push(user)
+		}
 		if (callback && typeof(callback) === "function")
 			callback(user)
 	};

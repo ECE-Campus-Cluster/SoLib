@@ -60,18 +60,18 @@ sio.configure(function () {
 			if (err || !session) return callback('socket.io: session not found.', false)
 			// session handshakeData
 			handshakeData.session = session
-			if (handshakeData.session.user)
-				return callback(null, true)
-			else
-				return callback('socket.io: session.user not found', false)
+			if (handshakeData.session.user) return callback(null, true)
+			else return callback('socket.io: session.user not found', false)
 		});
 	});
 });
 
 /* socket.io events */
 sio.on('connection', function (socket) {
-	var session = socket.handshake.session
+	var session = socket.handshake.session // get express session
+	console.log(socket.id + " " + session.user.lastname)
 	solibSessions.addUser(session.user, socket.id, function () {
+		console.log(solibSessions.connectedUsers)
 		sio.sockets.emit("list_users", { users: solibSessions.connectedUsers }); // send to all clients
 	});
 
