@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/solib/db" VERSION="20130208" COMMENT="XMLDB file for Moodle mod/solib"
+<XMLDB PATH="mod/solib/db" VERSION="2013031601" COMMENT="XMLDB file for Moodle mod/solib"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -8,7 +8,10 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="course"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="course" NEXT="timestamp"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The timestamp at wich the solib course is created" PREVIOUS="name" NEXT="server_addr"/>
+        <FIELD NAME="server_addr" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The address of the Solib server where the course is stocked." PREVIOUS="timestamp" NEXT="access_token"/>
+        <FIELD NAME="access_token" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="The token to access the solib server." PREVIOUS="server_addr"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -25,7 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$module->version   = 2013010802;       // The current module version (Date: YYYYMMDDXX)
-$module->requires  = 2012112900;    // Requires this Moodle version
+// 2013031601 -> next upgrade but it fails -_-'
+$module->version   = 20130316; // The current module version (Date: YYYYMMDDXX)
+$module->requires  = 2012112900; // Requires this Moodle version
 $module->component = 'mod_solib'; // Full name of the plugin (used for diagnostics)
 $module->cron      = 0;

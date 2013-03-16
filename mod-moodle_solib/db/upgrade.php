@@ -29,15 +29,21 @@ function xmldb_qtype_myqtype_upgrade($oldversion = 0) {
 
     $result = true;
     
-    /// Add a new column newcol to the mdl_myqtype_options
-    if ($oldversion < 2013010801) {
+    if ($oldversion < 2013031601) {
 
         // Define table solib to be created
         $table = new xmldb_table('solib');
 
         // Adding fields to table solib
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('server_addr', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('access_token', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table solib
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
         // Conditionally launch create table for solib
         if (!$dbman->table_exists($table)) {
@@ -45,9 +51,8 @@ function xmldb_qtype_myqtype_upgrade($oldversion = 0) {
         }
 
         // solib savepoint reached
-        upgrade_mod_savepoint(true, 2013010801, 'solib');
+        upgrade_mod_savepoint(true, 2013031601, 'solib');
     }
-
 
     return $result;
 }
