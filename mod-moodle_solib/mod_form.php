@@ -37,6 +37,10 @@ class mod_solib_mod_form extends moodleform_mod {
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         
+        $mform->addElement('text', 'server_addr', get_string('solibservaddress', 'solib'), array('size'=>'64'));
+        $mform->setType('server_addr', PARAM_TEXT);
+        $mform->addRule('server_addr', null, 'required', null, 'client');
+        
         $this->standard_coursemodule_elements(); // Réglages courants
 
 //-------------------------------------------------------------------------------

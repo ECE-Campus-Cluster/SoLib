@@ -29,7 +29,7 @@ function xmldb_solib_upgrade($oldversion = 0) {
 
     $result = true;
     
-    if ($oldversion < 2013031601) {
+    if ($oldversion < 2013031603) {
 
         // Define table solib to be created
         $table = new xmldb_table('solib');
@@ -51,7 +51,7 @@ function xmldb_solib_upgrade($oldversion = 0) {
         }
 
         // solib savepoint reached
-        upgrade_mod_savepoint(true, 2013031601, 'solib');
+        upgrade_mod_savepoint(true, 2013031603, 'solib');
     }
 
     return $result;

@@ -34,3 +34,4 @@ $string['pluginadministration'] = 'Administration Solib';
 $string['pluginname']           = 'Solib';
 
 $string['solibnewcoursename'] = 'Nom de l\'instance Solib';
+$string['solibservaddress']   = 'Adresse du serveur Solib';

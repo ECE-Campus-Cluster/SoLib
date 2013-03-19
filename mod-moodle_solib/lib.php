@@ -38,11 +38,11 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
  */
 function solib_add_instance($solib) {
     global $DB;
-
-    //var_dump($solib);
-    //die;
     
     $solib->timemodified = time();
+    // TODO ADD timestamp
+    $solib->timestamp = time();
+    $solib->access_token = "12345";
 
     return $DB->insert_record("solib", $solib); //returns the id
 }
