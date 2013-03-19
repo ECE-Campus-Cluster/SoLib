@@ -8,11 +8,11 @@
 */
 
 // Good JS class template: http://labs.tomasino.org/2011/11/10/javascript-class-template/
-function Sessions()
+function Sessions ()
 {
 	this.connectedUsers = new Array();
 
-	function __construct() {};
+	function __construct () {};
 
 	/**
 	* Add a user if he's new or add a socket if he already connected.

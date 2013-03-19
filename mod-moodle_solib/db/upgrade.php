@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_qtype_myqtype_upgrade($oldversion = 0) {
+function xmldb_solib_upgrade($oldversion = 0) {
     global $DB;
     $dbman = $DB->get_manager();
 
