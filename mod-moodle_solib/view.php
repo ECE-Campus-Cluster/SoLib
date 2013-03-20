@@ -24,6 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// http://docs.moodle.org/dev/Page_API
+// http://docs.moodle.org/dev/Output_renderers
+// http://fr.slideshare.net/samhemelryk/moodle-output-library
+
 require_once("../../config.php");
 require_once($CFG->dirroot.'/mod/solib/lib.php');
 

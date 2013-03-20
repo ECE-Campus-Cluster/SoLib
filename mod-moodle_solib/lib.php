@@ -24,6 +24,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// http://docs.moodle.org/dev/Text_formats_2.0
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
@@ -40,9 +42,8 @@ function solib_add_instance($solib) {
     global $DB;
     
     $solib->timemodified = time();
-    // TODO ADD timestamp
-    $solib->timestamp = time();
-    $solib->access_token = "12345";
+    $solib->creation_time = time();
+    $solib->access_token = uniqid();
 
     return $DB->insert_record("solib", $solib); //returns the id
 }

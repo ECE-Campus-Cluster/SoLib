@@ -29,7 +29,7 @@ function xmldb_solib_upgrade($oldversion = 0) {
 
     $result = true;
     
-    if ($oldversion < 2013031603) {
+    if ($oldversion < 2013032005) {
 
         // Define table solib to be created
         $table = new xmldb_table('solib');
@@ -38,9 +38,12 @@ function xmldb_solib_upgrade($oldversion = 0) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('nameformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('creation_time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('server_addr', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('access_token', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('server_addrformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('access_token', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table solib
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -51,8 +54,10 @@ function xmldb_solib_upgrade($oldversion = 0) {
         }
 
         // solib savepoint reached
-        upgrade_mod_savepoint(true, 2013031603, 'solib');
+
+        upgrade_mod_savepoint(true, 2013032005, 'solib');
     }
+
 
     return $result;
 }
