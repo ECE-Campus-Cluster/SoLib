@@ -1,9 +1,13 @@
 ﻿// Array of tools
 var setTool = new Array();
+
 // Last position of the mouse
 var prev_pos;
 
+//Annotations, for each annotation we attribute an id, the number of likes and the number of dislikes
 var nbAnnotations = 0;
+var numberLikes = 0;
+var numberDisikes = 0;
 
 /* PENCIL FUNCTION */
 setTool.pencil = function()
@@ -245,9 +249,12 @@ function displayText(y,x)
 	//we increase the number of annotations on the slide
 	nbAnnotations++;
 	//item that the user will use to display an annotation
+	//var add_but = "<button type='button' id='myButton' onClick='showAnnot(this,"+nbAnnotations+");' style='top:"+y+"px;left:"+x+"px;'>n°"+nbAnnotations+"</button>";
 	var add_but = "<button type='button' id='myButton' onClick='showAnnot(this,"+nbAnnotations+");' style='top:"+y+"px;left:"+x+"px;'>n°"+nbAnnotations+"</button>";
+	
 	//the annotation where we will change display to block to display and none to hide
-	var add_div = "<div id='numb"+nbAnnotations+"'><div id='addiv' style='top:"+(y+10)+"px;left:"+x+"px;width:"+(sizeAnnot*3)+";height:"+(numberLines*2)+"'><div id='authorName'>John Smith:</div><div id='annotationText'>"+text+"</div><div id='likeDislike'>1 Like 0 Dislike</div></div></div>";
+	var add_div = "<div id='numb"+nbAnnotations+"'><div id='addiv' style='top:"+(y+10)+"px;left:"+x+"px;'><div id='authorName'>John Smith:</div><div id='annotationText'>"+text+"</div><div id='txtLikeDislike'>Dislikes</div><button type='button' id='likeButton' onClick='addDislike("+nbAnnotations+",this);'>"+numberDisikes+"</button><div id='txtLikeDislike'>Likes</div><button type='button' id='dislikeButton' onClick='addLike("+nbAnnotations+",this);'>"+numberLikes+"</button></div></div>";
+
 
 	// Destroy the textarea, the button and the container
 	$('#comment').remove();
@@ -275,6 +282,21 @@ function showAnnot(bouton,id)
     div.style.display = "none"; // ... on le masque...
     bouton.innerHTML = "n°"+id; // ... et on change le contenu du bouton.
   }
+}
+
+//LIKE AND DISLIKE ANNOTATION
+function addDislike(id,bouton)
+{
+	numberDisikes++;
+	bouton.innerHTML = numberDisikes;
+
+}
+
+function addLike(id,bouton)
+{
+	numberLikes++;
+	bouton.innerHTML = numberLikes;
+
 }
 
 // Clear all the canvas 
