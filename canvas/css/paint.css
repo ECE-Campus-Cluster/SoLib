@@ -103,7 +103,7 @@ body
 	border: 3px solid DeepSkyBlue;
 }
 
-#likeButton
+.likeButton
 {
 	background-color : white;
 	border: 1px solid white;
@@ -112,7 +112,7 @@ body
 
 }
 
-#dislikeButton
+.dislikeButton
 {
 	background-color : white;
 	border: 1px solid white;
