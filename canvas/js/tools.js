@@ -251,36 +251,30 @@ function displayText(y,x)
 	nbAnnotations++;
 
 
-	tabAnnotation["annot"+nbAnnotations] = { name:"John Smith", text:myText,like: "0", dislike: "0"};
+	tabAnnotation["annot"+nbAnnotations] = { name:"John Smith", text:myText, like: "0", dislike: "0"};
 
 	console.log(tabAnnotation["annot"+nbAnnotations]["like"]);
 
 	//item that the user will use to display an annotation
 	var add_but = "<button type='button' id='myButton' onClick='showAnnot(this,"+nbAnnotations+");' style='top:"+y+"px;left:"+x+"px;'>n°"+nbAnnotations+"</button>";
-	
+	$("#div_canvas").append(add_but);
+
 	//the annotation where we will change display to block to display and none to hide
-	var add_div = "<div id='numb"+nbAnnotations+"'>"
-	add_div = add_div + "<div id='addiv' style='top:"+(y+10)+"px;left:"+x+"px;'>"
+	var add_div = "<div id='numb"+nbAnnotations+"' class='addiv' style='top:"+(y+10)+"px;left:"+x+"px;'>"
 	add_div = add_div + "<div id='authorName'>"+tabAnnotation["annot"+nbAnnotations]["name"]+":</div>"
  	add_div = add_div + "<div id='annotationText'>"+tabAnnotation["annot"+nbAnnotations]["text"]+"</div>"
-	add_div = add_div + "<div id='txtLikeDislike'>Dislikes</div>"
-	add_div = add_div + "<button type='button' class='dislikeButton' id='dislikeButton"+nbAnnotations+"' onClick='addDislike("+nbAnnotations+",this);'>"+tabAnnotation["annot"+nbAnnotations]["dislike"]+"</button>"
-	add_div = add_div + "<div id='txtLikeDislike'>Likes</div><button type='button' class='likeButton' id='likeButton"+nbAnnotations+"' onClick='addLike("+nbAnnotations+",this);'>"+tabAnnotation["annot"+nbAnnotations]["like"]+"</button>"
+	add_div = add_div + "<button type='button' class='dislikeButton' id='dislikeButton"+nbAnnotations+"' onClick='addDislike("+nbAnnotations+",this);'>Dislikes "+tabAnnotation["annot"+nbAnnotations]["dislike"]+"</button>"
+	add_div = add_div + "<button type='button' class='likeButton' id='likeButton"+nbAnnotations+"' onClick='addLike("+nbAnnotations+",this);'>Likes "+tabAnnotation["annot"+nbAnnotations]["like"]+"</button>"
 	add_div = add_div + "</div>"
-	add_div = add_div + "</div>";
+	$("#div_canvas").append(add_div);
+
+  	var div = document.getElementById("numb"+nbAnnotations);
+    div.style.display = "none"; // we hide the new annotation...
 
 	// Destroy the textarea, the button and the container
 	$('#comment').remove();
     $('#submit').remove();
     $('#popup').remove();
-	
-	$("#div_canvas").append(add_but);
-	$("#div_canvas").append(add_div);
-//	$("#div_canvas").appendChild(add_div);
-		
-
-  	var div = document.getElementById("numb"+nbAnnotations);
-    div.style.display = "none"; // we hide the new annotation...
 };
 
 
@@ -302,14 +296,14 @@ function showAnnot(bouton,id)
 function addDislike(id,bouton)
 {
  	tabAnnotation["annot"+id]["dislike"] = parseInt(tabAnnotation["annot"+id]["dislike"]) + 1;
-	bouton.innerHTML = 	tabAnnotation["annot"+id]["dislike"];
+	bouton.innerHTML ="Dislikes "+	tabAnnotation["annot"+id]["dislike"];
 
 }
 
 function addLike(id,bouton)
 {
  	tabAnnotation["annot"+id]["like"] = parseInt(tabAnnotation["annot"+id]["like"]) + 1;
-	bouton.innerHTML = 	tabAnnotation["annot"+id]["like"];
+	bouton.innerHTML ="Likes "+ 	tabAnnotation["annot"+id]["like"];
 }
 
 // Clear all the canvas 
