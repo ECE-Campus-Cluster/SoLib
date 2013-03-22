@@ -45,7 +45,44 @@ function solib_add_instance($solib) {
     $solib->creation_time = time();
     $solib->access_token = uniqid();
 
-    return $DB->insert_record("solib", $solib); //returns the id
+    $solib->id = $DB->insert_record("solib", $solib); // returns the id
+
+    $result = solib_send_to_server($solib);
+
+    return $solib->id;
+}
+
+/**
+*
+*
+*/
+function solib_send_to_server($solib) {
+    // curl stuff for post request to solib server
+    $url = $solib->server_addr.'/newcourse';
+    $fields = array(
+        'access_token' => urlencode($solib->access_token)
+    );
+
+    // url-ify the data for the POST
+    $fields_string = '';
+    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    rtrim($fields_string, '&');
+
+    // open connection
+    $ch = curl_init();
+
+    // set the url, number of POST vars, POST data
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, count($fields));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+
+    // execute post
+    $result = curl_exec($ch);
+
+    // close connection
+    curl_close($ch);
+
+    return $result;
 }
 
 /**
