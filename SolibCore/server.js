@@ -42,12 +42,11 @@ app.post('/newlesson', function (req, res) {
 	solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, result) {
 		if (err) {
 			console.log('Error connecting to mysql on insert statement: \n%s', err)
-			res.writeHead(500)
-			res.end('Error inserting course ' + req.param('name'))
+			res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
 		} else {
 			console.log("Inserted course '%s'", req.param('name'))
-			res.writeHead(200)
-			res.end('Insterted course "' + req.param('name') + '".')
+			res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
+			         		solibcoreid: result.insertId });
 		}
 	});
 });
