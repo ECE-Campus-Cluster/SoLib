@@ -5,11 +5,13 @@ express  = require('express')
 app      = express()
 ejs      = require('ejs')
 io       = require('socket.io')
+SolibSQL = require('./mysql').SolibSQL
 config   = require('./config')
 solibSessions = require('./sessions')
 const hashStore = 'solib_secret'
 
 solibSessions = new solibSessions.SolibSessions();
+solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
 /* session & cookies express side */
 var sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 })
@@ -36,8 +38,22 @@ server.listen(app.get('port'), function() {
 	console.log("Solib server running on port %d", app.get('port'))
 });
 
+app.post('/newlesson', function (req, res) {
+	solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, result) {
+		if (err) {
+			console.log('Error connecting to mysql on insert statement: \n%s', err)
+			res.writeHead(500)
+			res.end('Error inserting course ' + req.param('name'))
+		} else {
+			console.log("Inserted course '%s'", req.param('name'))
+			res.writeHead(200)
+			res.end('Insterted course "' + req.param('name') + '".')
+		}
+	});
+});
+
 app.get('/log', function (req, res) {
-	// we build the user object but we are still waiting the socket id, so we wait for soccket.on('connection')
+	// we build the user object but we are still waiting the socket id, so we wait for socket.on('connection')
 	req.session.user           = new Object()
 	req.session.user.id        = req.param('id')
 	req.session.user.firstname = req.param('firstname')

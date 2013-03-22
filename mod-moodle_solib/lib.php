@@ -42,12 +42,14 @@ function solib_add_instance($solib) {
     global $DB;
     
     $solib->timemodified = time();
-    $solib->creation_time = time();
+    $solib->creation_time = $solib->timemodified;
     $solib->access_token = uniqid();
 
     $solib->id = $DB->insert_record("solib", $solib); // returns the id
 
     $result = solib_send_to_server($solib);
+
+    // insert id_solib (from SolibCore) in moodle db
 
     return $solib->id;
 }
@@ -58,9 +60,12 @@ function solib_add_instance($solib) {
 */
 function solib_send_to_server($solib) {
     // curl stuff for post request to solib server
-    $url = $solib->server_addr.'/newcourse';
+    $url = $solib->server_addr.'/newlesson';
     $fields = array(
-        'access_token' => urlencode($solib->access_token)
+        'name'          => urlencode($solib->name),
+        'author'        => urlencode('JTF'),
+        'access_token'  => urlencode($solib->access_token),
+        'creation_time' => urlencode($solib->creation_time)
     );
 
     // url-ify the data for the POST
