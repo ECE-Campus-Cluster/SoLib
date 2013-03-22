@@ -34,19 +34,15 @@ div.connected-users {
   padding:22px 22px 22px 30px;
 }
 
-
-.rightside {
-  float:right;
-  right:0px;
+#myCanvas {
+  width:95%;
+  height:95%;
+  top:30px;
+  left:30px;
+  position: absolute;
+  border:1px solid #000000;
 }
 
-#popout { 
-  position: fixed; 
-  height: 100px; 
-  width: 75px; 
-  border: 1px dotted gray; 
-  background: darkblue; 
-  color: white; 
-  top:50px; 
-  left: -40px; }
-#toggle { float: right; }
+#popopen {
+  cursor: pointer;
+}
