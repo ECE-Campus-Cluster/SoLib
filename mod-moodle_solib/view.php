@@ -52,9 +52,15 @@ if ($idSolibCourse) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($solib->name);
 
-    $link = new action_link(new moodle_url("http://solib.hopto.org:8080/log", array('id'=>$USER->id, 'firstname'=>$USER->firstname, 'lastname'=>$USER->lastname)), "Access to ".$solib->name);
-    //$link->add_action(new popup_action('click', $link->url));
-    echo $OUTPUT->render($link);
+    echo $OUTPUT->box_start();
+        $link = new action_link(new moodle_url("http://solib.hopto.org:8080/log", array('id'=>$USER->id, 'firstname'=>$USER->firstname, 'lastname'=>$USER->lastname)), "Click this link to access to: ".$solib->name);
+        //$link->add_action(new popup_action('click', $link->url));
+        echo $OUTPUT->render($link);
+        echo '<br />';
+        echo '<br />';
+        echo 'Creation time: ' . date("D d F Y H:i",$solib->creation_time);
+
+    echo $OUTPUT->box_end();
 
     echo $OUTPUT->footer();
 }
