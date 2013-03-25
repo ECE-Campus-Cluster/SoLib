@@ -51,33 +51,36 @@ app.post('/newlesson', function (req, res) {
 	});
 });
 
-app.get('/', function (req, res) {
-	solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (err, rows) {
-		if (err) {
-            console.log("Error connecting to mysql on select statement.\n" + err)
-            res.send(500, "Database error.")
-        }
-        else if (rows.length > 0) {
-            if (req.param('access_token') == rows[0].access_token) {
-            	// Connection established.
-        		req.session.user           = new Object()
-				req.session.user.id        = req.param('user_id')
-				req.session.user.firstname = req.param('firstname')
-				req.session.user.lastname  = req.param('lastname')
-				req.session.user.sockets   = new Array()
-				res.render('index.html', function (err, html) {
-					//console.log(html)
-				});
-            }
-            else
-            	res.send(403, "Access forbidden.")
-        }
-        else {
-        	res.send(404, "Unknown lesson id.")
-        }
-	});
-
-	// //sio.sockets.emit('listusers', { users: users }); // sends to all clients
+app.get('/lesson', function (req, res) {
+	if (req.param('id_lesson') && req.param('access_token') && req.param('user_id') && req.param('firstname') && req.param('lastname'))
+	{
+		solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (err, rows) {
+			if (err) {
+	            console.log("Error connecting to mysql on select statement.\n" + err)
+	            res.send(500, "Database error.")
+	        }
+	        else if (rows.length > 0) {
+	            if (req.param('access_token') == rows[0].access_token) {
+	            	// Connection established.
+	        		req.session.user           = new Object()
+					req.session.user.id        = req.param('user_id')
+					req.session.user.firstname = req.param('firstname')
+					req.session.user.lastname  = req.param('lastname')
+					req.session.user.sockets   = new Array()
+					res.render('index.html')
+	            }
+	            else {
+	            	res.send(403, "Access forbidden.")
+	            }
+	        }
+	        else {
+	        	res.send(404, "Unknown lesson id.")
+	        }
+		});
+	}
+	else {
+		res.send(404, "Missing parameters.")
+	}
 });
 
 /* setting authorization method for socket.io */
