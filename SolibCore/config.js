@@ -1,5 +1,5 @@
 /* database host */
-const host = "can.vas"
+const host = "localhost"
 
 /* database name */
 const database = "solib"

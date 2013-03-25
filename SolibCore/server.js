@@ -19,6 +19,7 @@ var sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 })
 /* expressjs config */
 app.configure(function () {
     app.set('port', config.PORT)
+    app.use(express.static(__dirname + '/views'))
     app.set('views', __dirname + '/views') // html files
     app.engine('html', ejs.renderFile)
     app.use(express.bodyParser()) // for req.param
@@ -110,7 +111,6 @@ sio.on('connection', function (socket) {
 
     // Add the user to the connected list
     solibSessions.addUser(session.user, socket.id, function () {
-        //console.log(solibSessions.connectedUsers)
         sio.sockets.emit("list_users", { users: solibSessions.connectedUsers }); // send to all clients
     });
     
@@ -119,7 +119,7 @@ sio.on('connection', function (socket) {
         if (err)
             console.log("Error connecting to mysql on select statement.\n" + err)
         else if (rows.length > 0)
-            socket.emit("lesson_infos", { name: rows[0].name })
+            socket.emit("lesson_infos", { lesson_name: rows[0].name })
     });
     
 
