@@ -40,7 +40,7 @@ server.listen(app.get('port'), function() {
 });
 
 app.post('/newlesson', function (req, res) {
-    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, result) {
+    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (result) {
         if (err) {
             console.log('Error connecting to mysql on insert statement: \n%s', err)
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
@@ -56,11 +56,7 @@ app.get('/lesson', function (req, res) {
     if (req.param('id_lesson') && req.param('access_token') && req.param('user_id') && req.param('firstname') && req.param('lastname'))
     {
         solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (err, rows) {
-            if (err) {
-                console.log("Error connecting to mysql on select statement.\n" + err)
-                res.send(500, "Database error.")
-            }
-            else if (rows.length > 0) {
+            if (rows.length > 0) {
                 if (req.param('access_token') == rows[0].access_token) {
                     // Connection established.
                     req.session.user           = new Object()
@@ -115,10 +111,8 @@ sio.on('connection', function (socket) {
     });
     
     // Retrieve the lesson. Here we can assume that the lesson exists. 
-    solibSQL.query("select * from lessons where id = ?", [session.lessonid], function (err, rows) {
-        if (err)
-            console.log("Error connecting to mysql on select statement.\n" + err)
-        else if (rows.length > 0)
+    solibSQL.getLesson(session.lessonid, function (rows) {
+        if (rows.length > 0)
             socket.emit("lesson_infos", { lesson_name: rows[0].name })
     });
     

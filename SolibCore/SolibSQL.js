@@ -5,7 +5,7 @@ function SolibSQL (host, database, username, password) {
     _connection = ''
 
     /**
-    * Build the SolibSQL object connecting to the database
+    * Build the SolibSQL object connecting to the database and create tables if needed.
     *
     * @method __construct
     * @param {string} host Host address of the database
@@ -41,12 +41,29 @@ function SolibSQL (host, database, username, password) {
     * @return {void}
     */
     this.insertLesson = function (name, author, access_token, creation_time, callback) {
-        _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, rows) {
-            if (callback && typeof(callback) === 'function') {
-                callback(err, rows)
-            }
+        _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
+            if (err)
+                console.log("Error connecting to mysql on insert statement.\n" + err)
+            else if (callback && typeof(callback) === 'function')
+                callback(result)
         });
     };
+
+    /**
+    * Get the lesson with the specified id from the database.
+    *
+    * @method getLesson
+    * @param {int} lessonId The lesson id.
+    * @return {void}
+    */
+    this.getLesson = function (lessonId, callback) {
+        _connection.query("select * from lessons where id = ?", [lessonId], function (err, rows) {
+            if (err)
+                console.log("Error connecting to mysql on select statement.\n" + err)
+            else if (callback && typeof(callback) === 'function')
+                callback(rows)
+        });
+    }
 
     /**
     * Execute a query.
