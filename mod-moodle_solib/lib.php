@@ -47,8 +47,13 @@ function solib_add_instance($solib) {
     $solib->access_token = uniqid();
 
     // send to SolibCore db and retreive the lesson id.
-    $json_result = solib_send_to_server($solib);
-    $result = json_decode($json_result);
+    $curl_result = solib_send_to_server($solib);
+
+    if (! $curl_result) {
+        print_error('cantconnecttosolibcore');
+    }
+
+    $result = json_decode($curl_result);
     
     // insert the SolibCore lesson id in the $solib object 
     $solib->solibcoreid = $result->solibcoreid;
@@ -92,12 +97,12 @@ function solib_send_to_server($solib) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 
     // execute post
-    $json_result = curl_exec($ch);
+    $result = curl_exec($ch);
 
     // close connection
     curl_close($ch);
 
-    return $json_result;
+    return $result;
 }
 
 /**
