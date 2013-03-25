@@ -5,7 +5,7 @@ express  = require('express')
 app      = express()
 ejs      = require('ejs')
 io       = require('socket.io')
-SolibSQL = require('./mysql').SolibSQL
+SolibSQL = require('./SolibSQL').SolibSQL
 config   = require('./config')
 solibSessions = require('./sessions')
 const hashStore = 'solib_secret'
@@ -51,15 +51,33 @@ app.post('/newlesson', function (req, res) {
 	});
 });
 
-app.get('/log', function (req, res) {
-	// we build the user object but we are still waiting the socket id, so we wait for socket.on('connection')
-	req.session.user           = new Object()
-	req.session.user.id        = req.param('id')
-	req.session.user.firstname = req.param('firstname')
-	req.session.user.lastname  = req.param('lastname')
-	req.session.user.sockets   = new Array()
-	//sio.sockets.emit('listusers', { users: users }); // sends to all clients
-  	res.render('index.html')
+app.get('/', function (req, res) {
+	solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (err, rows) {
+		if (err) {
+            console.log("Error connecting to mysql on select statement.\n" + err)
+            res.send(500, "Database error.")
+        }
+        else if (rows.length > 0) {
+            if (req.param('access_token') == rows[0].access_token) {
+            	// Connection established.
+        		req.session.user           = new Object()
+				req.session.user.id        = req.param('user_id')
+				req.session.user.firstname = req.param('firstname')
+				req.session.user.lastname  = req.param('lastname')
+				req.session.user.sockets   = new Array()
+				res.render('index.html', function (err, html) {
+					//console.log(html)
+				});
+            }
+            else
+            	res.send(403, "Access forbidden.")
+        }
+        else {
+        	res.send(404, "Unknown lesson id.")
+        }
+	});
+
+	// //sio.sockets.emit('listusers', { users: users }); // sends to all clients
 });
 
 /* setting authorization method for socket.io */

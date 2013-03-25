@@ -41,12 +41,27 @@ function SolibSQL (host, database, username, password) {
     * @return {void}
     */
     this.insertLesson = function (name, author, access_token, creation_time, callback) {
-        _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
+        _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, rows) {
+            if (callback && typeof(callback) === 'function') {
+                callback(err, rows)
+            }
+        });
+    };
+
+    /**
+    * Execute a query.
+    *
+    * @method query
+    * @param {string} query The query to execute
+    * @return {void}
+    */
+    this.query = function (query, params, callback) {
+        _connection.query(query, params, function (err, result) {
             if (callback && typeof(callback) === 'function') {
                 callback(err, result)
             }
         });
-    };
+    }
 }
 
 exports.SolibSQL = SolibSQL
