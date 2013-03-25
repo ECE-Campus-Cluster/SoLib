@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'solib', language 'fr'
+ * Library of functions and constants for module Solib
  *
  * @package    mod
  * @subpackage solib
@@ -24,13 +24,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['modulename']           = 'Solib';
-$string['modulename_help']      = 'Le plugin de Solib permettant à vos utilisateurs de rejoindre le serveur Node.js sur lequel tourne l\'application Solib.';
-$string['modulename_link']      = 'mod/solib/view';
-$string['modulenameplural']     = 'Solib';
-$string['pluginadministration'] = 'Administration Solib';
-$string['pluginname']           = 'Solib';
+// http://docs.moodle.org/dev/Admin_settings
 
-$string['newcoursename'] = 'Nom de l\'instance Solib';
-$string['servaddress']   = 'Adresse du serveur Solib';
-$string['servaddress_help'] = 'C\'est l\'adresse où votre server Node.js est lancé. N\'oubliez pas d\'ajouter le numéro du port si vous avez lancé le serveur sur un port autre que 80.';
+defined('MOODLE_INTERNAL') || die();
+
+//$ADMIN->add('localplugins', $settings); // adding page to admin panel
+
+$settings->add(new admin_setting_configtext('setting_name', 'display name test',
+                                            'description test', 'default value test',
+                                             PARAM_TEXT));

@@ -24,53 +24,53 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// http://docs.moodle.org/dev/Page_API
+// http://docs.moodle.org/dev/Output_renderers
+// http://fr.slideshare.net/samhemelryk/moodle-output-library
+
 require_once("../../config.php");
-//require_once( __DIR__ . "/lib/curl.php");
+require_once($CFG->dirroot.'/mod/solib/lib.php');
 
-$id = optional_param('id',0,PARAM_INT);    // Course Module ID, or
-$l = optional_param('l',0,PARAM_INT);     // solib ID
+$idSolibCourse = required_param('id', PARAM_INT);    // Course Module ID
 
-if ($id) {
-    if (! $cm = get_coursemodule_from_id('solib', $id)) {
+if ($idSolibCourse) {
+    if (! $cm = get_coursemodule_from_id('solib', $idSolibCourse)) { // the module of the course Cour 1 By JTF. Can be Solib or any other module (plugin)
         print_error('invalidcoursemodule');
     }
-
-    if (! $course = $DB->get_record("course", array("id"=>$cm->course))) {
+    if (! $course = $DB->get_record("course", array("id"=>$cm->course))) { // CT2
         print_error('coursemisconf');
     }
-
-    if (! $solib = $DB->get_record("solib", array("id"=>$cm->instance))) {
+    if (! $solib = $DB->get_record("solib", array("id"=>$cm->instance))) { // Course 1 By JTF
         print_error('invalidcoursemodule');
     }
+    require_login($course, true, $cm);
+    // We are connected
+    $PAGE->set_url('/mod/solib/view.php', array('id' => $cm->id));
+    $PAGE->set_title($solib->name);
+    $PAGE->set_heading($course->fullname);
 
-    $url = "http://solib.hopto.org:8080/log?id=".$USER->id."&firstname=".$USER->firstname."&lastname=".$USER->lastname;
-?>
-    <html>
-        <head></head>
-        <body>
-            <a href="<?php echo $url ?>" target="_blank">Connect to Solib</a>
-            <br />
-            <a href="http://solib.hopto.org:8080/log?id=67&firstname=Jean&lastname=Luc" target="_blank">Connect to Solib with fake account (for tests)</a>
-        </body>
-    </html>
-<?
-    
-} else {
-    if (! $solib = $DB->get_record("solib", array("id"=>$l))) {
-        print_error('invalidcoursemodule');
-    }
-    if (! $course = $DB->get_record("course", array("id"=>$solib->course)) ){
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($solib->name);
+
+    echo $OUTPUT->box_start();
+        $link = new action_link(new moodle_url($solib->server_addr."/lesson", array('user_id'=>$USER->id, 'firstname'=>$USER->firstname, 'lastname'=>$USER->lastname, "id_lesson" => $solib->solibcoreid ,'access_token' => $solib->access_token)), "Click this link to access the lesson");
+        //$link->add_action(new popup_action('click', $link->url));
+        echo $OUTPUT->render($link);
+        echo '<br />';
+        echo '<br />';
+        echo 'Creation time: ' . date("D d F Y H:i",$solib->creation_time);
+
+    echo $OUTPUT->box_end();
+
+    echo $OUTPUT->footer();
+}
+else {
+    if (! $course = $DB->get_record("course", array("id"=>$solib->course)) ) {
         print_error('coursemisconf');
     }
     if (! $cm = get_coursemodule_from_instance("solib", $solib->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 }
-
-require_login($course, true, $cm);
-
-//$PAGE->set_url("/solib/view.php");
-
-//redirect("$CFG->wwwroot/course/view.php?id=$course->id"); // Redirect to moodle core
 
 

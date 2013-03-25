@@ -1,10 +1,15 @@
 {
   "name": "Solib",
-  "description": "Solib app",
-  "version": "0.0.1",
+  "author": "ECE Paris",
+  "version": "0.1.0",
+  "description": "A social learning application.",
   "private": true,
-  "dependencies":
-  {
-    "express": "3.1.0"
-  }
+  "scripts": {"start": "node server.js"},
+  "dependencies": {
+    "socket.io": "0.9.x",
+    "mysql": "2.0.0-alpha7",
+    "express": "3.x",
+    "ejs": "0.8.x"
+  },
+  "engine": "node 0.8.x"
 }

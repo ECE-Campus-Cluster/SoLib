@@ -5,84 +5,131 @@ express  = require('express')
 app      = express()
 ejs      = require('ejs')
 io       = require('socket.io')
+SolibSQL = require('./SolibSQL').SolibSQL
 config   = require('./config')
 solibSessions = require('./sessions')
 const hashStore = 'solib_secret'
 
 solibSessions = new solibSessions.SolibSessions();
+solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
 /* session & cookies express side */
 var sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 })
 
 /* expressjs config */
 app.configure(function () {
-	app.set('port', config.PORT)
-	app.set('views', __dirname + '/views') // html files
-	app.engine('html', ejs.renderFile)
-	app.use(express.bodyParser()) // for req.param
-	app.use(express.methodOverride())
-	app.use(express.cookieParser())
-	app.use(express.static(__dirname + '/views'));
-	app.use(express.session({
-		store: sessionStore,
-		key: 'sid',
-		secret: hashStore
-	}));
+    app.set('port', config.PORT)
+    app.set('views', __dirname + '/views') // html files
+    app.engine('html', ejs.renderFile)
+    app.use(express.bodyParser()) // for req.param
+    app.use(express.methodOverride())
+    app.use(express.cookieParser())
+    app.use(express.session({
+        store: sessionStore,
+        key: 'sid',
+        secret: hashStore
+    }));
 });
 
 /* expressjs init */
 var server = http.createServer(app)
 var sio    = io.listen(server)
 server.listen(app.get('port'), function() {
-	console.log("Solib server running on port %d", app.get('port'))
+    console.log("Solib server running on port %d", app.get('port'))
 });
 
-app.get('/log', function (req, res) {
-	// we build the user object but we are still waiting the socket id, so we wait for soccket.on('connection')
-	req.session.user           = new Object()
-	req.session.user.id        = req.param('id')
-	req.session.user.firstname = req.param('firstname')
-	req.session.user.lastname  = req.param('lastname')
-	req.session.user.sockets   = new Array()
-	//sio.sockets.emit('listusers', { users: users }); // sends to all clients
-  	res.render('index.html')
+app.post('/newlesson', function (req, res) {
+    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, result) {
+        if (err) {
+            console.log('Error connecting to mysql on insert statement: \n%s', err)
+            res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
+        } else {
+            console.log("Inserted course '%s'", req.param('name'))
+            res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
+                            solibcoreid: result.insertId });
+        }
+    });
+});
+
+app.get('/lesson', function (req, res) {
+    if (req.param('id_lesson') && req.param('access_token') && req.param('user_id') && req.param('firstname') && req.param('lastname'))
+    {
+        solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (err, rows) {
+            if (err) {
+                console.log("Error connecting to mysql on select statement.\n" + err)
+                res.send(500, "Database error.")
+            }
+            else if (rows.length > 0) {
+                if (req.param('access_token') == rows[0].access_token) {
+                    // Connection established.
+                    req.session.user           = new Object()
+                    req.session.user.id        = req.param('user_id')
+                    req.session.user.firstname = req.param('firstname')
+                    req.session.user.lastname  = req.param('lastname')
+                    req.session.lessonid       = req.param('id_lesson')
+                    req.session.user.sockets   = new Array()
+                    res.render('index.html')
+                }
+                else {
+                    res.send(403, "Access forbidden. You must login from your Moodle Solib activity.")
+                }
+            }
+            else {
+                res.send(404, "Unknown lesson id.")
+            }
+        });
+    }
+    else {
+        res.send(404, "Missing parameters. Are you trying to login from Moodle?")
+    }
 });
 
 /* setting authorization method for socket.io */
 sio.configure(function () {
-	sio.set('authorization', function (handshakeData, callback) {
-		// cookies
-		if (!handshakeData.headers.cookie) return callback('socket.io: cookie not found.', false)
-		// cookies and sessionId, https://github.com/DanielBaulig/sioe-demo/blob/master/app.js
-		var signedCookies = require('express/node_modules/cookie').parse(handshakeData.headers.cookie)
-		handshakeData.cookies = require('express/node_modules/connect/lib/utils').parseSignedCookies(signedCookies, hashStore)
-		// sessionId username
-		sessionStore.get(handshakeData.cookies['sid'], function(err, session) {
-			if (err || !session) return callback('socket.io: session not found.', false)
-			// session handshakeData
-			handshakeData.session = session
-			if (handshakeData.session.user) return callback(null, true)
-			else return callback('socket.io: session.user not found', false)
-		});
-	});
+    sio.set('authorization', function (handshakeData, callback) {
+        // cookies
+        if (!handshakeData.headers.cookie) return callback('socket.io: cookie not found.', false)
+        // cookies and sessionId, https://github.com/DanielBaulig/sioe-demo/blob/master/app.js
+        var signedCookies = require('express/node_modules/cookie').parse(handshakeData.headers.cookie)
+        handshakeData.cookies = require('express/node_modules/connect/lib/utils').parseSignedCookies(signedCookies, hashStore)
+        // sessionId username
+        sessionStore.get(handshakeData.cookies['sid'], function(err, session) {
+            if (err || !session) return callback('socket.io: session not found.', false)
+            // session handshakeData
+            handshakeData.session = session
+            if (handshakeData.session.user) return callback(null, true)
+            else return callback('socket.io: session.user not found', false)
+        });
+    });
 });
 
 /* socket.io events */
 sio.on('connection', function (socket) {
-	var session = socket.handshake.session // get express session
-	console.log(socket.id + " " + session.user.lastname)
-	solibSessions.addUser(session.user, socket.id, function () {
-		console.log(solibSessions.connectedUsers)
-		sio.sockets.emit("list_users", { users: solibSessions.connectedUsers }); // send to all clients
-	});
+    var session = socket.handshake.session // get express session
+    console.log("New user: " + socket.id + " " + session.user.lastname)
 
-	/* disconnect event */
-	socket.on('disconnect', function () {
-	    solibSessions.removeSocket(socket.id, function (lastsocket, user) {
-	    	if (lastsocket) {
-	    		solibSessions.removeUser(session.user)
-	    		socket.broadcast.emit("user_disconnected", { user: user });
-	    	}
-	    });
-	});
+    // Add the user to the connected list
+    solibSessions.addUser(session.user, socket.id, function () {
+        //console.log(solibSessions.connectedUsers)
+        sio.sockets.emit("list_users", { users: solibSessions.connectedUsers }); // send to all clients
+    });
+    
+    // Retrieve the lesson. Here we can assume that the lesson exists. 
+    solibSQL.query("select * from lessons where id = ?", [session.lessonid], function (err, rows) {
+        if (err)
+            console.log("Error connecting to mysql on select statement.\n" + err)
+        else if (rows.length > 0)
+            socket.emit("lesson_infos", { name: rows[0].name })
+    });
+    
+
+    /* disconnect event */
+    socket.on('disconnect', function () {
+        solibSessions.removeSocket(socket.id, function (lastsocket, user) {
+            if (lastsocket) {
+                solibSessions.removeUser(session.user)
+                socket.broadcast.emit("user_disconnected", { user: user });
+            }
+        });
+    });
 });

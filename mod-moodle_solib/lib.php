@@ -24,6 +24,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// http://docs.moodle.org/dev/Text_formats_2.0
+// http://docs.moodle.org/dev/Category:DB
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
@@ -38,13 +41,63 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
  */
 function solib_add_instance($solib) {
     global $DB;
-
-    //var_dump($solib);
-    //die;
     
     $solib->timemodified = time();
+    $solib->creation_time = $solib->timemodified;
+    $solib->access_token = uniqid();
 
-    return $DB->insert_record("solib", $solib); //returns the id
+    // send to SolibCore db and retreive the lesson id.
+    $json_result = solib_send_to_server($solib);
+    $result = json_decode($json_result);
+    
+    // insert the SolibCore lesson id in the $solib object 
+    $solib->solibcoreid = $result->solibcoreid;
+
+    $solib->id = $DB->insert_record("solib", $solib); // returns the id
+
+    return $solib->id;
+}
+
+/**
+* Given an object containing all the necessary data,
+* will send to the SolibCore server (Node.js) the new 
+* lesson instance.
+*
+* @global object
+* @param object $solib
+* @return json
+*/
+function solib_send_to_server($solib) {
+    // curl stuff for post request to solib server
+    $url = $solib->server_addr.'/newlesson';
+    $fields = array(
+        'name'          => urlencode($solib->name),
+        'author'        => urlencode('JTF'),
+        'access_token'  => urlencode($solib->access_token),
+        'creation_time' => urlencode($solib->creation_time)
+    );
+
+    // url-ify the data for the POST
+    $fields_string = '';
+    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    rtrim($fields_string, '&');
+
+    // open connection
+    $ch = curl_init();
+
+    // set the url, number of POST vars, POST data
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, count($fields));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+
+    // execute post
+    $json_result = curl_exec($ch);
+
+    // close connection
+    curl_close($ch);
+
+    return $json_result;
 }
 
 /**
