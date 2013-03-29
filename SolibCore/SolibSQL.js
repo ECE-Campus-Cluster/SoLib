@@ -45,7 +45,7 @@ function SolibSQL (host, database, username, password) {
             if (err)
                 console.log("Error connecting to mysql on insert statement.\n" + err)
             else if (callback && typeof(callback) === 'function')
-                callback(result)
+                callback(err, result)
         });
     };
 

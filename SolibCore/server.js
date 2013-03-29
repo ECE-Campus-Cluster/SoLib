@@ -40,7 +40,7 @@ server.listen(app.get('port'), function() {
 });
 
 app.post('/newlesson', function (req, res) {
-    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (result) {
+    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, result) {
         if (err) {
             console.log('Error connecting to mysql on insert statement: \n%s', err)
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
@@ -116,6 +116,10 @@ sio.on('connection', function (socket) {
             socket.emit("lesson_infos", { lesson_name: rows[0].name })
     });
     
+    socket.on('new_drawing', function (data) {
+        // TODO SAVE IN SQL
+        socket.broadcast.emit('new_drawing', data)
+    });
 
     /* disconnect event */
     socket.on('disconnect', function () {

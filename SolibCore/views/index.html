@@ -5,23 +5,75 @@
         <title>Solib</title>
         <link rel="icon" href="favicon.ico"> 
 	 	<script src="/socket.io/socket.io.js"></script>
-	 	<script src="js/script.js"></script>
+	 	<script src="js/cgscenegraph_1.4.2.min.js"></script>
+	 	<script src="js/Solib.js"></script>
+	 	<script src="js/main.js"></script>
 	 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
 	 	<link rel="stylesheet" href="css/custom.css">
 	</head>
 	<body>
-		<h1 id="lesson_name"></h1>
+		<center><h1 id="lesson_name"></h1><center>
 		<div class="container-fluid">
 			<div class="row-fluid">
-				<div class="span2">
+				<div class="span3 well" id="slide-list">
 					<!-- Sidebar content //SLIDES-LIST -->
+					<ul class="thumbnails" id="slides">
+					  <li class="span12">
+					    <div class="thumbnail">
+					      <img id="addNewSlide" alt="New Slide" src="add.png">
+								<center>
+						      <h3>Add new Slide</h3>
+						     </center>
+					    </div>
+					  </li>
+					  <li class="span12">
+					    <div class="thumbnail">
+					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
+								<center>
+						      <h3>Slide #</h3>
+						     </center>
+					    </div>
+					  </li>
+					  <li class="span12">
+					    <div class="thumbnail">
+					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
+								<center>
+						      <h3>Slide #</h3>
+						     </center>
+					    </div>
+					  </li>
+					  <li class="span12">
+					    <div class="thumbnail">
+					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
+								<center>
+						      <h3>Slide #</h3>
+						     </center>
+					    </div>
+					  </li>
+					  <li class="span12">
+					    <div class="thumbnail">
+					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
+								<center>
+						      <h3>Slide #</h3>
+						     </center>
+					    </div>
+					  </li>
+					  <li class="span12">
+					    <div class="thumbnail">
+					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
+								<center>
+						      <h3>Slide #</h3>
+						     </center>
+					    </div>
+					  </li>
+					</ul>
 				</div>
-				<div class="span10">
+				<div class="span9 well">
 					<!-- Body content -->
-					<center>
-						<canvas id="myCanvas" style=""></canvas>
-					</center>
+						<canvas id="lessonCanvas" width="700" height="550">
+							Your browser doest not support the canvas element.
+						</canvas>
 				</div>
 			</div>
 			<div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">

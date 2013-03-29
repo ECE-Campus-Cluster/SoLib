@@ -25,7 +25,7 @@ function Sessions ()
 			// Is already present so we just add the socket id
 			if (this.connectedUsers[i].id == user.id) {
 				this.connectedUsers[i].sockets.push(socketID)
-				isPresent = true;
+				isPresent = true
 			}
 		}
 		if (!isPresent) {
