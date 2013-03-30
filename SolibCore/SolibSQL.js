@@ -66,6 +66,26 @@ function SolibSQL (host, database, username, password) {
     }
 
     /**
+    * Insert a drawing in DB.
+    * Must receive a Solib drawing object and 
+    * convert it into a string for SQL storage.
+    *
+    * @method insertDrawing
+    * @param {int} lessonId The id of the lesson where the drawing has been made
+    * @param {object} points The drawing 
+    * @return {void} 
+    */
+    this.insertDrawing = function (lessonId, points, callback) {
+        // TODO convert points into string "4,5;5,6"
+        _connection.query("insert into drawings(idlesson, points) values(?, ?)", [lessonId, points], function (err, result) {
+            if (err)
+                console.log("Error connecting to mysql on insert statement.\n" + err)
+            else if (callback && typeof(callback) === 'function')
+                callback(err, result)
+        });
+    }
+
+    /**
     * Execute a query.
     *
     * @method query
