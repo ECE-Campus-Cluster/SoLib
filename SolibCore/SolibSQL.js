@@ -22,12 +22,14 @@ function SolibSQL (host, database, username, password) {
             password : password
         });
 
-        _connection.query("CREATE TABLE IF NOT EXISTS `lessons` (`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL COMMENT 'Name of the lesson (from Moodle)', `author` varchar(50) NOT NULL COMMENT 'Creator of the lesson (from Moodle)', `creation_time` int(10) NOT NULL COMMENT 'Creation time of the lesson (from Moodle)', `access_token` varchar(20) NOT NULL COMMENT 'token from moodle to connect to the course.', PRIMARY KEY (`id`))",
-            function (err, rows) {
-                if (err)
-                    console.log("Error connecting to database.\n" + err)
-            }
-        )
+        // TODO proper sql script execution for installation.
+        
+        // _connection.query("CREATE TABLE IF NOT EXISTS `lessons` (`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL COMMENT 'Name of the lesson (from Moodle)', `author` varchar(50) NOT NULL COMMENT 'Creator of the lesson (from Moodle)', `creation_time` int(10) NOT NULL COMMENT 'Creation time of the lesson (from Moodle)', `access_token` varchar(20) NOT NULL COMMENT 'token from moodle to connect to the course.', PRIMARY KEY (`id`))",
+        //     function (err, rows) {
+        //         if (err)
+        //             console.log("Error connecting to database.\n" + err)
+        //     }
+        // )
     }  __construct(host, database, username, password);
 
     /**
