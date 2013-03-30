@@ -29,8 +29,8 @@ function xmldb_solib_upgrade($oldversion = 0) {
 
     $result = true;
     
-    if ($oldversion < 2013033001) {
-         // Define table solib to be created
+    if ($oldversion < 2013032200) {
+        // Define table solib to be created
         $table = new xmldb_table('solib');
 
         // Adding fields to table solib
@@ -38,8 +38,6 @@ function xmldb_solib_upgrade($oldversion = 0) {
         $table->add_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
         $table->add_field('nameformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('intro', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('introformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('creation_time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('server_addr', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
@@ -56,7 +54,7 @@ function xmldb_solib_upgrade($oldversion = 0) {
         }
 
         // solib savepoint reached
-        upgrade_mod_savepoint(true, 2013033001, 'solib');
+        upgrade_mod_savepoint(true, 2013032200, 'solib');
     }
 
 

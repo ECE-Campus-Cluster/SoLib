@@ -36,17 +36,15 @@ class mod_solib_mod_form extends moodleform_mod {
     function definition() {
 
         $mform = $this->_form;
-        // Title
+
         $mform->addElement('text', 'name', get_string('newcoursename', 'solib'), array('size'=>'64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
-        // Server address
+        
         $mform->addElement('text', 'server_addr', get_string('servaddress', 'solib'), array('size'=>'64', 'value' => 'http://solib.hopto.org:8080')); // TODO select for server addresses.
         $mform->setType('server_addr', PARAM_TEXT);
         $mform->addRule('server_addr', null, 'required', null, 'client');
         $mform->addHelpButton('server_addr', 'servaddress', 'solib');
-        // Description
-        $this->add_intro_editor(false, get_string('description', 'solib'));
 
         $this->standard_coursemodule_elements(); // Réglages courants
 

@@ -52,10 +52,6 @@ if ($idSolibCourse) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading($solib->name);
 
-    if (! empty($solib->intro)) {
-            echo $OUTPUT->box(format_module_intro('solib', $solib, $cm->id), 'generalbox', 'intro');
-    }
-
     echo $OUTPUT->box_start();
         $link = new action_link(new moodle_url($solib->server_addr."/lesson", array('user_id'=>$USER->id, 'firstname'=>$USER->firstname, 'lastname'=>$USER->lastname, "id_lesson" => $solib->solibcoreid ,'access_token' => $solib->access_token)), "Click this link to access the lesson");
         //$link->add_action(new popup_action('click', $link->url));

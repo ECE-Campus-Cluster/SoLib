@@ -31,11 +31,6 @@ $string['modulenameplural']     = 'Solib';
 $string['pluginadministration'] = 'Solib administration';
 $string['pluginname']           = 'Solib';
 
-// new activity
-$string['newcoursename'] = 'Lesson\'s name';
-$string['servaddress']   = 'Lesson\'s server address';
-$string['servaddress_help'] = 'This is the address where your Solib server is running. The Node.js thing. Don\'t forget to add an eventual port number.';
-$string['description'] = 'Lesson description';
-
-// error
-$string['cantconnecttosolibcore'] = 'The connection to SolibCore has failed on the specified address. Is SolibCore running on this address?';
+$string['newcoursename'] = 'Solib instance\'s name';
+$string['servaddress']   = 'Solib server address';
+$string['servaddress_help'] = 'This is the address where your Solib server is running. The Node.js thing. Don\'t forget to add an eventual port number';

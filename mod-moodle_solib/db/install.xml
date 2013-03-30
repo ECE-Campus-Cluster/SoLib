@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/solib/db" VERSION="20130330" COMMENT="XMLDB file for Moodle mod/solib"
+<XMLDB PATH="mod/solib/db" VERSION="20130322" COMMENT="XMLDB file for Moodle mod/solib"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -9,10 +9,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="course" NEXT="nameformat"/>
-        <FIELD NAME="nameformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Required since 2.0 for rich content input by users" PREVIOUS="name" NEXT="intro"/>
-        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The lesson description." PREVIOUS="nameformat" NEXT="introformat"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Required since 2.0 for rich content input by users" PREVIOUS="intro" NEXT="creation_time"/>
-        <FIELD NAME="creation_time" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The timestamp at wich the solib course is created" PREVIOUS="introformat" NEXT="timemodified"/>
+        <FIELD NAME="nameformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Required since 2.0 for rich content input by users" PREVIOUS="name" NEXT="creation_time"/>
+        <FIELD NAME="creation_time" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The timestamp at wich the solib course is created" PREVIOUS="nameformat" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="creation_time" NEXT="server_addr"/>
         <FIELD NAME="server_addr" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The address of the Solib server where the course is stocked." PREVIOUS="timemodified" NEXT="server_addrformat"/>
         <FIELD NAME="server_addrformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Required since 2.0 for rich content input by users" PREVIOUS="server_addr" NEXT="solibcoreid"/>
