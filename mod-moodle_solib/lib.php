@@ -32,12 +32,12 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
- * will create a new instance and return the id number
+ * will create a new lesson and return the id number
  * of the new instance.
  *
  * @global object
  * @param object $solib
- * @return bool|int
+ * @return The id of the lesson
  */
 function solib_add_instance($solib) {
     global $DB;
@@ -50,7 +50,7 @@ function solib_add_instance($solib) {
     $curl_result = solib_send_to_server($solib);
 
     if (! $curl_result) {
-        print_error('cantconnecttosolibcore');
+        print_error('cantconnecttosolibcore', 'solib');
     }
 
     $result = json_decode($curl_result);

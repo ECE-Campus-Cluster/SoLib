@@ -31,6 +31,11 @@ $string['modulenameplural']     = 'Solib';
 $string['pluginadministration'] = 'Administration Solib';
 $string['pluginname']           = 'Solib';
 
-$string['newcoursename'] = 'Nom de l\'instance Solib';
+// new activity
+$string['newcoursename'] = 'Nom du cours Solib';
 $string['servaddress']   = 'Adresse du serveur Solib';
 $string['servaddress_help'] = 'C\'est l\'adresse où votre server Node.js est lancé. N\'oubliez pas d\'ajouter le numéro du port si vous avez lancé le serveur sur un port autre que 80.';
+$string['description'] = 'Description du cours';
+
+// error
+$string['cantconnecttosolibcore'] = 'La connection au serveur SolibCore a échouée. Avez-vous bien lancé un serveur SolibCore à l\'addresse spécifiée ?';
