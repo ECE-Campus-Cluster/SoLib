@@ -1,16 +1,17 @@
-/* Server */
+// Node.js plugins
 var path = require('path')
 http     = require('http')
 express  = require('express')
 app      = express()
 ejs      = require('ejs')
 io       = require('socket.io')
-SolibSQL = require('./SolibSQL').SolibSQL
-config   = require('./config')
-solibSessions = require('./sessions')
+// Solib tools
+config          = require('./config')
+SolibSQL        = require('./sql/SolibSQL').SolibSQL
+SolibSessions   = require('./Sessions').SolibSessions
 const hashStore = 'solib_secret'
 
-solibSessions = new solibSessions.SolibSessions();
+solibSessions = new SolibSessions()
 solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
 /* session & cookies express side */
