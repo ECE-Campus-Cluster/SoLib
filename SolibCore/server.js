@@ -104,7 +104,7 @@ sio.configure(function () {
 /* socket.io events */
 sio.on('connection', function (socket) {
     var session = socket.handshake.session // get express session
-    console.log("New user: " + socket.id + " " + session.user.lastname)
+    //console.log("New user: " + socket.id + " " + session.user.lastname)
 
     // Add the user to the connected list
     solibSessions.addUser(session.user, socket.id, function () {
@@ -118,6 +118,7 @@ sio.on('connection', function (socket) {
     });
     
     socket.on('new_drawing', function (data) {
+        // TODO: check user's rights
         solibSQL.insertDrawing(session.lessonid, data.points, function (result) {
              socket.broadcast.emit('new_drawing', data)
         });

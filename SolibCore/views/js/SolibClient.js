@@ -38,8 +38,11 @@ function SolibClient (canvasId, socket) {
     } __construct(canvasId, socket);
 
     /**
+    * Start the drawing when the mouse is pressed
     *
-    *
+    * @method mouseDown
+    * @param {object} event The event object
+    * @return {void}
     */
     function mouseDown (event) {
         _ispainting = true
@@ -50,8 +53,11 @@ function SolibClient (canvasId, socket) {
     } mouseDown(event);
 
     /**
+    * Draw pixel by pixel on canvas while mouseDown is binded. 
     *
-    *
+    * @method draw
+    * @param {object} event The event object
+    * @return {void}
     */
     function draw (event) {
         if (_ispainting) {
@@ -75,11 +81,15 @@ function SolibClient (canvasId, socket) {
     /**
     * Stop the mouse from drawing and send the drawing Array to Socket.IO
     *
+    * @method mouseUp
+    * @param {object} event The event object
+    * @return {void}
     */
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
             _socket.emit('new_drawing', { points: _drawing })
+            _drawing    = null
         }
     } mouseUp(event);
 

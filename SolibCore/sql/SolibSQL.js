@@ -99,16 +99,20 @@ function SolibSQL (host, database, username, password) {
     */
     this.insertDrawing = function (lessonId, points, callback) {
         var pointsToString = ''
-        for (var i=0 ; i<points.length ; i++)
-            pointsToString += points[i].x + "," + points[i].y + ";"     
-        pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
-        
-        _connection.query("insert into drawings(idlesson, points) values(?, ?)", [lessonId, pointsToString], function (err, result) {
-            if (err)
-                console.log("Error on insert drawing statement.\n" + err)
-            else if (callback && typeof(callback) === 'function')
-                callback(result)
-        });
+        for (var i=0 ; i<points.length ; i++) {
+            if (/^[\d]+$/.test(points[i].x) && /^[\d]+$/.test(points[i].y))
+                pointsToString += points[i].x + "," + points[i].y + ";"
+        }
+        if (pointsToString != '') {
+            pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
+            
+            _connection.query("insert into drawings(idlesson, points) values(?, ?)", [lessonId, pointsToString], function (err, result) {
+                if (err)
+                    console.log("Error on insert drawing statement.\n" + err)
+                else if (callback && typeof(callback) === 'function')
+                    callback(result)
+            });
+        }
     };
 
     /**
