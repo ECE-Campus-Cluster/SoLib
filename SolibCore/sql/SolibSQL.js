@@ -88,9 +88,8 @@ function SolibSQL (host, database, username, password) {
     };
 
     /**
-    * Insert a drawing in DB for a given lesson
-    * Must receive a Solib drawing object and 
-    * convert it into a string for SQL storage.
+    * Insert a drawing in DB for a given lesson.
+    * Convert a SOlibDrawing object into a string.
     *
     * @method insertDrawing
     * @param {int} lessonId The id of the lesson where the drawing has been made
@@ -115,6 +114,31 @@ function SolibSQL (host, database, username, password) {
         }
     };
 
+// TODO: MUST RETRIEVE LESSON DRAWINGS IN THE GETLESSON QUERY
+    // /**
+    // * Get all drawings from DB for a given lesson.
+    // * Convert the drawing from a string to a SolibDrawing object.
+    // *
+    // * @method getDrawings
+    // * @param {int} lessonId The lesson's id
+    // * @return {void}
+    // */
+    // this.getDrawings = function (lessonId, callback) {
+    //     var drawings = ''
+    //     _connection.query("select points from drawings where idlesson = ?", [lessonId], function (err, rows) {
+    //         if (err)
+    //             console.log("Error on select drawing statement.\n" + err)
+    //         else {
+    //             if (rows.length > 0) {
+    //                 for (var i=0 ; i<rows.length ; i++) {
+    //                     var points = rows[i].points.split(';')
+    //                     console.log(points)
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
+
     /**
     * Execute a query.
     *
@@ -125,7 +149,7 @@ function SolibSQL (host, database, username, password) {
     this.query = function (query, params, callback) {
         _connection.query(query, params, function (err, result) {
             if (err)
-                console.log("Error on SQL query.\n" + err)
+                console.log("Error on SolibSQL query.\n" + err)
             else if (callback && typeof(callback) === 'function')
                 callback(result)
         });
