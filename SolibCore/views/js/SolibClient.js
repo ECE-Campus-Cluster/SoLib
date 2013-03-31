@@ -1,7 +1,7 @@
 /**
 * JavaScript canvas drawing handler for Solib.
 */
-function Solib (canvasId, socket) {
+function SolibClient (canvasId, socket) {
 
     Solib.PRECISION = 1
 

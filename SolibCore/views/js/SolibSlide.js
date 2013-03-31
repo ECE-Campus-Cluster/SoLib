@@ -27,12 +27,12 @@ var SolibSlide = CGSGScene.extend({
         *
         *
         */
-        createSolibCanvas : function () {
+        createSolibSlide : function () {
             this.createRootNode()
-            this.createNodeText(10, 10, "Text 1")
-            this.createNodeText(20, 20, "Text 2")
-            this.createNodeText(30, 30, "Text 3")
-            this.createNodeText(40, 40, "Text 4")
+            this.createTextNode(10, 10, "Text 1")
+            this.createTextNode(20, 20, "Text 2")
+            this.createTextNode(30, 30, "Text 3")
+            this.createTextNode(40, 40, "Text 4")
         },
 
         /**
@@ -42,7 +42,7 @@ var SolibSlide = CGSGScene.extend({
         createRootNode : function () {
             self._rootNode = new CGSGNode(0, 0, this.sceneGraph.context.canvas.clientWidth, this.sceneGraph.context.canvas.clientHeight)
             self._rootNode.onDblClick = function (cgEvent) {
-                self.createNodeText(cgEvent.position[0].x, cgEvent.position[0].y, "Text")
+                self.createTextNode(cgEvent.position[0].x, cgEvent.position[0].y, "Text")
             }
 
             this.sceneGraph.addNode(this._rootNode, null)
@@ -51,13 +51,13 @@ var SolibSlide = CGSGScene.extend({
         /**
         * The Solib way to create a Text node.
         *
-        * @method createNodeText
+        * @method createTextNode
         * @param {int} x The x position of the node
         * @param {int} y The y position of the node
         * @param {stirng} text The text of the node
         * @return {void}
         */
-        createNodeText : function (x, y, text) {
+        createTextNode : function (x, y, text) {
             var textNode = new CGSGNodeText(x, y, text)
             textNode.isDraggable = true
             textNode.onDblClick = function(cgEvent) {

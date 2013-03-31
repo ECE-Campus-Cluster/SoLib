@@ -1,4 +1,5 @@
 var mysql = require('mysql')
+, fs      = require('fs') 
 
 function SolibSQL (host, database, username, password) {
 
@@ -22,7 +23,26 @@ function SolibSQL (host, database, username, password) {
             password : password
         });
 
-        // TODO proper sql script execution for installation.
+        _connection.connect(function (err) {
+            if (err) throw err
+        });
+
+        var solibsql = "sql/solib.sql"
+        fs.exists(solibsql, function (exists) {
+            if (exists) {
+                fs.readFile(solibsql, 'utf-8', function (error, content) {
+                    if (error) throw error
+                    else {
+                        // TODO
+                        // _connection.query(content, function (err) {
+                        //     if (err) throw err
+                        // });
+                    }
+                });
+            } else {
+                console.log("No SQL file at path %s. SolibCore database may be missing.", solibsql)
+            }
+        });
         
         // _connection.query("CREATE TABLE IF NOT EXISTS `lessons` (`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(50) NOT NULL COMMENT 'Name of the lesson (from Moodle)', `author` varchar(50) NOT NULL COMMENT 'Creator of the lesson (from Moodle)', `creation_time` int(10) NOT NULL COMMENT 'Creation time of the lesson (from Moodle)', `access_token` varchar(20) NOT NULL COMMENT 'token from moodle to connect to the course.', PRIMARY KEY (`id`))",
         //     function (err, rows) {
@@ -44,8 +64,7 @@ function SolibSQL (host, database, username, password) {
     */
     this.insertLesson = function (name, author, access_token, creation_time, callback) {
         _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
-            if (err)
-                console.log("Error connecting to mysql on insert statement.\n" + err)
+            if (err) throw err
             else if (callback && typeof(callback) === 'function')
                 callback(err, result)
         });
@@ -60,8 +79,7 @@ function SolibSQL (host, database, username, password) {
     */
     this.getLesson = function (lessonId, callback) {
         _connection.query("select * from lessons where id = ?", [lessonId], function (err, rows) {
-            if (err)
-                console.log("Error connecting to mysql on select statement.\n" + err)
+            if (err) throw err
             else if (callback && typeof(callback) === 'function')
                 callback(rows)
         });
@@ -80,8 +98,7 @@ function SolibSQL (host, database, username, password) {
     this.insertDrawing = function (lessonId, points, callback) {
         // TODO convert points into string "4,5;5,6"
         _connection.query("insert into drawings(idlesson, points) values(?, ?)", [lessonId, points], function (err, result) {
-            if (err)
-                console.log("Error connecting to mysql on insert statement.\n" + err)
+            if (err) throw err
             else if (callback && typeof(callback) === 'function')
                 callback(err, result)
         });
@@ -96,9 +113,9 @@ function SolibSQL (host, database, username, password) {
     */
     this.query = function (query, params, callback) {
         _connection.query(query, params, function (err, result) {
-            if (callback && typeof(callback) === 'function') {
+            if (err) throw err
+            else if (callback && typeof(callback) === 'function')
                 callback(err, result)
-            }
         });
     }
 }
