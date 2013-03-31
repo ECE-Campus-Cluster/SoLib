@@ -1,11 +1,14 @@
 window.onload = function () {
-    var users  = $('#users')
-    , socket   = io.connect("http://solib.hopto.org:8080")
-    , solib    = new SolibClient('lessonCanvas', socket)
+    var users     = $('#users')
+    , socket      = io.connect("http://solib.hopto.org:8080")
+    , solibClient = new SolibClient('lessonCanvas', socket)
 
     // Socket.IO events handler
     socket.on('lesson_infos', function (data) {
-        $('#lesson_name').text(data.lesson_name)
+        $('#lesson_name').text(data.lesson.name)
+        for (var i=0 ; i<data.lesson.drawings.length ; i++) {
+            solibClient.renderDrawing(data.lesson.drawings[i])
+        }
     });
 
     socket.on('list_users', function (data) {
@@ -23,7 +26,7 @@ window.onload = function () {
     });
 
     socket.on('new_drawing', function (data) {
-        solib.renderDrawing(data.points)
+        solibClient.renderDrawing(data.points)
     });
 }
 

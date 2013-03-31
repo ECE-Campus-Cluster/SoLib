@@ -112,9 +112,10 @@ sio.on('connection', function (socket) {
     });
     
     // Retrieve the lesson. Here we can assume that the lesson exists. 
-    solibSQL.getLesson(session.lessonid, function (rows) {
-        if (rows.length > 0)
-            socket.emit("lesson_infos", { lesson_name: rows[0].name })
+    solibSQL.getLesson(session.lessonid, function (lesson) {
+        if (lesson) {
+            socket.emit("lesson_infos", { lesson: lesson })
+        }
     });
     
     socket.on('new_drawing', function (data) {

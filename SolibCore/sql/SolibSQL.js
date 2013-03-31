@@ -73,17 +73,33 @@ function SolibSQL (host, database, username, password) {
 
     /**
     * Get the lesson with the specified id from the database.
+    * Retrieve the name and all drawings. Convert a drawing from
+    * string to SolibDrawing.
     *
     * @method getLesson
     * @param {int} lessonId The lesson id.
     * @return {void}
     */
     this.getLesson = function (lessonId, callback) {
-        _connection.query("select * from lessons where id = ?", [lessonId], function (err, rows) {
+        _connection.query("select name, points from lessons join drawings on lessons.id = drawings.idlesson where lessons.id = ?", [lessonId], function (err, rows) {
             if (err) 
                 console.log("Error on select lesson statement.\n" + err)
-            else if (callback && typeof(callback) === 'function')
-                callback(rows)
+            else {
+                var lesson      = {}
+                lesson.name     = rows[0].name
+                lesson.drawings = new Array()
+                // Build SolibDrawings
+                for (var i=0 ; i<rows.length ; i++) {
+                    // For a drawing
+                    var points = rows[i].points.split(';')
+                    lesson.drawings[i] = new Array()
+                    for (var j=0 ; j<points.length ; j++) {
+                        lesson.drawings[i].push({ x: points[j].split(',')[0], y: points[j].split(',')[1] });
+                    }
+                }
+                if (callback && typeof(callback) === 'function')
+                    callback(lesson)
+            }
         });
     };
 
@@ -113,31 +129,6 @@ function SolibSQL (host, database, username, password) {
             });
         }
     };
-
-// TODO: MUST RETRIEVE LESSON DRAWINGS IN THE GETLESSON QUERY
-    // /**
-    // * Get all drawings from DB for a given lesson.
-    // * Convert the drawing from a string to a SolibDrawing object.
-    // *
-    // * @method getDrawings
-    // * @param {int} lessonId The lesson's id
-    // * @return {void}
-    // */
-    // this.getDrawings = function (lessonId, callback) {
-    //     var drawings = ''
-    //     _connection.query("select points from drawings where idlesson = ?", [lessonId], function (err, rows) {
-    //         if (err)
-    //             console.log("Error on select drawing statement.\n" + err)
-    //         else {
-    //             if (rows.length > 0) {
-    //                 for (var i=0 ; i<rows.length ; i++) {
-    //                     var points = rows[i].points.split(';')
-    //                     console.log(points)
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
 
     /**
     * Execute a query.
