@@ -3,7 +3,7 @@
 */
 function SolibClient (canvasId, socket) {
 
-    Solib.PRECISION = 1
+    SolibClient.PRECISION = 1
 
     // Socket.IO stuff
     var _socket
@@ -12,7 +12,7 @@ function SolibClient (canvasId, socket) {
     var _canvas
     , _ctx
     , _ispainting = false
-    , _oldX, _oldY, _precision = Solib.PRECISION
+    , _oldX, _oldY, _precision = SolibClient.PRECISION
     , _drawing // Array of canvas points
 
     /**
@@ -55,7 +55,7 @@ function SolibClient (canvasId, socket) {
     */
     function draw (event) {
         if (_ispainting) {
-            if (_precision == Solib.PRECISION) {
+            if (_precision == SolibClient.PRECISION) {
                 //console.log(event.offsetX + " " + event.offsetY)
                 _ctx.beginPath()
                 _ctx.moveTo(_oldX, _oldY)
@@ -84,11 +84,14 @@ function SolibClient (canvasId, socket) {
     } mouseUp(event);
 
     /**
-    * PUBLIC METHODS
+    * PUBLIC METHOD
+    * Render a drawing from the given points object
     *
-    *
+    * @method renderDrawing
+    * @param {object} points The points representing a SolibDrawing
+    * @return {void}
     */
-    this.drawFromPoints = function (points) {
+    this.renderDrawing = function (points) {
         _oldX = points[0].x
         _oldY = points[0].y
         for (var i=1 ; i<points.length ; i++) {

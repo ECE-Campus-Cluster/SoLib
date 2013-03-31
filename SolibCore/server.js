@@ -36,7 +36,7 @@ app.configure(function () {
 /* expressjs init */
 var server = http.createServer(app)
 var sio    = io.listen(server)
-server.listen(app.get('port'), function() {
+server.listen(app.get('port'), function () {
     console.log("Solib server running on port %d", app.get('port'))
 });
 
@@ -56,7 +56,7 @@ app.post('/newlesson', function (req, res) {
 app.get('/lesson', function (req, res) {
     if (req.param('id_lesson') && req.param('access_token') && req.param('user_id') && req.param('firstname') && req.param('lastname'))
     {
-        solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (err, rows) {
+        solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (rows) {
             if (rows.length > 0) {
                 if (req.param('access_token') == rows[0].access_token) {
                     // Connection established.
@@ -118,8 +118,9 @@ sio.on('connection', function (socket) {
     });
     
     socket.on('new_drawing', function (data) {
-        // TODO SAVE IN SQL
-        socket.broadcast.emit('new_drawing', data)
+        solibSQL.insertDrawing(session.lessonid, data.points, function (result) {
+             socket.broadcast.emit('new_drawing', data)
+        });
     });
 
     /* disconnect event */

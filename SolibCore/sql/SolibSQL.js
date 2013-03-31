@@ -64,7 +64,8 @@ function SolibSQL (host, database, username, password) {
     */
     this.insertLesson = function (name, author, access_token, creation_time, callback) {
         _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
-            if (err) throw err
+            if (err)
+                console.log("Error on insert lesson statement.\n" + err)
             else if (callback && typeof(callback) === 'function')
                 callback(err, result)
         });
@@ -79,14 +80,15 @@ function SolibSQL (host, database, username, password) {
     */
     this.getLesson = function (lessonId, callback) {
         _connection.query("select * from lessons where id = ?", [lessonId], function (err, rows) {
-            if (err) throw err
+            if (err) 
+                console.log("Error on select lesson statement.\n" + err)
             else if (callback && typeof(callback) === 'function')
                 callback(rows)
         });
-    }
+    };
 
     /**
-    * Insert a drawing in DB.
+    * Insert a drawing in DB for a given lesson
     * Must receive a Solib drawing object and 
     * convert it into a string for SQL storage.
     *
@@ -96,13 +98,18 @@ function SolibSQL (host, database, username, password) {
     * @return {void} 
     */
     this.insertDrawing = function (lessonId, points, callback) {
-        // TODO convert points into string "4,5;5,6"
-        _connection.query("insert into drawings(idlesson, points) values(?, ?)", [lessonId, points], function (err, result) {
-            if (err) throw err
+        var pointsToString = ''
+        for (var i=0 ; i<points.length ; i++)
+            pointsToString += points[i].x + "," + points[i].y + ";"     
+        pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
+        
+        _connection.query("insert into drawings(idlesson, points) values(?, ?)", [lessonId, pointsToString], function (err, result) {
+            if (err)
+                console.log("Error on insert drawing statement.\n" + err)
             else if (callback && typeof(callback) === 'function')
-                callback(err, result)
+                callback(result)
         });
-    }
+    };
 
     /**
     * Execute a query.
@@ -113,11 +120,12 @@ function SolibSQL (host, database, username, password) {
     */
     this.query = function (query, params, callback) {
         _connection.query(query, params, function (err, result) {
-            if (err) throw err
+            if (err)
+                console.log("Error on SQL query.\n" + err)
             else if (callback && typeof(callback) === 'function')
-                callback(err, result)
+                callback(result)
         });
-    }
+    };
 }
 
 exports.SolibSQL = SolibSQL

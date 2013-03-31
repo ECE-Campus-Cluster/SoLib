@@ -23,7 +23,7 @@ window.onload = function () {
     });
 
     socket.on('new_drawing', function (data) {
-        solib.drawFromPoints(data.points)
+        solib.renderDrawing(data.points)
     });
 }
 
