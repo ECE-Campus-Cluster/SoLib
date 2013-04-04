@@ -13,7 +13,7 @@ function SolibClient (canvas, socket) {
     , _ctx
     , _ispainting = false
     , _oldX, _oldY, _precision = SolibClient.PRECISION
-    , _drawing // Array of canvas points
+    , _drawing // The drawing object to fill when a user draws on canvas
 
     /**
     * Class constructor from canvas' id.
@@ -25,18 +25,14 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function __construct (canvas, socket) {
-        _canvas = canvas
-        if (_canvas) {
-            _socket         = socket
-            _ctx            = _canvas.getContext('2d')
-            _drawing        = {}
-            _drawing.points = new Array()
-            _canvas.addEventListener("mousedown", mouseDown)
-            _canvas.addEventListener("mousemove", draw)
-            window.addEventListener("mouseup", mouseUp)
-        } else {
-            console.log('No canvas provided')
-        }
+        _canvas         = canvas
+        _socket         = socket
+        _ctx            = _canvas.getContext('2d')
+        _drawing        = {}
+        _drawing.points = new Array()
+        _canvas.addEventListener("mousedown", mouseDown)
+        _canvas.addEventListener("mousemove", draw)
+        window.addEventListener("mouseup", mouseUp)
     } __construct(canvas, socket);
 
     /**
@@ -47,9 +43,9 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function mouseDown (event) {
-        _ispainting     = true
-        _oldX           = event.offsetX
-        _oldY           = event.offsetY
+        _ispainting = true
+        _oldX       = event.offsetX
+        _oldY       = event.offsetY
         _drawing.points.push({ x: _oldX, y: _oldY })
     } mouseDown(event);
 
@@ -63,7 +59,6 @@ function SolibClient (canvas, socket) {
     function draw (event) {
         if (_ispainting) {
             if (_precision == SolibClient.PRECISION) {
-                //console.log(event.offsetX + " " + event.offsetY)
                 _ctx.beginPath()
                 _ctx.moveTo(_oldX, _oldY)
                 _ctx.lineTo(event.offsetX, event.offsetY)
