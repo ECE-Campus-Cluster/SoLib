@@ -1,8 +1,9 @@
 window.onload = function () {
-    var users     = $('#users')
+    var canvas    = document.getElementById('lessonCanvas')
+    , users       = document.getElementById('users')
     , socket      = io.connect("http://solib.hopto.org:8080")
-    , solibClient = new SolibClient('lessonCanvas', socket)
-    // , solibSlide  = new SolibSlide($('canvas#lessonCanvas'))
+    , solibClient = new SolibClient(canvas, socket)
+    , solibSlide  = new SolibSlide(canvas)
 
     // Socket.IO events handler
     socket.on('lesson_infos', function (data) {

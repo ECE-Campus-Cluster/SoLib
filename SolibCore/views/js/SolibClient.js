@@ -1,7 +1,7 @@
 /**
 * JavaScript canvas drawing handler for Solib.
 */
-function SolibClient (canvasId, socket) {
+function SolibClient (canvas, socket) {
 
     SolibClient.PRECISION = 1
 
@@ -20,12 +20,12 @@ function SolibClient (canvasId, socket) {
     * Take a Socket.IO socket object.
     *
     * @method __construct
-    * @param {string} canvasId The html canvas's id 
+    * @param {DOMElement} canvas The canvas element
     * @param {object} socket The Socket.IO socket
     * @return {void}
     */
-    function __construct (canvasId, socket) {
-        _canvas = document.getElementById(canvasId)
+    function __construct (canvas, socket) {
+        _canvas = canvas
         if (_canvas) {
             _socket         = socket
             _ctx            = _canvas.getContext('2d')
@@ -35,9 +35,9 @@ function SolibClient (canvasId, socket) {
             _canvas.addEventListener("mousemove", draw)
             window.addEventListener("mouseup", mouseUp)
         } else {
-            console.log('No canvas with id: %s', canvasId)
+            console.log('No canvas provided')
         }
-    } __construct(canvasId, socket);
+    } __construct(canvas, socket);
 
     /**
     * Start the drawing when the mouse is pressed
