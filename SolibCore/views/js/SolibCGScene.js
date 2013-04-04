@@ -12,15 +12,17 @@ var SolibSlide = CGSGScene.extend({
             // Call constructor of the parent : CGSGScene
             this._super(canvas)
             
-            // TO have a ref to the object in callbacks.
+            // To have a ref to the object in callbacks.
             self = this
 
             // Fill the graph with your nodes
-            this.createSolibCanvas()
+            this.createSolibSlide()
 
             // Start to refresh the canvas
             // this method is from the framework
-            this.startPlaying()
+            
+            // If we uncomment this, the canvas starts to refresh and thus we lose all drawings :(
+            //this.startPlaying()
         },
 
         /**

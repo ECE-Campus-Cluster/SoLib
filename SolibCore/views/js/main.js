@@ -1,6 +1,6 @@
 window.onload = function () {
     var canvas    = document.getElementById('lessonCanvas')
-    , users       = document.getElementById('users')
+    , users       = $('#users')
     , socket      = io.connect("http://solib.hopto.org:8080")
     , solibClient = new SolibClient(canvas, socket)
     , solibSlide  = new SolibSlide(canvas)
