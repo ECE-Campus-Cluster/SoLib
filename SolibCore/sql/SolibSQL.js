@@ -85,22 +85,32 @@ function SolibSQL (host, database, username, password) {
             if (err) 
                 console.log("Error on select lesson statement.\n" + err)
             else {
-                var lesson      = {}
-                lesson.name     = rows[0].name
-                //lesson.author   = rows[0].author
-                lesson.drawings = new Array()
-                // Build SolibDrawings
-                for (var i=0 ; i<rows.length ; i++) {
-                    // For a drawing
-                    var points = rows[i].points.split(';')
-                    lesson.drawings[i] = {}
-                    //lesson.drawings[i].size = 
-                    //lesson.drawings[i].color = 
-                    lesson.drawings[i].points = new Array()
-                    for (var j=0 ; j<points.length ; j++) {
-                        lesson.drawings[i].points.push({ x: points[j].split(',')[0], y: points[j].split(',')[1] });
+                var lesson       = {}
+                lesson.name      = rows[0].name
+                //lesson.author  = rows[0].author
+                lesson.slides    = new Array()
+                lesson.slides[0] = {} // TODO change when slides will be get from database
+                // Build slides
+                for (var s=0 ; s<lesson.slides.length ; s++) { // TODO change for nb of slides when db
+                    lesson.slides[s] = {}
+                    //lesson.slides[s].numSlide = 
+                    //lesson.slides[s].idSlide  =
+                    lesson.slides[s].drawings = new Array()
+                    // Build drawings
+                    for (var d=0 ; d<rows.length ; d++) {
+                        var points = rows[d].points.split(';')
+                        lesson.slides[s].drawings[d] = {}
+                        //lesson.slides[s].drawings[d].size = 
+                        //lesson.slides[s].drawings[d].color =
+                        //lesson.slides[s].drawings[d].slide =  
+                        lesson.slides[s].drawings[d].points = new Array()
+                        // Build points
+                        for (var j=0 ; j<points.length ; j++) {
+                            lesson.slides[s].drawings[d].points.push({ x: points[j].split(',')[0], y: points[j].split(',')[1] });
+                        }
                     }
                 }
+                
                 if (callback && typeof(callback) === 'function')
                     callback(lesson)
             }

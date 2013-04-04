@@ -7,35 +7,42 @@
     {
         "name": "Lesson",
         "author": "JTF",
-        "drawings": 
+        "slides":
         [
             {
-                "size": 5,
-                "color": "#333333",
-                "points":
+                "idSlide": 3,
+                "numSlide": 1,
+                "drawings": 
                 [
                     {
-                        "x": 3,
-                        "y": 4
-                    },
+                        "size": 5,
+                        "color": "#333333",
+                        "points":
+                        [
+                            {
+                                "x": 3,
+                                "y": 4
+                            },
+                            {
+                                "x": 4,
+                                "y": 5
+                            },
+                            {
+                                "x": 5,
+                                "y": 6
+                            }
+                        ]
+                    }
+                ],
+                "textNodes":
+                [
                     {
-                        "x": 4,
-                        "y": 5
-                    },
-                    {
-                        "x": 5,
-                        "y": 6
+                        "text": "The Text",
+                        "size": 12,
+                        "x": 45,
+                        "y": 34
                     }
                 ]
-            }
-        ],
-        "textNodes":
-        [
-            {
-                "text": "The Text",
-                "size": 12,
-                "x": 45,
-                "y": 34
             }
         ]
     }

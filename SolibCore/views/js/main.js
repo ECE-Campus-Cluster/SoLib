@@ -7,8 +7,12 @@ window.onload = function () {
     // Socket.IO events handler
     socket.on('lesson_infos', function (data) {
         $('#lesson_name').text(data.lesson.name)
-        for (var i=0 ; i<data.lesson.drawings.length ; i++) {
-            solibClient.renderDrawing(data.lesson.drawings[i])
+        // Build slides
+        for (var s=0 ; s<data.lesson.slides.length ; s++) {
+            // Build drawings
+            for (var d=0 ; d<data.lesson.slides[s].drawings.length ; d++) {
+                solibClient.renderDrawing(data.lesson.slides[s].drawings[d])
+            }
         }
     });
 
