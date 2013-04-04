@@ -120,8 +120,8 @@ sio.on('connection', function (socket) {
     
     socket.on('new_drawing', function (data) {
         // TODO: check user's rights
-        solibSQL.insertDrawing(session.lessonid, data.points, function (result) {
-             socket.broadcast.emit('new_drawing', data)
+        solibSQL.insertDrawing(session.lessonid, data.drawing, function (result) {
+             socket.broadcast.emit('new_drawing', data.drawing)
         });
     });
 

@@ -87,14 +87,18 @@ function SolibSQL (host, database, username, password) {
             else {
                 var lesson      = {}
                 lesson.name     = rows[0].name
+                //lesson.author   = rows[0].author
                 lesson.drawings = new Array()
                 // Build SolibDrawings
                 for (var i=0 ; i<rows.length ; i++) {
                     // For a drawing
                     var points = rows[i].points.split(';')
-                    lesson.drawings[i] = new Array()
+                    lesson.drawings[i] = {}
+                    //lesson.drawings[i].size = 
+                    //lesson.drawings[i].color = 
+                    lesson.drawings[i].points = new Array()
                     for (var j=0 ; j<points.length ; j++) {
-                        lesson.drawings[i].push({ x: points[j].split(',')[0], y: points[j].split(',')[1] });
+                        lesson.drawings[i].points.push({ x: points[j].split(',')[0], y: points[j].split(',')[1] });
                     }
                 }
                 if (callback && typeof(callback) === 'function')
@@ -109,14 +113,14 @@ function SolibSQL (host, database, username, password) {
     *
     * @method insertDrawing
     * @param {int} lessonId The id of the lesson where the drawing has been made
-    * @param {object} points The drawing 
+    * @param {object} drawing The drawing 
     * @return {void} 
     */
-    this.insertDrawing = function (lessonId, points, callback) {
+    this.insertDrawing = function (lessonId, drawing, callback) {
         var pointsToString = ''
-        for (var i=0 ; i<points.length ; i++) {
-            if (/^[\d]+$/.test(points[i].x) && /^[\d]+$/.test(points[i].y))
-                pointsToString += points[i].x + "," + points[i].y + ";"
+        for (var i=0 ; i<drawing.points.length ; i++) {
+            if (/^[\d]+$/.test(drawing.points[i].x) && /^[\d]+$/.test(drawing.points[i].y))
+                pointsToString += drawing.points[i].x + "," + drawing.points[i].y + ";"
         }
         if (pointsToString != '') {
             pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon

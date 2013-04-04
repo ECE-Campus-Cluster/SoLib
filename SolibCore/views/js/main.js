@@ -2,6 +2,7 @@ window.onload = function () {
     var users     = $('#users')
     , socket      = io.connect("http://solib.hopto.org:8080")
     , solibClient = new SolibClient('lessonCanvas', socket)
+    // , solibSlide  = new SolibSlide($('canvas#lessonCanvas'))
 
     // Socket.IO events handler
     socket.on('lesson_infos', function (data) {
@@ -26,8 +27,11 @@ window.onload = function () {
     });
 
     socket.on('new_drawing', function (data) {
-        solibClient.renderDrawing(data.points)
+        solibClient.renderDrawing(data)
     });
+
+    /* Dropdown menu */
+    $('.dropdown-toggle').dropdown();
 }
 
 function openConnectedUsers(element) {

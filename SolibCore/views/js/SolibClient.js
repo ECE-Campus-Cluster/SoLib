@@ -27,8 +27,10 @@ function SolibClient (canvasId, socket) {
     function __construct (canvasId, socket) {
         _canvas = document.getElementById(canvasId)
         if (_canvas) {
-            _socket = socket
-            _ctx = _canvas.getContext('2d')
+            _socket         = socket
+            _ctx            = _canvas.getContext('2d')
+            _drawing        = {}
+            _drawing.points = new Array()
             _canvas.addEventListener("mousedown", mouseDown)
             _canvas.addEventListener("mousemove", draw)
             window.addEventListener("mouseup", mouseUp)
@@ -45,11 +47,10 @@ function SolibClient (canvasId, socket) {
     * @return {void}
     */
     function mouseDown (event) {
-        _ispainting = true
-        _drawing    = new Array()
-        _oldX       = event.offsetX
-        _oldY       = event.offsetY
-        _drawing.push({ x: _oldX, y: _oldY })
+        _ispainting     = true
+        _oldX           = event.offsetX
+        _oldY           = event.offsetY
+        _drawing.points.push({ x: _oldX, y: _oldY })
     } mouseDown(event);
 
     /**
@@ -71,7 +72,7 @@ function SolibClient (canvasId, socket) {
                 _precision = 0
                 _oldX = event.offsetX
                 _oldY = event.offsetY
-                _drawing.push({ x: _oldX, y: _oldY })
+                _drawing.points.push({ x: _oldX, y: _oldY })
             } else {
                 _precision++
             }
@@ -88,8 +89,8 @@ function SolibClient (canvasId, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
-            _socket.emit('new_drawing', { points: _drawing })
-            _drawing    = null
+            _socket.emit('new_drawing', { drawing: _drawing })
+            _drawing.points = new Array()
         }
     } mouseUp(event);
 
@@ -101,17 +102,17 @@ function SolibClient (canvasId, socket) {
     * @param {object} points The points representing a SolibDrawing
     * @return {void}
     */
-    this.renderDrawing = function (points) {
-        _oldX = points[0].x
-        _oldY = points[0].y
-        for (var i=1 ; i<points.length ; i++) {
+    this.renderDrawing = function (drawing) {
+        _oldX = drawing.points[0].x
+        _oldY = drawing.points[0].y
+        for (var i=1 ; i<drawing.points.length ; i++) {
             _ctx.beginPath()
             _ctx.moveTo(_oldX, _oldY)
-            _ctx.lineTo(points[i].x, points[i].y)
+            _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
             _ctx.strokeStyle = "#333333"
             _ctx.stroke()
-            _oldX = points[i].x
-            _oldY = points[i].y
+            _oldX = drawing.points[i].x
+            _oldY = drawing.points[i].y
         }
     }
 }
