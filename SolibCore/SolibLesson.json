@@ -1,0 +1,42 @@
+/**
+* This is an example of a SolibLesson object. Please update it of you make any changes.
+*
+*/
+
+[
+    {
+        "name": "Lesson",
+        "author": "JTF",
+        "drawings": 
+        [
+            {
+                "size": 5,
+                "color": "#333333",
+                "points":
+                [
+                    {
+                        "x": 3,
+                        "y": 4
+                    },
+                    {
+                        "x": 4,
+                        "y": 5
+                    },
+                    {
+                        "x": 5,
+                        "y": 6
+                    }
+                ]
+            }
+        ],
+        "textNodes":
+        [
+            {
+                "text": "The Text",
+                "size": 12,
+                "x": 45,
+                "y": 34
+            }
+        ]
+    }
+]
