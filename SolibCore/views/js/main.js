@@ -3,22 +3,18 @@ window.onload = function () {
     , users       = $('#users')
     , socket      = io.connect("http://solib.hopto.org:8080")
     , solibClient = new SolibClient(canvas, socket)
-    , solibSlide  = new SolibSlide(canvas)
-    , slidesArray = {};
+    //, solibSlide  = new SolibSlide(canvas)
 
     // Socket.IO events handler
     socket.on('lesson_infos', function (data) {
         $('#lesson_name').text(data.lesson.name)
-        slidesArray = data.lesson.slides
-        console.log(slidesArray)
-        // Build slides
+        solibClient.slidesArray = data.lesson.slides
         for (var s=0 ; s<data.lesson.slides.length ; s++) {
             appendToSlideList(s)
-            // Build drawings
-            for (var d=0 ; d<data.lesson.slides[s].drawings.length ; d++) {
-                solibClient.renderDrawing(data.lesson.slides[s].drawings[d])
-            }
         }
+        // Render first slide on loading
+        console.log(data.lesson.slides[0].id)
+        solibClient.renderSlide(data.lesson.slides[0])
     });
 
     socket.on('list_users', function (data) {
@@ -35,15 +31,12 @@ window.onload = function () {
         $('#'+data.user.id).remove()
     });
 
-    socket.on('coucou', function(data) {
-        console.log("coucou");
-    })
-
-    socket.on('new_drawing', function (data) {
-        solibClient.renderDrawing(data)
+    socket.on('new_drawing', function (drawing) {
+        solibClient.renderDrawing(drawing)
     });
 
-    socket.on('new_slide', function(data) {
+    socket.on('new_slide', function (slide) {
+        solibClient.slidesArray.push(slide)
         appendToSlideList(slidesArray.length)
     });
 
@@ -51,19 +44,10 @@ window.onload = function () {
     $('.dropdown-toggle').dropdown();
 
     /* Add new slide */
-    $('#new-slide').click(function(){
-        var slide = appendToSlideList(slidesArray.length)
-        window.location.hash = slide.id
-        
-        var newSlide = {
-            drawings: new Array({
-                points: new Array()
-            })
-        }
-        slidesArray.push(newSlide);
-
-        socket.emit('new_slide', { slide: newSlide })
-
+    $('#new-slide').click(function () {
+        //var slide = appendToSlideList(slidesArray.length)
+        //window.location.hash = slide.id
+        socket.emit("new_slide", { position: solibClient.slidesArray.length })
     });
 }
 
@@ -75,7 +59,7 @@ function createSlidePreview(id) {
     var title           = document.createElement('h3')
 
     newSlide.className  = "span12"
-    newSlide.id         = id+1
+    newSlide.id         = id + 1
     thumbnail.className = "thumbnail"
     imgPreview.src      = "slide.png"
     imgPreview.width    = "55"

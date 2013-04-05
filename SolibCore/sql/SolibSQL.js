@@ -81,7 +81,7 @@ function SolibSQL (host, database, username, password) {
     * @return {void}
     */
     this.getLesson = function (lessonId, callback) {
-        _connection.query("select lessons.name, lessons.author, drawings.points, (select count(*) from drawings where idlesson = ?) as nbDrawings from lessons join drawings on lessons.id = drawings.idlesson where lessons.id = ? group by points", [lessonId, lessonId], function (err, rows) {
+        _connection.query("select *, (select count(*) from drawings where idlesson = ?) as nbDrawings, (select count(*) from slides where idlesson = ?) as nbSlides from lessons join slides join drawings on lessons.id = slides.idlesson and slides.id = drawings.idslide where lessons.id = ?", [lessonId, lessonId, lessonId], function (err, rows) {
             if (err)
                 console.log("Error on select lesson statement.\n" + err)
             else {
@@ -90,22 +90,21 @@ function SolibSQL (host, database, username, password) {
                     author : rows[0].author,
                     slides : new Array()
                 }
-                lesson.slides[0] = {} // TODO change when slides will be retrieve from database
                 // Build slides
-                for (var s=0 ; s<lesson.slides.length ; s++) { // TODO change for nb of slides when db
+                for (var s=0 ; s<rows[0].nbSlides ; s++) { // TODO change for nb of slides when db
                     lesson.slides[s] = {
-                        drawings   : new Array(),
-                        //numSlide :
-                        //idSlide  :
+                        id       : rows[s].idslide,
+                        drawings : new Array(),
+                        position : rows[s].position
                     }
                     // Build drawings
                     for (var d=0 ; d<rows[0].nbDrawings ; d++) {
                         var points = rows[d].points.split(';')
                         lesson.slides[s].drawings[d] = {
-                            radius : rows[d].radius,
-                            color  : rows[d].color,
-                            //slide: 
-                            points : new Array()
+                            radius  : rows[d].radius,
+                            color   : rows[d].color,
+                            idSlide : rows[s].idslide,
+                            points  : new Array()
                         } 
                         // Build points
                         for (var j=0 ; j<points.length ; j++) {
@@ -120,16 +119,26 @@ function SolibSQL (host, database, username, password) {
         });
     };
 
+    this.insertSlide = function (idLesson, slide, callback) {
+        _connection.query("insert into slides(idlesson, position) values(?, ?)", [idLesson, slide.position], function (err, result) {
+            if (err)
+                console.log("Error on insert slide statement.\n" + err)
+            else {
+                if (callback && typeof(callback) === 'function')
+                    callback(result)
+            }
+        });
+    };
+
     /**
-    * Insert a drawing in DB for a given lesson.
-    * Convert a SOlibDrawing object into a string.
+    * Insert a drawing in DB for a given lesson at a given slide.
+    * Convert a SolibDrawing object into a string.
     *
     * @method insertDrawing
-    * @param {int} lessonId The id of the lesson where the drawing has been made
     * @param {object} drawing The drawing 
     * @return {void} 
     */
-    this.insertDrawing = function (lessonId, drawing, callback) {
+    this.insertDrawing = function (drawing, callback) {
         var pointsToString = ''
         for (var i=0 ; i<drawing.points.length ; i++) {
             if (/^[\d]+$/.test(drawing.points[i].x) && /^[\d]+$/.test(drawing.points[i].y))
@@ -138,7 +147,7 @@ function SolibSQL (host, database, username, password) {
         if (pointsToString != '') {
             pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
             
-            _connection.query("insert into drawings(idlesson, radius, color, points) values(?, ?, ?, ?)", [lessonId, drawing.radius, drawing.color,  pointsToString], function (err, result) {
+            _connection.query("insert into drawings(idlesson, idslide, radius, color, points) values(?, ?, ?, ?, ?)", [drawing.idLesson, drawing.idSlide, drawing.radius, drawing.color,  pointsToString], function (err, result) {
                 if (err)
                     console.log("Error on insert drawing statement.\n" + err)
                 else if (callback && typeof(callback) === 'function')

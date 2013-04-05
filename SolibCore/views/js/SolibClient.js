@@ -14,6 +14,8 @@ function SolibClient (canvas, socket) {
     , _ispainting = false
     , _oldX, _oldY, _precision = SolibClient.PRECISION
     , _drawing // The drawing object to fill when a user draws on canvas
+    , slidesArray = new Array()
+    , currentSlideId
 
     /**
     * Class constructor from canvas' id.
@@ -25,12 +27,12 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function __construct (canvas, socket) {
-        _canvas         = canvas
-        _socket         = socket
-        _ctx            = _canvas.getContext('2d')
-        _drawing        = {}
-        _drawing.points = new Array()
-        _drawing.size   = $("#pencil_width").val()
+        _canvas  = canvas
+        _socket  = socket
+        _ctx     = _canvas.getContext('2d')
+        _drawing = {
+            points : new Array()
+        }
         _canvas.addEventListener("mousedown", mouseDown)
         _canvas.addEventListener("mousemove", draw)
         window.addEventListener("mouseup", mouseUp)
@@ -44,11 +46,12 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function mouseDown (event) {
-        _ispainting     = true
-        _oldX           = event.offsetX
-        _oldY           = event.offsetY
-        _drawing.color  = "#cb3494"
-        _drawing.radius = $('#pencil_width').val()
+        _ispainting      = true
+        _oldX            = event.offsetX
+        _oldY            = event.offsetY
+        _drawing.idSlide = currentSlideId
+        _drawing.color   = "#cb3494"
+        _drawing.radius  = $('#pencil_width').val()
         _drawing.points.push({ x: _oldX, y: _oldY })
     } mouseDown(event);
 
@@ -90,6 +93,7 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
+            console.log(_drawing)
             _socket.emit('new_drawing', { drawing: _drawing })
             _drawing.points = new Array()
         }
@@ -100,7 +104,7 @@ function SolibClient (canvas, socket) {
     * Render a drawing from the given points object
     *
     * @method renderDrawing
-    * @param {object} points The points representing a SolibDrawing
+    * @param {object} points The drawing object from SolibLesson
     * @return {void}
     */
     this.renderDrawing = function (drawing) {
@@ -117,6 +121,18 @@ function SolibClient (canvas, socket) {
             _ctx.stroke()
             _oldX = drawing.points[i].x
             _oldY = drawing.points[i].y
+        }
+    }
+
+    /**
+    * PUBLIC METHOD
+    *
+    */
+    this.renderSlide = function (slide) {
+        currentSlideId = slide.id
+        _ctx.clearRect(0, 0, _canvas.width, _canvas.height)
+        for (var d=0 ; d<slide.drawings.length ; d++) {
+            this.renderDrawing(slide.drawings[d])
         }
     }
 }

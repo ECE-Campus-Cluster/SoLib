@@ -41,15 +41,22 @@ server.listen(app.get('port'), function () {
 });
 
 app.post('/newlesson', function (req, res) {
-    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, result) {
+    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, resultLesson) {
         if (err) {
             console.log('Error connecting to mysql on insert statement: \n%s', err)
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
         } else {
             console.log("Inserted course '%s'", req.param('name'))
-            solibSQL.query("insert into drawings(idlesson, points) values(?, ?)", [result.insertId, "0,0"])
-            res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
-                            solibcoreid: result.insertId });
+            solibSQL.query("insert into slides(idlesson, position) values(?, ?)", [resultLesson.insertId, 0], function (resultSlide) {
+                var fakePoints = new Array()
+                fakePoints.push({x: 0, y: 0})
+                solibSQL.query("insert into drawings(idlesson, idslide, points) values(?, ?, ?)", [resultLesson.insertId, resultSlide.insertId, fakePoints], function (resultDrawing) {
+                    if (resultDrawing) {
+                        res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
+                            solibcoreid: resultLesson.insertId });
+                    }
+                });
+            });
         }
     });
 });
@@ -119,9 +126,27 @@ sio.on('connection', function (socket) {
         }
     });
     
+    socket.on('new_slide', function (data) {
+        var slide = {
+            position : data.position
+        }
+        solibSQL.insertSlide(session.lessonid, slide, function (resultSlide) {
+            var fakePoints = new Array()
+            fakePoints.push({x: 0, y: 0})
+            var drawing = {
+                idSlide : resultSlide.insertId,
+                points  : fakePoints
+            }
+            solibSQL.insertDrawing(drawing, function (result) {
+                socket.emit('new_slide', slide)
+            });
+        });
+    });
+
     socket.on('new_drawing', function (data) {
         // TODO: check user's rights
-        solibSQL.insertDrawing(session.lessonid, data.drawing, function (result) {
+        data.drawing.idLesson = session.lessonid
+        solibSQL.insertDrawing(data.drawing, function (result) {
              socket.broadcast.emit('new_drawing', data.drawing)
         });
     });
