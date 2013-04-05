@@ -17,12 +17,11 @@ var SolibSlide = CGSGScene.extend({
 
             // Fill the graph with your nodes
             this.createSolibSlide()
-
             // Start to refresh the canvas
             // this method is from the framework
             
             // If we uncomment this, the canvas starts to refresh and thus we lose all drawings :(
-            //this.startPlaying()
+            // this.startPlaying()
         },
 
         /**
@@ -62,7 +61,7 @@ var SolibSlide = CGSGScene.extend({
         createTextNode : function (x, y, text) {
             var textNode = new CGSGNodeText(x, y, text)
             textNode.isDraggable = true
-            textNode.onDblClick = function(cgEvent) {
+            textNode.onDblClick = function (cgEvent) {
                 textInput = document.createElement("input")
                 textInput.style.position = "absolute"
                 var nodeX = (textNode.getAbsoluteLeft() + cgEvent.event.target.offsetLeft)

@@ -15,7 +15,7 @@
                 "drawings": 
                 [
                     {
-                        "size": 5,
+                        "radius": 5,
                         "color": "#333333",
                         "points":
                         [

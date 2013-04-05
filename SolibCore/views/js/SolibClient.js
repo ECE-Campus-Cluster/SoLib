@@ -30,6 +30,7 @@ function SolibClient (canvas, socket) {
         _ctx            = _canvas.getContext('2d')
         _drawing        = {}
         _drawing.points = new Array()
+        _drawing.size   = $("#pencil_width").val()
         _canvas.addEventListener("mousedown", mouseDown)
         _canvas.addEventListener("mousemove", draw)
         window.addEventListener("mouseup", mouseUp)
@@ -43,9 +44,11 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function mouseDown (event) {
-        _ispainting = true
-        _oldX       = event.offsetX
-        _oldY       = event.offsetY
+        _ispainting     = true
+        _oldX           = event.offsetX
+        _oldY           = event.offsetY
+        _drawing.color  = "#cb3494"
+        _drawing.radius = $('#pencil_width').val()
         _drawing.points.push({ x: _oldX, y: _oldY })
     } mouseDown(event);
 
@@ -62,7 +65,10 @@ function SolibClient (canvas, socket) {
                 _ctx.beginPath()
                 _ctx.moveTo(_oldX, _oldY)
                 _ctx.lineTo(event.offsetX, event.offsetY)
-                _ctx.strokeStyle = "#333333"
+                _ctx.strokeStyle = _drawing.color
+                _ctx.lineJoin = "round"
+                _ctx.lineCap = "round"
+                _ctx.lineWidth = _drawing.radius
                 _ctx.stroke()
                 _precision = 0
                 _oldX = event.offsetX
@@ -104,7 +110,10 @@ function SolibClient (canvas, socket) {
             _ctx.beginPath()
             _ctx.moveTo(_oldX, _oldY)
             _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
-            _ctx.strokeStyle = "#333333"
+            _ctx.strokeStyle = drawing.color
+            _ctx.lineJoin = "round"
+            _ctx.lineCap = "round"
+            _ctx.lineWidth = drawing.radius
             _ctx.stroke()
             _oldX = drawing.points[i].x
             _oldY = drawing.points[i].y

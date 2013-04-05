@@ -20,9 +20,9 @@ var sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 })
 /* expressjs config */
 app.configure(function () {
     app.set('port', config.PORT)
-    app.use(express.static(__dirname + '/views'))
     app.set('views', __dirname + '/views') // html files
     app.engine('html', ejs.renderFile)
+    app.use(express.static(__dirname + '/views'))
     app.use(express.bodyParser()) // for req.param
     app.use(express.methodOverride())
     app.use(express.cookieParser())
@@ -47,6 +47,7 @@ app.post('/newlesson', function (req, res) {
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
         } else {
             console.log("Inserted course '%s'", req.param('name'))
+            solibSQL.query("insert into drawings(idlesson, points) values(?, ?)", [result.insertId, "0,0"])
             res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
                             solibcoreid: result.insertId });
         }

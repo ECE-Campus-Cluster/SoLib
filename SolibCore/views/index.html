@@ -20,63 +20,15 @@
 		<center><h1 id="lesson_name"></h1><center>
 		<div class="container-fluid">
 			<div class="row-fluid">
-				<div class="span3 well" id="slide-list">
+				<div class="span2 well" id="slide-list">
 					<!-- Sidebar content //SLIDES-LIST -->
-					<ul class="thumbnails" id="slides">
-					  <li class="span12">
-					    <div class="thumbnail">
-					      <img id="addNewSlide" alt="New Slide" src="add.png">
-								<center>
-						      <h3>Add new Slide</h3>
-						     </center>
-					    </div>
-					  </li>
-					  <li class="span12">
-					    <div class="thumbnail">
-					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
-								<center>
-						      <h3>Slide #</h3>
-						     </center>
-					    </div>
-					  </li>
-					  <li class="span12">
-					    <div class="thumbnail">
-					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
-								<center>
-						      <h3>Slide #</h3>
-						     </center>
-					    </div>
-					  </li>
-					  <li class="span12">
-					    <div class="thumbnail">
-					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
-								<center>
-						      <h3>Slide #</h3>
-						     </center>
-					    </div>
-					  </li>
-					  <li class="span12">
-					    <div class="thumbnail">
-					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
-								<center>
-						      <h3>Slide #</h3>
-						     </center>
-					    </div>
-					  </li>
-					  <li class="span12">
-					    <div class="thumbnail">
-					      <img id="addNewSlide" width="55" alt="New Slide" src="slide.png">
-								<center>
-						      <h3>Slide #</h3>
-						     </center>
-					    </div>
-					  </li>
-					</ul>
+					<ul class="thumbnails" id="slides"></ul>
 				</div>
-				<div class="span9 well">
+				<div class="span10 well">
 					<!-- Body content -->
 					<div id="toolbar" class="well">
 			      <!-- <button class="btn" id="pencil"> Pencil </button> -->
+			      <button class="btn-success btn" id="new-slide"><i class="icon-plus icon-white"></i> New Slide</button>
 			      <div class="btn-group">
 						  <button class="btn" id="pencil">Pencil</button>
 						  <button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -90,12 +42,12 @@
 						    </li>
 						  </ul>
 						</div>
-			      <button class="btn" id="line"> Line </button>
-			      <button class="btn" id="rect"> Rectangle </button>
-			      <button class="btn" id="circle"> Circle </button>
-			      <button class="btn" id="text"> Text </button>
-			      <button class="btn" id="clear"> Clear </button>
-			      <button class="btn" id="download"> Download </button>
+			      <button class="btn" id="line">Line</button>
+			      <button class="btn" id="rect">Rectangle</button>
+			      <button class="btn" id="circle">Circle</button>
+			      <button class="btn" id="text">Text</button>
+			      <button class="btn" id="clear">Clear</button>
+			      <button class="btn btn-inverse" id="download">Download</button>
 <!-- 			      <output class="btn" id="output">5 pixels</output>
  -->			      <!-- <div>
 			        <ul id="couleurs">
@@ -109,7 +61,7 @@
 			        </ul>
 			      </div> -->
 			    </div>
-					<canvas id="lessonCanvas" width="700" height="450">
+					<canvas id="lessonCanvas" width="900" height="450">
 						Your browser doest not support the canvas element.
 					</canvas>
 				</div>
