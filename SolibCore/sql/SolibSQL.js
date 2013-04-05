@@ -146,7 +146,7 @@ function SolibSQL (host, database, username, password) {
         }
         if (pointsToString != '') {
             pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
-            
+
             _connection.query("insert into drawings(idlesson, idslide, radius, color, points) values(?, ?, ?, ?, ?)", [drawing.idLesson, drawing.idSlide, drawing.radius, drawing.color,  pointsToString], function (err, result) {
                 if (err)
                     console.log("Error on insert drawing statement.\n" + err)

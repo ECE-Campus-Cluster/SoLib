@@ -135,7 +135,10 @@ sio.on('connection', function (socket) {
             fakePoints.push({x: 0, y: 0})
             var drawing = {
                 idSlide : resultSlide.insertId,
-                points  : fakePoints
+                points  : fakePoints,
+                idLesson: session.lessonid,
+                radius  : 5,
+                color   : '#333333'
             }
             solibSQL.insertDrawing(drawing, function (result) {
                 socket.emit('new_slide', slide)

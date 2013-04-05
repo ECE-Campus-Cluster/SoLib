@@ -37,7 +37,7 @@ window.onload = function () {
 
     socket.on('new_slide', function (slide) {
         solibClient.slidesArray.push(slide)
-        appendToSlideList(slidesArray.length)
+        appendToSlideList(solibClient.slidesArray.length-1)
     });
 
     /* Dropdown menu */
@@ -46,8 +46,8 @@ window.onload = function () {
     /* Add new slide */
     $('#new-slide').click(function () {
         //var slide = appendToSlideList(slidesArray.length)
-        //window.location.hash = slide.id
         socket.emit("new_slide", { position: solibClient.slidesArray.length })
+        window.location.hash = solibClient.slidesArray.length
     });
 }
 
@@ -59,7 +59,7 @@ function createSlidePreview(id) {
     var title           = document.createElement('h3')
 
     newSlide.className  = "span12"
-    newSlide.id         = id + 1
+    newSlide.id         = id
     thumbnail.className = "thumbnail"
     imgPreview.src      = "slide.png"
     imgPreview.width    = "55"
