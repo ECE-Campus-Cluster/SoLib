@@ -1,11 +1,20 @@
 window.onload = function () {
-    var users  = $('#users')
-    , socket   = io.connect("http://solib.hopto.org:8080")
-    , solib    = new Solib('lessonCanvas', socket)
+    var canvas    = document.getElementById('lessonCanvas')
+    , users       = $('#users')
+    , socket      = io.connect("http://solib.hopto.org:8080")
+    , solibClient = new SolibClient(canvas, socket)
+    //, solibSlide  = new SolibSlide(canvas)
 
     // Socket.IO events handler
     socket.on('lesson_infos', function (data) {
-        $('#lesson_name').text(data.lesson_name)
+        $('#lesson_name').text(data.lesson.name)
+        solibClient.slidesArray = data.lesson.slides
+        for (var s=0 ; s<data.lesson.slides.length ; s++) {
+            appendToSlideList(s)
+        }
+        // Render first slide on loading
+        console.log(data.lesson.slides[0].id)
+        solibClient.renderSlide(data.lesson.slides[0])
     });
 
     socket.on('list_users', function (data) {
@@ -22,10 +31,54 @@ window.onload = function () {
         $('#'+data.user.id).remove()
     });
 
-    socket.on('new_drawing', function (data) {
-        solib.drawFromPoints(data.points)
+    socket.on('new_drawing', function (drawing) {
+        solibClient.renderDrawing(drawing)
+    });
+
+    socket.on('new_slide', function (slide) {
+        solibClient.slidesArray.push(slide)
+        appendToSlideList(solibClient.slidesArray.length-1)
+    });
+
+    /* Dropdown menu */
+    $('.dropdown-toggle').dropdown();
+
+    /* Add new slide */
+    $('#new-slide').click(function () {
+        //var slide = appendToSlideList(slidesArray.length)
+        socket.emit("new_slide", { position: solibClient.slidesArray.length })
+        window.location.hash = solibClient.slidesArray.length
     });
 }
+
+function createSlidePreview(id) {
+    var newSlide        = document.createElement('li')
+    var thumbnail       = document.createElement('div')
+    var imgPreview      = document.createElement('img')
+    var center          = document.createElement('center')
+    var title           = document.createElement('h3')
+
+    newSlide.className  = "span12"
+    newSlide.id         = id
+    thumbnail.className = "thumbnail"
+    imgPreview.src      = "slide.png"
+    imgPreview.width    = "55"
+    title.innerHTML     = "Slide #" + newSlide.id
+
+    center.appendChild(title)
+    thumbnail.appendChild(imgPreview)
+    thumbnail.appendChild(center)
+    newSlide.appendChild(thumbnail)
+
+    return newSlide;
+}
+
+function appendToSlideList(id) {
+    var newSlide = createSlidePreview(id)
+    document.getElementById('slides').appendChild(createSlidePreview(id))
+    return newSlide
+}
+
 
 function openConnectedUsers(element) {
     if ($("#popopen").length) {

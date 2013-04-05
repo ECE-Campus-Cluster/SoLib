@@ -8,7 +8,7 @@
 */
 
 // Good JS class template: http://labs.tomasino.org/2011/11/10/javascript-class-template/
-function Sessions ()
+function SolibSessions ()
 {
 	this.connectedUsers = new Array();
 
@@ -68,4 +68,4 @@ function Sessions ()
 	};
 }
 
-exports.SolibSessions = Sessions;
+exports.SolibSessions = SolibSessions;
