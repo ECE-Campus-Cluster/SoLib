@@ -93,7 +93,6 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
-            console.log(_drawing)
             _socket.emit('new_drawing', { drawing: _drawing })
             _drawing.points = new Array()
         }
