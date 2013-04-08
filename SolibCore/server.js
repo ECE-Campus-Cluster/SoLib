@@ -1,20 +1,20 @@
 // Node.js plugins
-var path = require('path')
-http     = require('http')
-express  = require('express')
-app      = express()
-ejs      = require('ejs')
-io       = require('socket.io')
+//var path = require('path')
+var http  = require('http')
+, express = require('express')
+, app     = express()
+, ejs     = require('ejs')
+, io      = require('socket.io')
 // Solib tools
-config          = require('./config')
-SolibSQL        = require('./sql/SolibSQL').SolibSQL
-SolibSessions   = require('./Sessions').SolibSessions
+, config        = require('./config')
+, SolibSQL      = require('./sql/SolibSQL').SolibSQL
+, SolibSessions = require('./Sessions').SolibSessions
 const hashStore = 'solib_secret'
 
 solibSessions = new SolibSessions()
 solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
-/* session & cookies express side */
+/* Session & cookies express side */
 var sessionStore = new express.session.MemoryStore({ reapInterval: 60000 * 10 })
 
 /* expressjs config */
@@ -48,8 +48,8 @@ app.post('/newlesson', function (req, res) {
         } else {
             console.log("Inserted course '%s'", req.param('name'))
             solibSQL.query("insert into slides(idlesson, position) values(?, ?)", [resultLesson.insertId, 0], function (resultSlide) {
-                var fakePoints = new Array()
-                fakePoints.push({x: 0, y: 0})
+                 // Quick fix for slide with no drawing bug. Forced to add drawing.
+                var fakePoints = [{x: 0, y: 0}]
                 solibSQL.query("insert into drawings(idlesson, idslide, points) values(?, ?, ?)", [resultLesson.insertId, resultSlide.insertId, fakePoints], function (resultDrawing) {
                     if (resultDrawing) {
                         res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
@@ -86,11 +86,11 @@ app.get('/lesson', function (req, res) {
         });
     }
     else {
-        res.send(404, "Missing parameters. Are you trying to login from Moodle?")
+        res.send(400, "Bad request. Are you trying to login from Moodle?")
     }
 });
 
-/* setting authorization method for socket.io */
+/* Setting authorization method for socket.io */
 sio.configure(function () {
     sio.set('authorization', function (handshakeData, callback) {
         // cookies
@@ -112,18 +112,15 @@ sio.configure(function () {
 /* socket.io events */
 sio.on('connection', function (socket) {
     var session = socket.handshake.session // get express session
-    //console.log("New user: " + socket.id + " " + session.user.lastname)
 
     // Add the user to the connected list
     solibSessions.addUser(session.user, socket.id, function () {
-        sio.sockets.emit("list_users", { users: solibSessions.connectedUsers }); // send to all clients
+        sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
-    
+
     // Retrieve the lesson. Here we can assume that the lesson exists. 
     solibSQL.getLesson(session.lessonid, function (lesson) {
-        if (lesson) {
-            socket.emit("lesson_infos", { lesson: lesson })
-        }
+        if (lesson) socket.emit("lesson_infos", lesson)
     });
     
     socket.on('new_slide', function (data) {
@@ -131,14 +128,14 @@ sio.on('connection', function (socket) {
             position : data.position
         }
         solibSQL.insertSlide(session.lessonid, slide, function (resultSlide) {
-            var fakePoints = new Array()
-            fakePoints.push({x: 0, y: 0})
+            // Quick fix for slide with no drawing bug. Forced to add drawing.
+            var fakePoints = [{x: 0, y: 0}]
             var drawing = {
-                idSlide : resultSlide.insertId,
-                points  : fakePoints,
-                idLesson: session.lessonid,
-                radius  : 5,
-                color   : '#333333'
+                idSlide  : resultSlide.insertId,
+                points   : fakePoints,
+                idLesson : session.lessonid,
+                radius   : 5,
+                color    : '#333333'
             }
             solibSQL.insertDrawing(drawing, function (result) {
                 socket.emit('new_slide', slide)
@@ -154,12 +151,12 @@ sio.on('connection', function (socket) {
         });
     });
 
-    /* disconnect event */
+    // Disconnect event
     socket.on('disconnect', function () {
         solibSessions.removeSocket(socket.id, function (lastsocket, user) {
             if (lastsocket) {
                 solibSessions.removeUser(session.user)
-                socket.broadcast.emit("user_disconnected", { user: user });
+                socket.broadcast.emit("user_disconnected", user);
             }
         });
     });

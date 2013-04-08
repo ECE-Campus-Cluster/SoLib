@@ -103,7 +103,7 @@ function SolibClient (canvas, socket) {
     * Render a drawing from the given points object
     *
     * @method renderDrawing
-    * @param {object} points The drawing object from SolibLesson
+    * @param {drawing} drawing The drawing object from a slide of SolibLesson
     * @return {void}
     */
     this.renderDrawing = function (drawing) {
@@ -125,13 +125,17 @@ function SolibClient (canvas, socket) {
 
     /**
     * PUBLIC METHOD
-    *
+    * Render a given slide and set the currentSlideId
+    * to slide param's id.
+    * 
+    * @method renderSlide
+    * @param {slide} The slide object from SolibLesson
+    * @return {void}
     */
     this.renderSlide = function (slide) {
         currentSlideId = slide.id
         _ctx.clearRect(0, 0, _canvas.width, _canvas.height)
-        for (var d=0 ; d<slide.drawings.length ; d++) {
+        for (var d=0 ; d<slide.drawings.length ; d++)
             this.renderDrawing(slide.drawings[d])
-        }
     }
 }

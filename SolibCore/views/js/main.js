@@ -1,57 +1,60 @@
 window.onload = function () {
-    var canvas    = document.getElementById("lessonCanvas")
-    , users       = $('#users')
-    , socket      = io.connect("http://solib.hopto.org:8080")
-    , solibClient = new SolibClient(canvas, socket)
-    //, solibSlide  = new SolibSlide(canvas)
+    var canvas     = document.getElementById("lessonCanvas")
+    , usersList    = document.getElementById("users")
+    , socket       = io.connect("http://solib.hopto.org:8080")
+    , solibClient  = new SolibClient(canvas, socket)
+    //, solibSlide = new SolibSlide(canvas)
 
     // Socket.IO events handlers
-    socket.on('lesson_infos', function (data) {
-        $('#lesson_name').text(data.lesson.name)
-        solibClient.slidesArray = data.lesson.slides
-        for (var s=0 ; s<data.lesson.slides.length ; s++) {
+    socket.on("lesson_infos", function (lesson) {
+        document.getElementById("lesson_name").innerHTML = lesson.name
+        solibClient.slidesArray = lesson.slides
+        for (var s=0 ; s<lesson.slides.length ; s++)
             appendToSlidesPreview(s)
-        }
-        // Render first slide on loading
-        solibClient.renderSlide(data.lesson.slides[0])
+        solibClient.renderSlide(lesson.slides[0]) // Render first slide on loading
     });
 
-    socket.on('list_users', function (data) {
-        users[0].innerHTML = ""
-        for (var i=0 ; i<data.users.length ; i++) {
+    socket.on("list_users", function (users) {
+        usersList.innerHTML = ""
+        for (var i=0 ; i<users.length ; i++) {
             var tr = document.createElement('tr')
-            tr.id = data.users[i].id
-            tr.innerHTML = data.users[i].firstname + " " + data.users[i].lastname
-            users.append(tr)
+            tr.id = users[i].id
+            tr.innerHTML = users[i].firstname + " " + users[i].lastname
+            usersList.appendChild(tr)
         }
     });
 
-    socket.on('user_disconnected', function (data) {
-        $('#'+data.user.id).remove()
+    socket.on("user_disconnected", function (user) {
+        $('#'+user.id).remove()
     });
 
-    socket.on('new_drawing', function (drawing) {
+    socket.on("new_drawing", function (drawing) {
         solibClient.renderDrawing(drawing)
     });
 
-    socket.on('new_slide', function (slide) {
+    socket.on("new_slide", function (slide) {
         solibClient.slidesArray.push(slide)
         appendToSlidesPreview(solibClient.slidesArray.length - 1)
     });
 
-    /* Dropdown menu */
-    $('.dropdown-toggle').dropdown();
+    // Dropdown menu
+    $(".dropdown-toggle").dropdown();
 
-    /* Add new slide */
-    $('#new-slide').click(function () {
+    // Add new slide
+    $("#new-slide").click(function () {
         socket.emit("new_slide", { position: solibClient.slidesArray.length })
         window.location.hash = solibClient.slidesArray.length
     });
 
-    /* Change current slide */
-    $('.slide').click(function () {
+    // Change current slide
+    $(".slide").click(function (e) {
         console.log('slide')
-        solibClient.renderSlide(solibClient.slidesArray[this.id])
+        solibClient.renderSlide(solibClient.slidesArray[$(this).id])
+    });
+
+    // Connected users list animation
+    $("#popopen").click(function (e) {
+        openConnectedUsers($(this))
     });
 }
 
@@ -100,17 +103,12 @@ function createSlidePreview (id) {
 * 
 * @return {void}
 */
-function openConnectedUsers (element) {
-    if ($("#popopen").length) {
-        $(element).animate({
-          right: "-5px"
-        }, 500);
-        element.id = "popclose"
-    }
-    else {
-        $(element).animate({
-          right: "-205px"
-        }, 500);
-        element.id = "popopen"
+function openConnectedUsers (elem) {
+    if (elem.length) {
+        elem.animate({ right: "-5px" }, 500)
+        elem.id = "popclose"
+    } else {
+        elem.animate({ right: "-205px" }, 500)
+        elem.id = "popopen"
     }
 }
