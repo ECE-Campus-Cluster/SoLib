@@ -29,7 +29,12 @@ window.onload = function () {
     });
 
     socket.on("new_drawing", function (drawing) {
-        solibClient.renderDrawing(drawing)
+        // TODO add idSlide to drawing object
+        // Drawing has been made on current slide for current user
+        //if (drawing.idSlide == solibClient.currentSlideId)
+            solibClient.renderDrawing(drawing)
+        // Drawing has been made on another slide
+        //else solibClient.slidesArray[drawing.idSlide].drawings.push(drawing)
     });
 
     socket.on("new_slide", function (slide) {
@@ -47,13 +52,13 @@ window.onload = function () {
     });
 
     // Change current slide
-    $(".slide").click(function (e) {
-        console.log('slide')
+    $(".thumbnail").click(function () {
+        console.log('slide click')
         solibClient.renderSlide(solibClient.slidesArray[$(this).id])
     });
 
     // Connected users list animation
-    $("#popopen").click(function (e) {
+    $("#popopen").click(function () {
         openConnectedUsers($(this))
     });
 }
@@ -62,6 +67,7 @@ window.onload = function () {
 * Create a slide via createSlidePreview
 * and append it to the HTML list as a thumbnail.
 *
+* @param {int} id The slide id from DB, who will be the DOMElement id.
 * @return {void}
 */
 function appendToSlidesPreview (id) {
@@ -84,7 +90,7 @@ function createSlidePreview (id) {
 
     newSlide.className  = "span12"
     newSlide.id         = id
-    thumbnail.className = "thumbnail slide"
+    thumbnail.className = "thumbnail"
     imgPreview.src      = "slide.png"
     imgPreview.width    = "55"
     var idSlide         = parseInt(newSlide.id) + 1
@@ -101,6 +107,7 @@ function createSlidePreview (id) {
 /**
 * Open or close the users list.
 * 
+* @param {DOMElement} elem The HTML element to animate
 * @return {void}
 */
 function openConnectedUsers (elem) {

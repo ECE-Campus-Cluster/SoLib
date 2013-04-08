@@ -51,7 +51,7 @@ function SolibClient (canvas, socket) {
         _oldY            = event.offsetY
         _drawing.idSlide = currentSlideId
         _drawing.color   = "#cb3494"
-        _drawing.radius  = $('#pencil_width').val()
+        _drawing.radius  = document.getElementById('pencil_width').value
         _drawing.points.push({ x: _oldX, y: _oldY })
     } mouseDown(event);
 
@@ -93,7 +93,7 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
-            _socket.emit('new_drawing', { drawing: _drawing })
+            _socket.emit('new_drawing', _drawing)
             _drawing.points = new Array()
         }
     } mouseUp(event);
@@ -114,9 +114,9 @@ function SolibClient (canvas, socket) {
             _ctx.moveTo(_oldX, _oldY)
             _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
             _ctx.strokeStyle = drawing.color
-            _ctx.lineJoin = "round"
-            _ctx.lineCap = "round"
-            _ctx.lineWidth = drawing.radius
+            _ctx.lineJoin    = "round"
+            _ctx.lineCap     = "round"
+            _ctx.lineWidth   = drawing.radius
             _ctx.stroke()
             _oldX = drawing.points[i].x
             _oldY = drawing.points[i].y

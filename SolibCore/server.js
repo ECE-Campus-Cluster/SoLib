@@ -138,16 +138,16 @@ sio.on('connection', function (socket) {
                 color    : '#333333'
             }
             solibSQL.insertDrawing(drawing, function (result) {
-                socket.emit('new_slide', slide)
+                sio.sockets.emit('new_slide', slide) // send new slides to all clients
             });
         });
     });
 
-    socket.on('new_drawing', function (data) {
+    socket.on('new_drawing', function (drawing) {
         // TODO: check user's rights
-        data.drawing.idLesson = session.lessonid
-        solibSQL.insertDrawing(data.drawing, function (result) {
-             socket.broadcast.emit('new_drawing', data.drawing)
+        drawing.idLesson = session.lessonid
+        solibSQL.insertDrawing(drawing, function (result) {
+             socket.broadcast.emit('new_drawing', drawing)
         });
     });
 
