@@ -97,7 +97,7 @@ function solib_send_to_server($solib) {
 
     //var_dump($USER);
     die;
-/*
+*/
 
     // curl stuff for post request to solib server
     $url = $solib->server_addr.'/newlesson';
