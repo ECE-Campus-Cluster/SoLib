@@ -15,6 +15,7 @@
                 "drawings": 
                 [
                     {
+                        "idSlide": 0,
                         "radius": 5,
                         "color": "#333333",
                         "points":

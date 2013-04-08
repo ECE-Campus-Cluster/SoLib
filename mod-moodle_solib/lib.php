@@ -73,6 +73,32 @@ function solib_add_instance($solib) {
 * @return json
 */
 function solib_send_to_server($solib) {
+/*
+    global $USER, $COURSE, $DB, $OUTPUT;
+
+    $myContext = get_context_instance(50, $COURSE->id);
+
+    echo $USER->username . " " . $USER->lastname;
+
+    //if (has_capability('moodle/course:update', $myContext)) {
+    if (has_capability('moodle/course:create', $myContext)) {
+        echo "moodle/course:create";
+    } else if (has_capability('moodle/course:view', $myContext)) {
+        echo "moodle/course:view";
+    }
+
+    $query = 'select u.id as id, firstname, lastname, picture, imagealt, email from mdl_role_assignments as a, mdl_user as u where contextid=' . $myContext->id . ' and roleid=5 and a.userid=u.id;';
+
+    $rs = $DB->get_recordset_sql( $query ); 
+    foreach( $rs as $r ) { 
+        echo $OUTPUT->user_picture($r, array('size' => 50, 'courseid'=>$COURSE->id));
+        echo $r->firstname . ' ' . $r->lastname . '<br>'; 
+    }
+
+    //var_dump($USER);
+    die;
+*/
+
     // curl stuff for post request to solib server
     $url = $solib->server_addr.'/newlesson';
     $fields = array(
