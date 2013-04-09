@@ -75,6 +75,7 @@ app.get('/lesson', function (req, res) {
                             lastname  : rows[0].lastname,
                             sockets   : []
                         }
+                        req.session.lesson   = lesson
                         req.session.lessonid = req.param('lesson')
                         res.render('index.html')
                     } else {
@@ -118,13 +119,11 @@ sio.on('connection', function (socket) {
         sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
 
-    // Retrieve the lesson. Here we can assume that the lesson exists.
-    solibSQL.getLesson(session.lessonid, function (lesson) {
-        if (lesson) {
-            if (lesson.authorId == session.user.moodleId) session.user.isTeacher = true
-            socket.emit("lesson_infos", lesson)
-        }
-    });
+    // Send the lesson to the client
+    if (session.lesson) {
+        if (session.lesson.authorId == session.user.moodleId) session.user.isTeacher = true
+        socket.emit("lesson_infos", session.lesson)
+    }
     
     socket.on('new_slide', function (data) {
         var slide = {
@@ -150,7 +149,7 @@ sio.on('connection', function (socket) {
         if (session.user.isTeacher) {
             drawing.idLesson = session.lessonid // Insert lesson id in object before DB insert
             solibSQL.insertDrawing(drawing, function (result) {
-                 socket.broadcast.emit('new_drawing', drawing)
+                socket.broadcast.emit('new_drawing', drawing)
             });
         }
     });

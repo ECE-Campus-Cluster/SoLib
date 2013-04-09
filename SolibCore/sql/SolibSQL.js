@@ -96,6 +96,7 @@ function SolibSQL (host, database, username, password) {
                 console.log("Error on select lesson statement.\n" + err)
             else if (rows.length > 0) {
                 var lesson = {
+                    id       : rows[0].id,
                     name     : rows[0].name,
                     authorId : rows[0].authorid,
                     slides   : []
