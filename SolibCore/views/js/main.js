@@ -56,11 +56,6 @@ window.onload = function () {
         console.log('slide click')
         solibClient.renderSlide(solibClient.slidesArray[$(this).id])
     });
-
-    // Connected users list animation
-    $("#popopen").click(function () {
-        openConnectedUsers($(this))
-    });
 }
 
 /**
@@ -110,12 +105,12 @@ function createSlidePreview (id) {
 * @param {DOMElement} elem The HTML element to animate
 * @return {void}
 */
-function openConnectedUsers (elem) {
-    if (elem.length) {
-        elem.animate({ right: "-5px" }, 500)
-        elem.id = "popclose"
+function openConnectedUsers (element) {
+    if ($("#popopen").length) {
+        $(element).animate({ right: "-5px" }, 500)
+        element.id = "popclose"
     } else {
-        elem.animate({ right: "-205px" }, 500)
-        elem.id = "popopen"
+        $(element).animate({ right: "-205px" }, 500)
+        element.id = "popopen"
     }
 }

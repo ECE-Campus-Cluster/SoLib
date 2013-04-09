@@ -41,7 +41,7 @@ server.listen(app.get('port'), function () {
 });
 
 app.post('/newlesson', function (req, res) {
-    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, resultLesson) {
+    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('users'), req.param('access_token'), req.param('creation_time'), function (err, resultLesson) {
         if (err) {
             console.log('Error connecting to mysql on insert statement: \n%s', err)
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
@@ -68,12 +68,13 @@ app.get('/lesson', function (req, res) {
             if (rows.length > 0) {
                 if (req.param('access_token') == rows[0].access_token) {
                     // Connection established.
-                    req.session.user           = new Object()
-                    req.session.user.id        = req.param('user_id')
-                    req.session.user.firstname = req.param('firstname')
-                    req.session.user.lastname  = req.param('lastname')
-                    req.session.lessonid       = req.param('id_lesson')
-                    req.session.user.sockets   = new Array()
+                    req.session.user = {
+                        id        : req.param('user_id'),
+                        firstname : req.param('firstname'),
+                        lastname  : req.param('lastname'),
+                        sockets   : []
+                    }
+                    req.session.lessonid = req.param('id_lesson')
                     res.render('index.html')
                 }
                 else {
@@ -86,7 +87,7 @@ app.get('/lesson', function (req, res) {
         });
     }
     else {
-        res.send(400, "Bad request. Are you trying to login from Moodle?")
+        res.send(400, "Bad request. You should login from Moodle.?")
     }
 });
 

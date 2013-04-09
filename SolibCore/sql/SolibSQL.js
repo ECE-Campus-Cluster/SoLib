@@ -33,7 +33,7 @@ function SolibSQL (host, database, username, password) {
                 fs.readFile(solibsql, 'utf-8', function (error, content) {
                     if (error) throw error
                     else {
-                        // TODO
+                        // TODO read sql file to create tables
                         // _connection.query(content, function (err) {
                         //     if (err) throw err
                         // });
@@ -57,16 +57,26 @@ function SolibSQL (host, database, username, password) {
     *
     * @method insertLesson
     * @param {string} name Lesson's name
-    * @param {string} author Lesson's author
-    * @param {string} access_token Token to access the course from Moodle
+    * @param {int} author The moodle id of the author
+    * @param {json} users The user list authorized to see the lesson 
+    * @param {string} access_token Token to access the lesson from Moodle
     * @param {string} creation_time Creation time of the Solib lesson on Moodle
     * @return {void}
     */
-    this.insertLesson = function (name, author, access_token, creation_time, callback) {
+    this.insertLesson = function (name, author, users, access_token, creation_time, callback) {
         _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
             if (err)
                 console.log("Error on insert lesson statement.\n" + err)
-            else if (callback && typeof(callback) === 'function')
+            else {
+                users = JSON.parse(users)
+                for (var u in users) {
+                    _connection.query('insert into users(idmoodle, lastname, firstname) value(?, ?, ?)', [users[u].id, users[u].lastname, users[u].firstname], function (err, result) {
+                        if (err)
+                            console.log("Error on insert user statement.\n" + err)
+                    });
+                }
+            }
+            if (callback && typeof(callback) === 'function')
                 callback(err, result)
         });
     };
@@ -146,7 +156,7 @@ function SolibSQL (host, database, username, password) {
         }
         if (pointsToString != '') {
             pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
-
+            
             _connection.query("insert into drawings(idlesson, idslide, radius, color, points) values(?, ?, ?, ?, ?)", [drawing.idLesson, drawing.idSlide, drawing.radius, drawing.color,  pointsToString], function (err, result) {
                 if (err)
                     console.log("Error on insert drawing statement.\n" + err)
