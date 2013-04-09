@@ -27,9 +27,9 @@ app.configure(function () {
     app.use(express.methodOverride())
     app.use(express.cookieParser())
     app.use(express.session({
-        store: sessionStore,
-        key: 'sid',
-        secret: hashStore
+        store  : sessionStore,
+        key    : 'sid',
+        secret : hashStore
     }));
 });
 
@@ -47,6 +47,7 @@ app.post('/newlesson', function (req, res) {
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
         } else {
             console.log("Inserted course '%s'", req.param('name'))
+            // Insert first empty slide
             solibSQL.query("insert into slides(idlesson, position) values(?, ?)", [resultLesson.insertId, 0], function (resultSlide) {
                  // Quick fix for slide with no drawing bug. Forced to add drawing.
                 var fakePoints = [{x: 0, y: 0}]
@@ -62,27 +63,24 @@ app.post('/newlesson', function (req, res) {
 });
 
 app.get('/lesson', function (req, res) {
-    if (req.param('id_lesson') && req.param('access_token') && req.param('user_id') && req.param('firstname') && req.param('lastname'))
+    if (req.param('id_lesson') && req.param('user_id'))
     {
-        solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (rows) {
+        solibSQL.getUser(rows) {
             if (rows.length > 0) {
-                if (req.param('access_token') == rows[0].access_token) {
                     // Connection established.
                     req.session.user = {
                         id        : req.param('user_id'),
-                        firstname : req.param('firstname'),
-                        lastname  : req.param('lastname'),
+                        firstname : rows[0].firstname,
+                        lastname  : rows[0].lastname,
+                        //role      : 
                         sockets   : []
                     }
                     req.session.lessonid = req.param('id_lesson')
                     res.render('index.html')
-                }
-                else {
-                    res.send(403, "Access forbidden. You must login from your Moodle Solib activity.")
-                }
             }
             else {
-                res.send(404, "Unknown lesson id.")
+                res.send(403, "Access forbidden. You must login from your Moodle Solib activity.")
+                //res.send(404, "Unknown lesson id.")
             }
         });
     }

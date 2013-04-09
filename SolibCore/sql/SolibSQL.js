@@ -129,6 +129,23 @@ function SolibSQL (host, database, username, password) {
         });
     };
 
+    /**
+    *
+    *
+    */
+    this.getUser = function (userId, callback) {
+        _connection.query('select * from users where idmoodle = ?', [req.param('user_id')], function (err, rows) {
+            if (err)
+                console.log("Error on select user statement.\n" + err)
+            else if (callback && typeof(callback) === 'function')
+                callback(rows)
+        });
+    }
+
+    /**
+    *
+    *
+    */
     this.insertSlide = function (idLesson, slide, callback) {
         _connection.query("insert into slides(idlesson, position) values(?, ?)", [idLesson, slide.position], function (err, result) {
             if (err)
