@@ -37,10 +37,10 @@ if ($idSolibCourse) {
     if (! $cm = get_coursemodule_from_id('solib', $idSolibCourse)) { // the module of the course Cour 1 By JTF. Can be Solib or any other module (plugin)
         print_error('invalidcoursemodule');
     }
-    if (! $course = $DB->get_record("course", array("id"=>$cm->course))) { // CT2
+    if (! $course = $DB->get_record("course", array("id" => $cm->course))) { // CT2
         print_error('coursemisconf');
     }
-    if (! $solib = $DB->get_record("solib", array("id"=>$cm->instance))) { // Course 1 By JTF
+    if (! $solib = $DB->get_record("solib", array("id" => $cm->instance))) { // Course 1 By JTF
         print_error('invalidcoursemodule');
     }
     require_login($course, true, $cm);
@@ -53,11 +53,11 @@ if ($idSolibCourse) {
     echo $OUTPUT->heading($solib->name);
 
     if (! empty($solib->intro)) {
-            echo $OUTPUT->box(format_module_intro('solib', $solib, $cm->id), 'generalbox', 'intro');
+        echo $OUTPUT->box(format_module_intro('solib', $solib, $cm->id), 'generalbox', 'intro');
     }
 
     echo $OUTPUT->box_start();
-        $link = new action_link(new moodle_url($solib->server_addr."/lesson", array('user_id'=>$USER->id, 'firstname'=>$USER->firstname, 'lastname'=>$USER->lastname, "id_lesson" => $solib->solibcoreid ,'access_token' => $solib->access_token)), "Click this link to access the lesson");
+        $link = new action_link(new moodle_url($solib->server_addr."/lesson", array('user'=>$USER->id, "lesson" => $solib->solibcoreid)), "Click this link to access the lesson");
         //$link->add_action(new popup_action('click', $link->url));
         echo $OUTPUT->render($link);
         echo '<br />';

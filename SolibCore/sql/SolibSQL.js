@@ -33,7 +33,7 @@ function SolibSQL (host, database, username, password) {
                 fs.readFile(solibsql, 'utf-8', function (error, content) {
                     if (error) throw error
                     else {
-                        // TODO
+                        // TODO read sql file to create tables
                         // _connection.query(content, function (err) {
                         //     if (err) throw err
                         // });
@@ -57,16 +57,26 @@ function SolibSQL (host, database, username, password) {
     *
     * @method insertLesson
     * @param {string} name Lesson's name
-    * @param {string} author Lesson's author
-    * @param {string} access_token Token to access the course from Moodle
+    * @param {int} author The moodle id of the author
+    * @param {json} users The user list authorized to see the lesson 
+    * @param {string} access_token Token to access the lesson from Moodle
     * @param {string} creation_time Creation time of the Solib lesson on Moodle
     * @return {void}
     */
-    this.insertLesson = function (name, author, access_token, creation_time, callback) {
+    this.insertLesson = function (name, author, users, access_token, creation_time, callback) {
         _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
             if (err)
                 console.log("Error on insert lesson statement.\n" + err)
-            else if (callback && typeof(callback) === 'function')
+            else {
+                users = JSON.parse(users)
+                for (var u in users) {
+                    _connection.query('insert into users(idmoodle, lastname, firstname) value(?, ?, ?)', [users[u].id, users[u].lastname, users[u].firstname], function (err, result) {
+                        if (err)
+                            console.log("Error on insert user statement.\n" + err)
+                    });
+                }
+            }
+            if (callback && typeof(callback) === 'function')
                 callback(err, result)
         });
     };
@@ -84,18 +94,19 @@ function SolibSQL (host, database, username, password) {
         _connection.query("select *, (select count(*) from drawings where idlesson = ?) as nbDrawings, (select count(*) from slides where idlesson = ?) as nbSlides from lessons join slides join drawings on lessons.id = slides.idlesson and slides.id = drawings.idslide where lessons.id = ?", [lessonId, lessonId, lessonId], function (err, rows) {
             if (err)
                 console.log("Error on select lesson statement.\n" + err)
-            else {
+            else if (rows.length > 0) {
                 var lesson = {
-                    name   : rows[0].name,
-                    author : rows[0].author,
-                    slides : new Array()
+                    id       : rows[0].id,
+                    name     : rows[0].name,
+                    authorId : rows[0].authorid,
+                    slides   : []
                 }
                 // Build slides
                 for (var s=0 ; s<rows[0].nbSlides ; s++) { // TODO change for nb of slides when db
                     lesson.slides[s] = {
                         id       : rows[s].idslide,
-                        drawings : new Array(),
-                        position : rows[s].position
+                        position : rows[s].position,
+                        drawings : []
                     }
                     // Build drawings
                     for (var d=0 ; d<rows[0].nbDrawings ; d++) {
@@ -104,7 +115,7 @@ function SolibSQL (host, database, username, password) {
                             radius  : rows[d].radius,
                             color   : rows[d].color,
                             idSlide : rows[s].idslide,
-                            points  : new Array()
+                            points  : []
                         } 
                         // Build points
                         for (var j=0 ; j<points.length ; j++) {
@@ -113,12 +124,36 @@ function SolibSQL (host, database, username, password) {
                         }
                     }
                 }
-                if (callback && typeof(callback) === 'function')
-                    callback(lesson)
-            }
+            } // rows.length > 0
+            if (callback && typeof(callback) === 'function')
+                callback(lesson)
         });
     };
 
+    /**
+    * Retrieve a user accorgind to the given id
+    * 
+    * @method getUser
+    * @param {int} userId The user id
+    * @return {void}
+    */
+    this.getUser = function (userId, callback) {
+        _connection.query('select * from users where idmoodle = ?', [userId], function (err, rows) {
+            if (err)
+                console.log("Error on select user statement.\n" + err)
+            else if (callback && typeof(callback) === 'function')
+                callback(rows)
+        });
+    }
+
+    /**
+    * Insert a slide in a given lesson according to the lesson id param.
+    * 
+    * @method insertSlide
+    * @param {int} idLesson The lesson id
+    * @param {SolibSlide} slide The SolibSlide object
+    * @return {void}
+    */
     this.insertSlide = function (idLesson, slide, callback) {
         _connection.query("insert into slides(idlesson, position) values(?, ?)", [idLesson, slide.position], function (err, result) {
             if (err)
@@ -135,7 +170,7 @@ function SolibSQL (host, database, username, password) {
     * Convert a SolibDrawing object into a string.
     *
     * @method insertDrawing
-    * @param {object} drawing The drawing 
+    * @param {object} drawing The drawing
     * @return {void} 
     */
     this.insertDrawing = function (drawing, callback) {
@@ -146,7 +181,7 @@ function SolibSQL (host, database, username, password) {
         }
         if (pointsToString != '') {
             pointsToString = pointsToString.substring(0, pointsToString.length - 1) // remove last semicolon
-
+            
             _connection.query("insert into drawings(idlesson, idslide, radius, color, points) values(?, ?, ?, ?, ?)", [drawing.idLesson, drawing.idSlide, drawing.radius, drawing.color,  pointsToString], function (err, result) {
                 if (err)
                     console.log("Error on insert drawing statement.\n" + err)

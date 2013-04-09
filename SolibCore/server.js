@@ -27,9 +27,9 @@ app.configure(function () {
     app.use(express.methodOverride())
     app.use(express.cookieParser())
     app.use(express.session({
-        store: sessionStore,
-        key: 'sid',
-        secret: hashStore
+        store  : sessionStore,
+        key    : 'sid',
+        secret : hashStore
     }));
 });
 
@@ -41,12 +41,13 @@ server.listen(app.get('port'), function () {
 });
 
 app.post('/newlesson', function (req, res) {
-    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('access_token'), req.param('creation_time'), function (err, resultLesson) {
+    solibSQL.insertLesson(req.param('name'), req.param('author'), req.param('users'), req.param('access_token'), req.param('creation_time'), function (err, resultLesson) {
         if (err) {
             console.log('Error connecting to mysql on insert statement: \n%s', err)
             res.send(500, { text: "Error inserting course " + req.param('name') + " please try again." });
         } else {
             console.log("Inserted course '%s'", req.param('name'))
+            // Insert first empty slide
             solibSQL.query("insert into slides(idlesson, position) values(?, ?)", [resultLesson.insertId, 0], function (resultSlide) {
                  // Quick fix for slide with no drawing bug. Forced to add drawing.
                 var fakePoints = [{x: 0, y: 0}]
@@ -62,31 +63,31 @@ app.post('/newlesson', function (req, res) {
 });
 
 app.get('/lesson', function (req, res) {
-    if (req.param('id_lesson') && req.param('access_token') && req.param('user_id') && req.param('firstname') && req.param('lastname'))
-    {
-        solibSQL.query('select access_token from lessons where id = ?', [req.param('id_lesson')], function (rows) {
-            if (rows.length > 0) {
-                if (req.param('access_token') == rows[0].access_token) {
-                    // Connection established.
-                    req.session.user           = new Object()
-                    req.session.user.id        = req.param('user_id')
-                    req.session.user.firstname = req.param('firstname')
-                    req.session.user.lastname  = req.param('lastname')
-                    req.session.lessonid       = req.param('id_lesson')
-                    req.session.user.sockets   = new Array()
-                    res.render('index.html')
-                }
-                else {
-                    res.send(403, "Access forbidden. You must login from your Moodle Solib activity.")
-                }
-            }
-            else {
-                res.send(404, "Unknown lesson id.")
+    if (req.param('lesson') && req.param('user')) {
+        solibSQL.getLesson(req.param('lesson'), function (lesson) {
+            if (lesson) {
+                solibSQL.getUser(req.param('user'), function (rows) {
+                    if (rows.length > 0) {
+                        // Connection established.
+                        req.session.user = {
+                            moodleId  : rows[0].idmoodle,
+                            firstname : rows[0].firstname,
+                            lastname  : rows[0].lastname,
+                            sockets   : []
+                        }
+                        req.session.lesson   = lesson
+                        req.session.lessonid = req.param('lesson')
+                        res.render('index.html')
+                    } else {
+                        res.send(403, "Access forbidden. You must login from your Moodle Solib activity.")
+                    }
+                });
+            } else {
+                res.send(404, "Unknown lesson.")
             }
         });
-    }
-    else {
-        res.send(400, "Bad request. Are you trying to login from Moodle?")
+    } else {
+        res.send(400, "Bad request. You should login from Moodle.?")
     }
 });
 
@@ -109,7 +110,7 @@ sio.configure(function () {
     });
 });
 
-/* socket.io events */
+/* Socket.IO events */
 sio.on('connection', function (socket) {
     var session = socket.handshake.session // get express session
 
@@ -118,10 +119,11 @@ sio.on('connection', function (socket) {
         sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
 
-    // Retrieve the lesson. Here we can assume that the lesson exists. 
-    solibSQL.getLesson(session.lessonid, function (lesson) {
-        if (lesson) socket.emit("lesson_infos", lesson)
-    });
+    // Send the lesson to the client
+    if (session.lesson) {
+        if (session.lesson.authorId == session.user.moodleId) session.user.isTeacher = true
+        socket.emit("lesson_infos", session.lesson)
+    }
     
     socket.on('new_slide', function (data) {
         var slide = {
@@ -138,17 +140,18 @@ sio.on('connection', function (socket) {
                 color    : '#333333'
             }
             solibSQL.insertDrawing(drawing, function (result) {
-                sio.sockets.emit('new_slide', slide) // send new slides to all clients
+                sio.sockets.emit('new_slide', slide) // send new slide to all clients
             });
         });
     });
 
     socket.on('new_drawing', function (drawing) {
-        // TODO: check user's rights
-        drawing.idLesson = session.lessonid
-        solibSQL.insertDrawing(drawing, function (result) {
-             socket.broadcast.emit('new_drawing', drawing)
-        });
+        if (session.user.isTeacher) {
+            drawing.idLesson = session.lessonid // Insert lesson id in object before DB insert
+            solibSQL.insertDrawing(drawing, function (result) {
+                socket.broadcast.emit('new_drawing', drawing)
+            });
+        }
     });
 
     // Disconnect event
