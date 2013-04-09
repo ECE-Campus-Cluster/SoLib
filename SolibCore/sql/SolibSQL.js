@@ -94,18 +94,18 @@ function SolibSQL (host, database, username, password) {
         _connection.query("select *, (select count(*) from drawings where idlesson = ?) as nbDrawings, (select count(*) from slides where idlesson = ?) as nbSlides from lessons join slides join drawings on lessons.id = slides.idlesson and slides.id = drawings.idslide where lessons.id = ?", [lessonId, lessonId, lessonId], function (err, rows) {
             if (err)
                 console.log("Error on select lesson statement.\n" + err)
-            else {
+            else if (rows.length > 0) {
                 var lesson = {
                     name   : rows[0].name,
-                    author : rows[0].author,
-                    slides : new Array()
+                    author : rows[0].authorid,
+                    slides : []
                 }
                 // Build slides
                 for (var s=0 ; s<rows[0].nbSlides ; s++) { // TODO change for nb of slides when db
                     lesson.slides[s] = {
                         id       : rows[s].idslide,
-                        drawings : new Array(),
-                        position : rows[s].position
+                        position : rows[s].position,
+                        drawings : []
                     }
                     // Build drawings
                     for (var d=0 ; d<rows[0].nbDrawings ; d++) {
@@ -114,7 +114,7 @@ function SolibSQL (host, database, username, password) {
                             radius  : rows[d].radius,
                             color   : rows[d].color,
                             idSlide : rows[s].idslide,
-                            points  : new Array()
+                            points  : []
                         } 
                         // Build points
                         for (var j=0 ; j<points.length ; j++) {
@@ -123,18 +123,22 @@ function SolibSQL (host, database, username, password) {
                         }
                     }
                 }
-                if (callback && typeof(callback) === 'function')
-                    callback(lesson)
-            }
+            } // rows.length > 0
+
+            if (callback && typeof(callback) === 'function')
+                callback(lesson)
         });
     };
 
     /**
-    *
-    *
+    * Retrieve a user accorgind to the given id
+    * 
+    * @method getUser
+    * @param {int} userId The user id
+    * @return {void}
     */
     this.getUser = function (userId, callback) {
-        _connection.query('select * from users where idmoodle = ?', [req.param('user_id')], function (err, rows) {
+        _connection.query('select * from users where idmoodle = ?', [userId], function (err, rows) {
             if (err)
                 console.log("Error on select user statement.\n" + err)
             else if (callback && typeof(callback) === 'function')
@@ -143,8 +147,12 @@ function SolibSQL (host, database, username, password) {
     }
 
     /**
-    *
-    *
+    * Insert a slide in a given lesson according to the lesson id param.
+    * 
+    * @method insertSlide
+    * @param {int} idLesson The lesson id
+    * @param {SolibSlide} slide The SolibSlide object
+    * @return {void}
     */
     this.insertSlide = function (idLesson, slide, callback) {
         _connection.query("insert into slides(idlesson, position) values(?, ?)", [idLesson, slide.position], function (err, result) {
@@ -162,7 +170,7 @@ function SolibSQL (host, database, username, password) {
     * Convert a SolibDrawing object into a string.
     *
     * @method insertDrawing
-    * @param {object} drawing The drawing 
+    * @param {object} drawing The drawing
     * @return {void} 
     */
     this.insertDrawing = function (drawing, callback) {

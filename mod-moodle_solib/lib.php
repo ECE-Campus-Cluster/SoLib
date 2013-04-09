@@ -95,14 +95,13 @@ function solib_send_to_server($solib) {
         );
         array_push($users, $user);
     }
-    //var_dump($USER);
 
     // curl stuff for post request to solib server
     $url = $solib->server_addr.'/newlesson';
     $fields = array(
         'name'          => urlencode($solib->name),
         'author'        => urlencode($USER->id),
-        'users'         => json_encode($users),
+        'users'         => urlencode(json_encode($users)),
         'access_token'  => urlencode($solib->access_token),
         'creation_time' => urlencode($solib->creation_time),
     );
