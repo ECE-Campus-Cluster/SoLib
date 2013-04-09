@@ -140,7 +140,7 @@ sio.on('connection', function (socket) {
                 color    : '#333333'
             }
             solibSQL.insertDrawing(drawing, function (result) {
-                sio.sockets.emit('new_slide', slide) // send new slides to all clients
+                sio.sockets.emit('new_slide', slide) // send new slide to all clients
             });
         });
     });
