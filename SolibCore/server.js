@@ -70,7 +70,7 @@ app.get('/lesson', function (req, res) {
                     if (rows.length > 0) {
                         // Connection established.
                         req.session.user = {
-                            moodleid  : rows[0].moodleid,
+                            moodleId  : rows[0].idmoodle,
                             firstname : rows[0].firstname,
                             lastname  : rows[0].lastname,
                             sockets   : []
@@ -118,10 +118,10 @@ sio.on('connection', function (socket) {
         sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
 
-    // Retrieve the lesson. Here we can assume that the lesson exists. 
+    // Retrieve the lesson. Here we can assume that the lesson exists.
     solibSQL.getLesson(session.lessonid, function (lesson) {
         if (lesson) {
-            if (lesson.authorid == session.user.id) session.user.isTeacher = true
+            if (lesson.authorId == session.user.moodleId) session.user.isTeacher = true
             socket.emit("lesson_infos", lesson)
         }
     });

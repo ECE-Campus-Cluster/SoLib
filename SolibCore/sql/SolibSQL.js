@@ -96,9 +96,9 @@ function SolibSQL (host, database, username, password) {
                 console.log("Error on select lesson statement.\n" + err)
             else if (rows.length > 0) {
                 var lesson = {
-                    name   : rows[0].name,
-                    author : rows[0].authorid,
-                    slides : []
+                    name     : rows[0].name,
+                    authorId : rows[0].authorid,
+                    slides   : []
                 }
                 // Build slides
                 for (var s=0 ; s<rows[0].nbSlides ; s++) { // TODO change for nb of slides when db
@@ -124,7 +124,6 @@ function SolibSQL (host, database, username, password) {
                     }
                 }
             } // rows.length > 0
-
             if (callback && typeof(callback) === 'function')
                 callback(lesson)
         });
