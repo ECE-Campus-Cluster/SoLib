@@ -7,8 +7,8 @@ var http  = require('http')
 , io      = require('socket.io')
 // Solib tools
 , config        = require('./config')
-, SolibSQL      = require('./sql/SolibSQL').SolibSQL
-, SolibSessions = require('./Sessions').SolibSessions
+, SolibSQL      = require('./libs/SolibSQL').SolibSQL
+, SolibSessions = require('./libs/SocketSessions').SolibSessions
 const hashStore = 'solib_secret'
 
 solibSessions = new SolibSessions()
