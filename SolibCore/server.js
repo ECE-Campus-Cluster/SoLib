@@ -1,5 +1,4 @@
 // Node.js plugins
-//var path = require('path')
 var http  = require('http')
 , express = require('express')
 , app     = express()
@@ -8,10 +7,9 @@ var http  = require('http')
 // Solib tools
 , config         = require('./config')
 , SolibSQL       = require('./libs/SolibSQL').SolibSQL
-, SocketSessions = require('./libs/SocketSessions').SocketSessions
+, solibSessions  = require('./libs/SocketSessions').SocketSessions
 const hashStore  = 'solib_secret'
 
-solibSessions = new SocketSessions()
 solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
 /* Session & cookies express side */
@@ -78,7 +76,6 @@ app.get('/lesson', function (req, res) {
                         req.session.lesson   = lesson
                         req.session.lessonid = req.param('lesson')
                         res.render('index.html')
-                        console.log(req.session.user.lastname)
                     } else {
                         res.send(403, "Access forbidden. You must login from your Moodle.")
                     }
@@ -117,7 +114,6 @@ sio.on('connection', function (socket) {
 
     // Add the user to the connected list
     solibSessions.addUser(session.user, socket.id, function () {
-        console.log(solibSessions.connectedUsers)
         sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
 
@@ -159,10 +155,8 @@ sio.on('connection', function (socket) {
     // Disconnect event
     socket.on('disconnect', function () {
         solibSessions.removeSocket(socket.id, function (lastsocket, user) {
-            if (lastsocket) {
-                solibSessions.removeUser(user)
+            if (lastsocket)
                 socket.broadcast.emit("user_disconnected", user);
-            }
         });
     });
 });
