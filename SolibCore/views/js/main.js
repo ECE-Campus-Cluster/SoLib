@@ -86,7 +86,7 @@ function createSlidePreview (id) {
     newSlide.className  = "span12"
     newSlide.id         = id
     thumbnail.className = "thumbnail"
-    imgPreview.src      = "slide.png"
+    imgPreview.src      = "img/slide.png"
     imgPreview.width    = "55"
     var idSlide         = parseInt(newSlide.id) + 1
     title.innerHTML     = "Slide " + idSlide
