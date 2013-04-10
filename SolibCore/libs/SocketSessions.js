@@ -1,28 +1,29 @@
-// connectedUsers example
-/*
-[{  id: '3',
-    firstname: 'Thibault',
-    lasname: 'Charbonnier',
-    sockets: [ '-zyTqv8UL0xepTB_49Id', 'NpmFZ70hdupUH3GM49Ie' ],
-}]
+/**
+* A class to manage sessions of connected users with Socket.IO
+* assuming you have an id for each user. It handles different
+* sockets for each user (basically the number of opened tabs).
+*
+* @author: thibaultCha
+* @version: 1.0
 */
 
-// Good JS class template: http://labs.tomasino.org/2011/11/10/javascript-class-template/
-function SolibSessions ()
+function SocketSessions ()
 {
-	this.connectedUsers = new Array();
+	this.connectedUsers = new Array()
 
 	function __construct () {};
 
 	/**
-	* Add a user if he's new or add a socket if he already connected.
-	* @param  {user} user object
+	* Add a user if he's new or add a socket if
+	* he is already connected.
+	*
+	* method addUser
+	* @param  {user} User Object
 	* @return {Array}
 	*/
 	this.addUser = function (user, socketID, callback) {
-		var isPresent = false;
+		var isPresent = false
 		for (var i=0 ; i<this.connectedUsers.length ; i++) {
-			// Is already present so we just add the socket id
 			if (this.connectedUsers[i].id == user.id) {
 				this.connectedUsers[i].sockets.push(socketID)
 				isPresent = true
@@ -38,6 +39,8 @@ function SolibSessions ()
 
 	/**
 	* Remove a socket from a user.
+	*
+	* @method removeSocket
 	* @param  {socketID} id of the socket to remove
 	* @return {void}
 	*/
@@ -57,15 +60,19 @@ function SolibSessions ()
 
 	/**
 	* Remove a user.
+	*
+	* @method removeUser
 	* @param  {user} user object
 	* @return {void}
 	*/
-	this.removeUser = function (user) {
+	this.removeUser = function  (user, callback) {
 		for (var i=0 ; i<this.connectedUsers.length ; i++) {
 			if (this.connectedUsers[i].id == user.id)
 				this.connectedUsers.splice(i, 1)
 		}
+		if (callback && typeof(callback) === "function")
+			callback(islast, user)
 	};
 }
 
-exports.SolibSessions = SolibSessions;
+exports.SocketSessions = SocketSessions;

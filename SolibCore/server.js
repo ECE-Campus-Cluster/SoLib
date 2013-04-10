@@ -6,12 +6,12 @@ var http  = require('http')
 , ejs     = require('ejs')
 , io      = require('socket.io')
 // Solib tools
-, config        = require('./config')
-, SolibSQL      = require('./libs/SolibSQL').SolibSQL
-, SolibSessions = require('./libs/SocketSessions').SolibSessions
-const hashStore = 'solib_secret'
+, config         = require('./config')
+, SolibSQL       = require('./libs/SolibSQL').SolibSQL
+, SocketSessions = require('./libs/SocketSessions').SocketSessions
+const hashStore  = 'solib_secret'
 
-solibSessions = new SolibSessions()
+solibSessions = new SocketSessions()
 solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
 /* Session & cookies express side */
@@ -70,7 +70,7 @@ app.get('/lesson', function (req, res) {
                     if (rows.length > 0) {
                         // Connection established.
                         req.session.user = {
-                            moodleId  : rows[0].idmoodle,
+                            id  : rows[0].idmoodle,
                             firstname : rows[0].firstname,
                             lastname  : rows[0].lastname,
                             sockets   : []
@@ -78,8 +78,9 @@ app.get('/lesson', function (req, res) {
                         req.session.lesson   = lesson
                         req.session.lessonid = req.param('lesson')
                         res.render('index.html')
+                        console.log(req.session.user.lastname)
                     } else {
-                        res.send(403, "Access forbidden. You must login from your Moodle Solib activity.")
+                        res.send(403, "Access forbidden. You must login from your Moodle.")
                     }
                 });
             } else {
@@ -87,7 +88,7 @@ app.get('/lesson', function (req, res) {
             }
         });
     } else {
-        res.send(400, "Bad request. You should login from Moodle.?")
+        res.send(400, "Bad request. You must login from Moodle.")
     }
 });
 
@@ -116,12 +117,13 @@ sio.on('connection', function (socket) {
 
     // Add the user to the connected list
     solibSessions.addUser(session.user, socket.id, function () {
+        console.log(solibSessions.connectedUsers)
         sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
 
     // Send the lesson to the client
     if (session.lesson) {
-        if (session.lesson.authorId == session.user.moodleId) session.user.isTeacher = true
+        if (session.lesson.authorId == session.user.id) session.user.isTeacher = true
         socket.emit("lesson_infos", session.lesson)
     }
     
@@ -158,7 +160,7 @@ sio.on('connection', function (socket) {
     socket.on('disconnect', function () {
         solibSessions.removeSocket(socket.id, function (lastsocket, user) {
             if (lastsocket) {
-                solibSessions.removeUser(session.user)
+                solibSessions.removeUser(user)
                 socket.broadcast.emit("user_disconnected", user);
             }
         });
