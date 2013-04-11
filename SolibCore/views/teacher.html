@@ -17,47 +17,75 @@
 	 	<link rel="stylesheet" href="css/custom.css">
 	</head>
 	<body>
-		<center><h1 id="lesson_name"></h1><center>
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<div class="span2 well" id="slide-list">
-					<!-- Sidebar content //SLIDES-LIST -->
-					<ul class="thumbnails" id="slides"></ul>
-				</div>
-				<div class="span10 well">
-					<!-- Body content -->
-					<div id="toolbar" class="well">
-			      <!-- <button class="btn" id="pencil"> Pencil </button> -->
-			      	<button class="btn-success btn" id="new-slide"><i class="icon-plus icon-white"></i> New Slide</button>
-			      	<div class="btn-group">
-						<button class="btn" id="pencil">Pencil</button>
-						<button class="btn dropdown-toggle" data-toggle="dropdown">
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<!-- dropdown menu links -->
-							<li>
-								<label for="pencil_width">Pencil's width :</label>
-							    <input id="pencil_width" type="range" min="2" max="50" value="5" />
-							</li>
-						</ul>
-				    </div>
-			        <button class="btn" id="line">Line</button>
-			        <button class="btn" id="text">Text</button>
-			        <button class="btn" id="clear">Clear</button>
-			        <div class="input-append color" data-color="#333333" data-color-format="hex" id="cp3">
-						<input type="text" class="span2" id="colorpicker" value="#333333">
-						<span class="add-on"><i style="background-color: #333333"></i></span>
+		<center>
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div class="span3 well" id="course-name">
+						<!-- Course Name -->
+						<h1 id="lesson_name"></h1>
 					</div>
-			    </div>
-				<canvas id="lessonCanvas" width="900" height="450">
-					Your browser doest not support the canvas element.
-				</canvas>
+				<div class="span8 well toolbar-container">
+					<!-- // TOOLBAR -->
+					<div id="toolbar" class="well">
+			      <button class="btn-success btn" id="new-slide"><i class="icon-plus icon-white"></i> New Slide</button>
+			      <div class="btn-group">
+							<button class="btn" id="pencil">Pencil</button>
+							<button class="btn dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+							<!-- dropdown menu links -->
+								<li>
+									<label for="pencil_width">Pencil's width :</label>
+								  <input id="pencil_width" type="range" min="2" max="50" value="5" />
+								</li>
+							</ul>
+				    </div>
+				    <div class="btn-group">
+							<button class="btn btn-primary" id="rubber">Rubber</button>
+							<button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+							<!-- dropdown menu links -->
+								<li>
+								  <input id="pencil_width" type="range" min="2" max="50" value="5" />
+								</li>
+								<li class="divider"></li>
+								<li>
+									<input id="pencil_width" type="range" min="2" max="50" value="5" />
+								</li>
+							</ul>
+				    </div>
+			      <div class="input-append color" data-color="#333333" data-color-format="hex" id="cp3">
+							<input type="text" class="span2" id="colorpicker" value="#333333">
+							<span class="add-on"><i style="background-color: #333333"></i></span>
+						</div>
+						<button class="btn btn-warning" id="clear">Clear</button>
+						<button class="btn btn-danger" id="remove">Remove</button>
+				  </div>
+				</div>
 			</div>
-			<div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">
-				<h4>Connected users:</h4>
-				<table id="users"></table>
+		</center>
+		<center>
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div class="span2 well" id="slide-list">
+						<!-- Sidebar content //SLIDES-LIST -->
+						<ul class="thumbnails" id="slides"></ul>
+					</div>
+					<div class="span10 well">
+						<!-- Body content -->
+						<canvas id="lessonCanvas" width="900" height="550">
+							Your browser doest not support the canvas element.
+						</canvas>
+					</div>
+					<div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">
+						<h4>Connected users:</h4>
+						<table id="users"></table>
+					</div>
+				</div>
 			</div>
-		</div>
+		</center>
 	</body>
 </html>
