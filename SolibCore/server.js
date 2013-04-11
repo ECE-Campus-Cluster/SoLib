@@ -64,18 +64,23 @@ app.get('/lesson', function (req, res) {
     if (req.param('lesson') && req.param('user')) {
         solibSQL.getLesson(req.param('lesson'), function (lesson) {
             if (lesson) {
-                solibSQL.getUser(req.param('user'), function (rows) {
-                    if (rows.length > 0) {
-                        // Connection established.
+                solibSQL.getUser(req.param('user'), function (user) {
+                    if (user.length > 0) { // Connection established.
                         req.session.user = {
-                            id  : rows[0].idmoodle,
-                            firstname : rows[0].firstname,
-                            lastname  : rows[0].lastname,
+                            id  : user[0].idmoodle,
+                            firstname : user[0].firstname,
+                            lastname  : user[0].lastname,
                             sockets   : []
                         }
                         req.session.lesson   = lesson
                         req.session.lessonid = req.param('lesson')
-                        res.render('index.html')
+                        if (req.session.lesson.authorId == req.session.user.id) {
+                            req.session.user.isTeacher = true
+                            res.render('teacher.html')
+                        } else {
+                            req.session.user.isTeacher = false
+                            res.render('student.html')
+                        }
                     } else {
                         res.send(403, "Access forbidden. You must login from your Moodle.")
                     }
@@ -118,10 +123,7 @@ sio.on('connection', function (socket) {
     });
 
     // Send the lesson to the client
-    if (session.lesson) {
-        if (session.lesson.authorId == session.user.id) session.user.isTeacher = true
-        socket.emit("lesson_infos", session.lesson)
-    }
+    socket.emit("lesson_infos", { lesson: session.lesson, user: session.user })
     
     socket.on('new_slide', function (data) {
         var slide = {
@@ -144,12 +146,13 @@ sio.on('connection', function (socket) {
     });
 
     socket.on('new_drawing', function (drawing) {
-        if (session.user.isTeacher) {
+        // if (session.user.isTeacher) {
             drawing.idLesson = session.lessonid // Insert lesson id in object before DB insert
+            console.log(drawing)
             solibSQL.insertDrawing(drawing, function (result) {
                 socket.broadcast.emit('new_drawing', drawing)
             });
-        }
+        // }
     });
 
     // Disconnect event

@@ -7,6 +7,7 @@ function SolibClient (canvas, socket) {
 
     // Socket.IO stuff
     var _socket
+    , isTeacher = false
 
     // Canvas stuff
     var _canvas
@@ -31,12 +32,17 @@ function SolibClient (canvas, socket) {
         _socket  = socket
         _ctx     = _canvas.getContext('2d')
         _drawing = {
-            points : new Array()
+            idSlide : currentSlideId,
+            points  : new Array()
         }
         _canvas.addEventListener("mousedown", mouseDown)
         _canvas.addEventListener("mousemove", draw)
         window.addEventListener("mouseup", mouseUp)
     } __construct(canvas, socket);
+
+    this.setTeacher = function (boolean) {
+        isTeacher = boolean
+    }
 
     /**
     * Start the drawing when the mouse is pressed
@@ -46,13 +52,15 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function mouseDown (event) {
-        _ispainting      = true
-        _oldX            = event.offsetX
-        _oldY            = event.offsetY
-        _drawing.idSlide = currentSlideId
-        _drawing.color   = "#cb3494"
-        _drawing.radius  = document.getElementById('pencil_width').value
-        _drawing.points.push({ x: _oldX, y: _oldY })
+        if (isTeacher) {
+            _ispainting      = true
+            _oldX            = event.offsetX
+            _oldY            = event.offsetY
+            _drawing.idSlide = currentSlideId
+            _drawing.color   = $("#colorpicker").val()
+            _drawing.radius  = document.getElementById('pencil_width').value
+            _drawing.points.push({ x: _oldX, y: _oldY })
+        }
     } mouseDown(event);
 
     /**
@@ -107,19 +115,21 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     this.renderDrawing = function (drawing) {
-        _oldX = drawing.points[0].x
-        _oldY = drawing.points[0].y
-        for (var i=1 ; i<drawing.points.length ; i++) {
-            _ctx.beginPath()
-            _ctx.moveTo(_oldX, _oldY)
-            _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
-            _ctx.strokeStyle = drawing.color
-            _ctx.lineJoin    = "round"
-            _ctx.lineCap     = "round"
-            _ctx.lineWidth   = drawing.radius
-            _ctx.stroke()
-            _oldX = drawing.points[i].x
-            _oldY = drawing.points[i].y
+        if (drawing.points.length > 0) {
+            _oldX = drawing.points[0].x
+            _oldY = drawing.points[0].y
+            for (var i=1 ; i<drawing.points.length ; i++) {
+                _ctx.beginPath()
+                _ctx.moveTo(_oldX, _oldY)
+                _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
+                _ctx.strokeStyle = drawing.color
+                _ctx.lineJoin    = "round"
+                _ctx.lineCap     = "round"
+                _ctx.lineWidth   = drawing.radius
+                _ctx.stroke()
+                _oldX = drawing.points[i].x
+                _oldY = drawing.points[i].y
+            }
         }
     }
 
@@ -135,7 +145,8 @@ function SolibClient (canvas, socket) {
     this.renderSlide = function (slide) {
         currentSlideId = slide.id
         _ctx.clearRect(0, 0, _canvas.width, _canvas.height)
-        for (var d=0 ; d<slide.drawings.length ; d++)
+        for (var d=0 ; d<slide.drawings.length ; d++) {
             this.renderDrawing(slide.drawings[d])
+        }
     }
 }

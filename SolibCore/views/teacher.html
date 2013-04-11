@@ -7,13 +7,14 @@
 	 	<script src="/socket.io/socket.io.js"></script>
 	 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	 	<script src="js/bootstrap.min.js"></script>
-	 	<script src="js/cgscenegraph_1.4.2.min.js"></script>
+	 	<script src="js/bootstrap-colorpicker.js"></script>
 	 	<script src="js/SolibClient.js"></script>
-	 	<script src="js/SolibCGScene.js"></script>
 	 	<script src="js/main.js"></script>
+	 	<script src="js/teacher.js"></script>
 	 	
 	 	<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css"> -->
 	 	<link rel="stylesheet" href="css/bootstrap.min.css">
+	 	<link rel="stylesheet" href="css/colorpicker.css">
 	 	<link rel="stylesheet" href="css/custom.css">
 	</head>
 	<body>
@@ -45,6 +46,10 @@
 			      <button class="btn" id="line">Line</button>
 			      <button class="btn" id="text">Text</button>
 			      <button class="btn" id="clear">Clear</button>
+			      <div class="input-append color" data-color="#cb3494" data-color-format="hex" id="cp3">
+							<input type="text" class="span2" id="colorpicker" value="#cb3494">
+							<span class="add-on"><i style="background-color: #cb3494"></i></span>
+						</div>
 <!-- 			      <output class="btn" id="output">5 pixels</output>
  -->			    <!-- <div>
 			        <ul id="couleurs">
