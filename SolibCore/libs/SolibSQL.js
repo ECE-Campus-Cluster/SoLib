@@ -27,7 +27,7 @@ function SolibSQL (host, database, username, password) {
             if (err) throw err
         });
 
-        var solibsql = "sql/solib.sql"
+        var solibsql = "ressources/solib.sql"
         fs.exists(solibsql, function (exists) {
             if (exists) {
                 fs.readFile(solibsql, 'utf-8', function (error, content) {
@@ -64,7 +64,7 @@ function SolibSQL (host, database, username, password) {
     * @return {void}
     */
     this.insertLesson = function (name, author, users, access_token, creation_time, callback) {
-        _connection.query('insert into lessons(name, author, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
+        _connection.query('insert into lessons(name, authorid, access_token, creation_time) values(?, ?, ?, ?)', [name, author, access_token, creation_time], function (err, result) {
             if (err)
                 console.log("Error on insert lesson statement.\n" + err)
             else {
@@ -102,17 +102,17 @@ function SolibSQL (host, database, username, password) {
                     slides   : []
                 }
                 // Build slides
-                for (var s=0 ; s<rows[0].nbSlides ; s++) { // TODO change for nb of slides when db
-                    lesson.slides[s] = {
+                for (var s=0 ; s<rows.length ; s++) { // TODO change for nb of slides when db
+                    lesson.slides[rows[s].position] = {
                         id       : rows[s].idslide,
                         position : rows[s].position,
                         drawings : []
                     }
                     // Build drawings
                     for (var d=0 ; d<rows[0].nbDrawings ; d++) { // TODO rows[DperS].nbDrawings returning the number of drawings per slide in SQL
-                        if(lesson.slides[s].id == rows[d].idslide) {
+                        if(lesson.slides[rows[s].position].id == rows[d].idslide) {
                             var points = rows[d].points.split(';')
-                            lesson.slides[s].drawings.push({
+                            lesson.slides[rows[s].position].drawings.push({
                                 radius  : rows[d].radius,
                                 color   : rows[d].color,
                                 idSlide : rows[d].idslide,
@@ -121,8 +121,8 @@ function SolibSQL (host, database, username, password) {
                             // Build points
                             for (var j=0 ; j < points.length ; j++) {
                                 // TODO don't forget to change the drawings[0] to drawings[DperS] when Request will change and be correct.
-                                lesson.slides[s].drawings[0].points.push({ x: points[j].split(',')[0],
-                                                                           y: points[j].split(',')[1] });
+                                lesson.slides[rows[s].position].drawings[d].points.push({ x: points[j].split(',')[0]
+                                                                                         ,y: points[j].split(',')[1] });
                             }
                         }
                     }

@@ -137,7 +137,7 @@ sio.on('connection', function (socket) {
                 points   : fakePoints,
                 idLesson : session.lessonid,
                 radius   : 5,
-                color    : '#333333'
+                color    : '#ffffff'
             }
             solibSQL.insertDrawing(drawing, function (result) {
                 sio.sockets.emit('new_slide', slide) // send new slide to all clients
@@ -146,13 +146,12 @@ sio.on('connection', function (socket) {
     });
 
     socket.on('new_drawing', function (drawing) {
-        // if (session.user.isTeacher) {
+        if (session.user.isTeacher) {
             drawing.idLesson = session.lessonid // Insert lesson id in object before DB insert
-            console.log(drawing)
             solibSQL.insertDrawing(drawing, function (result) {
                 socket.broadcast.emit('new_drawing', drawing)
             });
-        // }
+        }
     });
 
     // Disconnect event

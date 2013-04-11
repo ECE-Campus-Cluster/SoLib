@@ -10,7 +10,6 @@
 	 	<script src="js/bootstrap-colorpicker.js"></script>
 	 	<script src="js/SolibClient.js"></script>
 	 	<script src="js/main.js"></script>
-	 	<script src="js/teacher.js"></script>
 	 	
 	 	<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css"> -->
 	 	<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -29,44 +28,31 @@
 					<!-- Body content -->
 					<div id="toolbar" class="well">
 			      <!-- <button class="btn" id="pencil"> Pencil </button> -->
-			      <button class="btn-success btn" id="new-slide"><i class="icon-plus icon-white"></i> New Slide</button>
-			      <div class="btn-group">
-						  <button class="btn" id="pencil">Pencil</button>
-						  <button class="btn dropdown-toggle" data-toggle="dropdown">
-						    <span class="caret"></span>
-						  </button>
-						  <ul class="dropdown-menu">
-						    <!-- dropdown menu links -->
-						    <li>
-						    	<label for="pencil_width">Pencil's width :</label>
+			      	<button class="btn-success btn" id="new-slide"><i class="icon-plus icon-white"></i> New Slide</button>
+			      	<div class="btn-group">
+						<button class="btn" id="pencil">Pencil</button>
+						<button class="btn dropdown-toggle" data-toggle="dropdown">
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<!-- dropdown menu links -->
+							<li>
+								<label for="pencil_width">Pencil's width :</label>
 							    <input id="pencil_width" type="range" min="2" max="50" value="5" />
-						    </li>
-						  </ul>
-				  </div>
-			      <button class="btn" id="line">Line</button>
-			      <button class="btn" id="text">Text</button>
-			      <button class="btn" id="clear">Clear</button>
-			      <div class="input-append color" data-color="#cb3494" data-color-format="hex" id="cp3">
-							<input type="text" class="span2" id="colorpicker" value="#cb3494">
-							<span class="add-on"><i style="background-color: #cb3494"></i></span>
-						</div>
-<!-- 			      <output class="btn" id="output">5 pixels</output>
- -->			    <!-- <div>
-			        <ul id="couleurs">
-			          <li><a href="#" data-couleur="black" class="actif"></a></li>
-			          <li><a href="#" data-couleur="white"></a></li>
-			          <li><a href="#" data-couleur="red"></a></li>
-			          <li><a href="#" data-couleur="orange"></a></li>
-			          <li><a href="#" data-couleur="green"></a></li>
-			          <li><a href="#" data-couleur="blue"></a></li>
-			          <li><a href="#" data-couleur="Violet"></a></li> 
-			        </ul>
-			      </div> -->
+							</li>
+						</ul>
+				    </div>
+			        <button class="btn" id="line">Line</button>
+			        <button class="btn" id="text">Text</button>
+			        <button class="btn" id="clear">Clear</button>
+			        <div class="input-append color" data-color="#333333" data-color-format="hex" id="cp3">
+						<input type="text" class="span2" id="colorpicker" value="#333333">
+						<span class="add-on"><i style="background-color: #333333"></i></span>
+					</div>
 			    </div>
-					<canvas id="lessonCanvas" width="900" height="450">
-						Your browser doest not support the canvas element.
-					</canvas>
-				</div>
+				<canvas id="lessonCanvas" width="900" height="450">
+					Your browser doest not support the canvas element.
+				</canvas>
 			</div>
 			<div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">
 				<h4>Connected users:</h4>

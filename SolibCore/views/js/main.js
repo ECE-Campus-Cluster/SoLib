@@ -1,22 +1,41 @@
 window.onload = function () {
     var canvas    = document.getElementById("lessonCanvas")
     , usersList   = document.getElementById("users")
-    , socket      = io.connect("http://solib.hopto.org:25000")
+    , socket      = io.connect("http://solib.hopto.org:8080")
     , solibClient = new SolibClient(canvas, socket)
     //, solibSlide = new SolibSlide(canvas)
 
     // Socket.IO events handlers
     socket.on("lesson_infos", function (data) {
         solibClient.setTeacher(data.user.isTeacher)
+        
         document.getElementById("lesson_name").innerHTML = data.lesson.name
+        
         solibClient.slidesArray = data.lesson.slides
+        
         for (var s=0 ; s<data.lesson.slides.length ; s++)
             appendToSlidesPreview(data.lesson.slides[s].id, data.lesson.slides[s].position)
-        solibClient.renderSlide(data.lesson.slides[0]) // Render first slide on loading
+        
+        // Render first slide on loading
+        solibClient.renderSlide(data.lesson.slides[0])
+        
         // Binding change current slide
         $("ul.thumbnails#slides li.span12").click(function () {
             solibClient.renderSlide(solibClient.slidesArray[$(this)[0].getAttribute("data-position")])
         });
+
+        // Teacher bindings
+        if (data.user.isTeacher) {
+            $(".dropdown-toggle").dropdown();
+            $('.color').colorpicker().on('changeColor', function (ev) {
+                bodyStyle.backgroundColor = ev.color.toHex();
+            });
+            // Add new slide
+            $("#new-slide").click(function () {
+                socket.emit("new_slide", { position: solibClient.slidesArray.length })
+                window.location.hash = solibClient.slidesArray.length
+            });
+        }
     });
 
     socket.on("list_users", function (users) {
@@ -51,6 +70,9 @@ window.onload = function () {
         appendToSlidesPreview(slide.id, solibClient.slidesArray.length - 1)
     });
 }
+
+
+
 
 /**
 * Create a slide via createSlidePreview
