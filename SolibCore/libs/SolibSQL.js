@@ -223,11 +223,11 @@ function SolibSQL (host, database, username, password) {
     *
     */
     this.removeSlide = function (idSlide, callback) {
-        _connection.query("DELETE * FROM slides where id = ?", [idSlide], function (err, result) {
+        _connection.query("DELETE FROM slides where id = ?", [idSlide], function (err, result) {
             if (err)
                 console.log("Error on delete slide statement.\n" + err)
             else if (callback && typeof(callback) === 'function')
-                callback(idSlide)
+                callback()
         });
     };
 
@@ -237,7 +237,7 @@ function SolibSQL (host, database, username, password) {
     *
     */
     this.clearSlide = function (idSlide, callback) {
-        _connection.query("DELETE * FROM drawings where idslide = ?", [idSlide], function (err, result) {
+        _connection.query("DELETE FROM drawings where idslide = ?", [idSlide], function (err, result) {
             if (err)
                 console.log("Error on clear slide statement.\n" + err)
             else if (callback && typeof(callback) === 'function')

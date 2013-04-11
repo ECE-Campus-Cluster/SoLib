@@ -51,6 +51,7 @@ function SolibClient (canvas, socket) {
     */
     function mouseDown (event) {
         if (isTeacher) {
+            _drawing.points = new Array()
             _ispainting      = true
             _oldX            = event.offsetX
             _oldY            = event.offsetY
@@ -99,9 +100,8 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
-            // this.slidesArray[$("#" + this.currentSlideId).attr("data-position")].drawings.push(_drawing)
+            _slidesArray[$("#" + _currentSlideId).attr("data-position")].drawings.push(_drawing)
             _socket.emit('new_drawing', _drawing)
-            _drawing.points = new Array()
         }
     } mouseUp(event);
 

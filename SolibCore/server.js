@@ -46,9 +46,9 @@ app.post('/newlesson', function (req, res) {
         } else {
             console.log("Inserted course '%s'", req.param('name'))
             // Insert first empty slide
-            var slide = { position : data.position }
+            var slide = { position : 0 }
             solibSQL.insertSlide(resultLesson.insertId, slide, function (slide) {
-                if (resultDrawing)
+                if (slide)
                     res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", solibcoreid: resultLesson.insertId });
             });
         }
@@ -124,6 +124,17 @@ sio.on('connection', function (socket) {
         var slide = { position : data.position }
         solibSQL.insertSlide(session.lessonid, slide, function (slide) {
             sio.sockets.emit('new_slide', slide) // send new slide to all clients
+        });
+    });
+
+    socket.on('remove_slide', function (data) {
+        solibSQL.removeSlide(data.idSlide, function () {
+            for (var i=data.position ; i<session.lesson.slides.length ; i++)
+                session.lesson.slides[i].position--
+            session.lesson.slides.splice(data.position, 1)
+            for (i=0 ; i<session.lesson.slides.length ; i++)
+                console.log(i+" "+session.lesson.slides[i].position)
+            sio.sockets.emit('remove_slide', { slides: session.lesson.slides })
         });
     });
 

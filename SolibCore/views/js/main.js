@@ -15,9 +15,12 @@ window.onload = function () {
 
         // Render first slide on loading
         solibClient.renderSlide(data.lesson.slides[0])
+        $("li[data-position=0]").attr("active", true)
 
         // Binding click on current slide
         $("ul.thumbnails#slides li.span12").click(function () {
+            $("ul.thumbnails#slides li.span12").attr("active", false)
+            $(this).attr("active", true)
             solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
         });
 
@@ -32,6 +35,10 @@ window.onload = function () {
             $("#new-slide").click(function () {
                 socket.emit("new_slide", { position: solibClient.getSlidesArray().length })
                 window.location.hash = solibClient.getSlidesArray().length
+            });
+
+            $("#remove").click(function () {
+                socket.emit("remove_slide", { idSlide: $("li[active=true]").attr("id"), position: $("li[active=true]").attr("data-position") })
             });
         }
     });
@@ -61,6 +68,21 @@ window.onload = function () {
         appendToSlidesPreview(slide.id, solibClient.getSlidesArray().length - 1)
 
         $("ul.thumbnails#slides li.span12").click(function () {
+            $("ul.thumbnails#slides li.span12").attr("active", false)
+            $(this).attr("active", true);
+            solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
+        });
+    });
+
+    socket.on("remove_slide", function (data) {
+        solibClient.setSlidesArray(data.slides)
+        $("#slides").html('')
+        for (var s=0 ; s<data.slides.length ; s++)
+            appendToSlidesPreview(data.slides[s].id, data.slides[s].position)
+        //solibClient.renderSlide(solibClient.getC)
+        $("ul.thumbnails#slides li.span12").click(function () {
+            $("ul.thumbnails#slides li.span12").attr("active", false)
+            $(this).attr("active", true);
             solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
         });
     });
@@ -94,11 +116,11 @@ function appendToSlidesPreview (id, position) {
 * @return {DOMElement} The thumbnail
 */
 function createSlidePreview (id, position) {
-    var newSlide   = document.createElement('li')
-    var thumbnail  = document.createElement('div')
-    var imgPreview = document.createElement('img')
-    var center     = document.createElement('center')
-    var title      = document.createElement('h3')
+    var newSlide    = document.createElement('li')
+    var thumbnail   = document.createElement('div')
+    var imgPreview  = document.createElement('img')
+    var center      = document.createElement('center')
+    var title       = document.createElement('h3')
 
     newSlide.className  = "span12"
     newSlide.id         = id
