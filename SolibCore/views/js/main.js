@@ -8,17 +8,17 @@ window.onload = function () {
     // Socket.IO events handlers
     socket.on("lesson_infos", function (data) {
         solibClient.setTeacher(data.user.isTeacher)
-        
+
         document.getElementById("lesson_name").innerHTML = data.lesson.name
-        
+
         solibClient.slidesArray = data.lesson.slides
-        
+
         for (var s=0 ; s<data.lesson.slides.length ; s++)
             appendToSlidesPreview(data.lesson.slides[s].id, data.lesson.slides[s].position)
-        
+
         // Render first slide on loading
         solibClient.renderSlide(data.lesson.slides[0])
-        
+
         // Binding change current slide
         $("ul.thumbnails#slides li.span12").click(function () {
             solibClient.renderSlide(solibClient.slidesArray[$(this)[0].getAttribute("data-position")])
@@ -53,22 +53,27 @@ window.onload = function () {
     });
 
     socket.on("new_drawing", function (drawing) {
-        // Drawing has been made on current slide for current user
-        if (drawing.idSlide == solibClient.currentSlideId) {
-            console.log("drawing on current slide")
+        if (drawing.idSlide == solibClient.getCurrentSlideId()) // Drawing has been made on current slide for current user
             solibClient.renderDrawing(drawing)
-        }
-        // Drawing has been made on another slide
-        else {
-            console.log("drawing on slide" + drawing.idSlide)
-            solibClient.slidesArray[drawing.idSlide].drawings.push(drawing)
-        }
+        else // Drawing has been made on another slide
+            solibClient.slidesArray[$("#" + drawing.idSlide).attr("data-position")].drawings.push(drawing)
     });
 
     socket.on("new_slide", function (slide) {
         solibClient.slidesArray.push(slide)
         appendToSlidesPreview(slide.id, solibClient.slidesArray.length - 1)
+
+        $("ul.thumbnails#slides li.span12").click(function () {
+            solibClient.renderSlide(solibClient.slidesArray[$(this)[0].getAttribute("data-position")])
+        });
     });
+
+    // $("ul.thumbnails#slides").change(function() {
+
+    //     $("ul.thumbnails#slides li.span12").click(function () {
+    //         solibClient.renderSlide(solibClient.slidesArray[$(this)[0].getAttribute("data-position")])
+    //     });
+    // });
 }
 
 

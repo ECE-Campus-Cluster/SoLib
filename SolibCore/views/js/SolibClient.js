@@ -33,16 +33,12 @@ function SolibClient (canvas, socket) {
         _ctx     = _canvas.getContext('2d')
         _drawing = {
             idSlide : currentSlideId,
-            points  : new Array()
+            points  : []
         }
         _canvas.addEventListener("mousedown", mouseDown)
         _canvas.addEventListener("mousemove", draw)
         window.addEventListener("mouseup", mouseUp)
     } __construct(canvas, socket);
-
-    this.setTeacher = function (boolean) {
-        isTeacher = boolean
-    }
 
     /**
     * Start the drawing when the mouse is pressed
@@ -137,7 +133,7 @@ function SolibClient (canvas, socket) {
     * PUBLIC METHOD
     * Render a given slide and set the currentSlideId
     * to slide param's id.
-    * 
+    *
     * @method renderSlide
     * @param {slide} The slide object from SolibLesson
     * @return {void}
@@ -148,5 +144,28 @@ function SolibClient (canvas, socket) {
         for (var d=0 ; d<slide.drawings.length ; d++) {
             this.renderDrawing(slide.drawings[d])
         }
+    }
+
+    /**
+    * PUBLIC METHOD
+    * Define user's rights
+    *
+    * @method setTeacher
+    * @param {bool} bool User is teacher
+    * @return {void}
+    */
+    this.setTeacher = function (bool) {
+        isTeacher = bool
+    }
+
+    /**
+    * PUBLIC METHOD
+    * Return current Slide ID
+    *
+    * @method getCurrentSlideId
+    * @return {int}
+    */
+    this.getCurrentSlideId = function () {
+        return currentSlideId;
     }
 }

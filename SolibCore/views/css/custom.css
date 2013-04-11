@@ -122,3 +122,11 @@ div.connected-users {
 #pencil_width {
   width: 120px;
 }
+
+.input-append.color {
+  margin-bottom: 0;
+}
+
+.input-append.color input {
+  width: 75px;
+}
