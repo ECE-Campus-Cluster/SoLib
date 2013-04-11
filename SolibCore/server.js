@@ -139,6 +139,9 @@ sio.on('connection', function (socket) {
                 radius   : 5,
                 color    : '#ffffff'
             }
+            slide.id = resultSlide.insertId
+            slide.drawings = [drawing]
+
             solibSQL.insertDrawing(drawing, function (result) {
                 sio.sockets.emit('new_slide', slide) // send new slide to all clients
             });
