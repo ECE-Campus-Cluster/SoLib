@@ -46,15 +46,10 @@ app.post('/newlesson', function (req, res) {
         } else {
             console.log("Inserted course '%s'", req.param('name'))
             // Insert first empty slide
-            solibSQL.query("insert into slides(idlesson, position) values(?, ?)", [resultLesson.insertId, 0], function (resultSlide) {
-                 // Quick fix for slide with no drawing bug. Forced to add drawing.
-                var fakePoints = [{x: 0, y: 0}]
-                solibSQL.query("insert into drawings(idlesson, idslide, points) values(?, ?, ?)", [resultLesson.insertId, resultSlide.insertId, fakePoints], function (resultDrawing) {
-                    if (resultDrawing) {
-                        res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
-                            solibcoreid: resultLesson.insertId });
-                    }
-                });
+            var slide = { position : data.position }
+            solibSQL.insertSlide(resultLesson.insertId, slide, function (slide) {
+                if (resultDrawing)
+                    res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", solibcoreid: resultLesson.insertId });
             });
         }
     });
@@ -126,25 +121,9 @@ sio.on('connection', function (socket) {
     socket.emit("lesson_infos", { lesson: session.lesson, user: session.user })
     
     socket.on('new_slide', function (data) {
-        var slide = {
-            position : data.position
-        }
-        solibSQL.insertSlide(session.lessonid, slide, function (resultSlide) {
-            // Quick fix for slide with no drawing bug. Forced to add drawing.
-            var fakePoints = [{x: 0, y: 0}]
-            var drawing = {
-                idSlide  : resultSlide.insertId,
-                points   : fakePoints,
-                idLesson : session.lessonid,
-                radius   : 5,
-                color    : '#ffffff'
-            }
-            slide.id = resultSlide.insertId
-            slide.drawings = [drawing]
-
-            solibSQL.insertDrawing(drawing, function (result) {
-                sio.sockets.emit('new_slide', slide) // send new slide to all clients
-            });
+        var slide = { position : data.position }
+        solibSQL.insertSlide(session.lessonid, slide, function (slide) {
+            sio.sockets.emit('new_slide', slide) // send new slide to all clients
         });
     });
 

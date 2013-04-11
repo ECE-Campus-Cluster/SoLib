@@ -15,8 +15,8 @@ function SolibClient (canvas, socket) {
     , _ispainting = false
     , _oldX, _oldY, _precision = SolibClient.PRECISION
     , _drawing // The drawing object to fill when a user draws on canvas
-    , slidesArray = new Array()
-    , currentSlideId
+    , _slidesArray
+    , _currentSlideId
 
     /**
     * Class constructor from canvas' id.
@@ -31,8 +31,10 @@ function SolibClient (canvas, socket) {
         _canvas  = canvas
         _socket  = socket
         _ctx     = _canvas.getContext('2d')
+        _slidesArray = new Array()
+        _currentSlideId = 0
         _drawing = {
-            idSlide : currentSlideId,
+            idSlide : _currentSlideId,
             points  : []
         }
         _canvas.addEventListener("mousedown", mouseDown)
@@ -52,7 +54,7 @@ function SolibClient (canvas, socket) {
             _ispainting      = true
             _oldX            = event.offsetX
             _oldY            = event.offsetY
-            _drawing.idSlide = currentSlideId
+            _drawing.idSlide = _currentSlideId
             _drawing.color   = $("#colorpicker").val()
             _drawing.radius  = document.getElementById('pencil_width').value
             _drawing.points.push({ x: _oldX, y: _oldY })
@@ -97,6 +99,7 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
+            // this.slidesArray[$("#" + this.currentSlideId).attr("data-position")].drawings.push(_drawing)
             _socket.emit('new_drawing', _drawing)
             _drawing.points = new Array()
         }
@@ -139,7 +142,7 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     this.renderSlide = function (slide) {
-        currentSlideId = slide.id
+        _currentSlideId = slide.id
         _ctx.clearRect(0, 0, _canvas.width, _canvas.height)
         for (var d=0 ; d<slide.drawings.length ; d++) {
             this.renderDrawing(slide.drawings[d])
@@ -166,6 +169,24 @@ function SolibClient (canvas, socket) {
     * @return {int}
     */
     this.getCurrentSlideId = function () {
-        return currentSlideId;
+        return _currentSlideId;
+    }
+
+    this.setCurrentSlideId = function (id) {
+        _currentSlideId = id
+    }
+
+    /**
+    * Return slides array
+    *
+    * @method getSlideArray
+    * @return {array}
+    */
+    this.getSlidesArray = function () {
+        return _slidesArray;
+    }
+
+    this.setSlidesArray = function (array) {
+        _slidesArray = array
     }
 }

@@ -167,11 +167,26 @@ function SolibSQL (host, database, username, password) {
     * @return {void}
     */
     this.insertSlide = function (idLesson, slide, callback) {
-        _connection.query("insert into slides(idlesson, position) values(?, ?)", [idLesson, slide.position], function (err, result) {
+        _connection.query("insert into slides(idlesson, position) values(?, ?)", [idLesson, slide.position], function (err, resultSlide) {
             if (err)
                 console.log("Error on insert slide statement.\n" + err)
-            else if (callback && typeof(callback) === 'function')
-                    callback(result)
+            else {
+                // Quick fix for slide with no drawing bug. Forced to add drawing.
+                var fakePoints = [{ x: 0, y: 0 }]
+                var fakeDrawing = {
+                    idSlide  : resultSlide.insertId,
+                    points   : fakePoints,
+                    idLesson : idLesson,
+                    radius   : 5,
+                    color    : '#ffffff'
+                }
+                slide.id = resultSlide.insertId
+                slide.drawings = new Array(fakeDrawing)
+                solibSQL.insertDrawing(fakeDrawing, function (result) {
+                    if (callback && typeof(callback) === 'function')
+                        callback(slide)
+                });
+            }
         });
     };
 
