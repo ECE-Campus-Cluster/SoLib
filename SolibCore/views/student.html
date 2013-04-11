@@ -21,15 +21,19 @@
         <div class="container-fluid">
           <div class="row-fluid">
             <div class="span2 well" id="slide-list">
-                  <!-- Sidebar content //SLIDES-LIST -->
-                  <ul class="thumbnails" id="slides"></ul>
+              <!-- Sidebar content //SLIDES-LIST -->
+              <ul class="thumbnails" id="slides"></ul>
             </div>
-            <canvas id="lessonCanvas" width="900" height="450">
-              Your browser doest not support the canvas element.
-            </canvas>
+            <div class="span10 well student">
+              <!-- Body content -->
+              <canvas id="lessonCanvas" width="900" height="550">
+                Your browser doest not support the canvas element.
+              </canvas>
+            </div>
           </div>
         </div>
         <div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">
+          <li id="chevron"><i class="icon-chevron-right icon-white"></i></li>
           <h4>Connected users:</h4>
           <table id="users"></table>
         </div>

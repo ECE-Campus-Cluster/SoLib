@@ -157,3 +157,17 @@ div.connected-users {
 li[active=true] {
   background-color:#ccc;
 }
+
+li#chevron {
+  float:left;
+  margin-left:-23px;
+  list-style: none;
+}
+
+li.rubber-size {
+  cursor: pointer;
+}
+
+.span10.well.student {
+  padding-left:50px;
+}

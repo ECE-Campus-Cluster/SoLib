@@ -20,7 +20,7 @@
 		<center>
 			<div class="container-fluid">
 				<div class="row-fluid">
-					<div class="span3 well" id="course-name">
+					<div class="span4 well" id="course-name">
 						<!-- Course Name -->
 						<h1 id="lesson_name"></h1>
 					</div>
@@ -48,12 +48,16 @@
 							</button>
 							<ul class="dropdown-menu">
 							<!-- dropdown menu links -->
-								<li>
-								  <input id="pencil_width" type="range" min="2" max="50" value="5" />
+								<li class="rubber-size" id="small">
+								  <img src="img/small.png"/>
+								</li>
+								<li class="divider" id="medium"></li>
+								<li class="rubber-size">
+								  <img src="img/medium.png"/>
 								</li>
 								<li class="divider"></li>
-								<li>
-									<input id="pencil_width" type="range" min="2" max="50" value="5" />
+								<li class="rubber-size" id="big">
+								  <img src="img/big.png"/>
 								</li>
 							</ul>
 				    </div>
@@ -81,6 +85,7 @@
 						</canvas>
 					</div>
 					<div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">
+						<li id="chevron"><i class="icon-chevron-right icon-white"></i></li>
 						<h4>Connected users:</h4>
 						<table id="users"></table>
 					</div>
