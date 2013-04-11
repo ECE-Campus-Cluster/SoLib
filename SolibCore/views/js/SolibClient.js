@@ -15,8 +15,8 @@ function SolibClient (canvas, socket) {
     , _ispainting = false
     , _oldX, _oldY, _precision = SolibClient.PRECISION
     , _drawing // The drawing object to fill when a user draws on canvas
-    , _slidesArray
-    , _currentSlideId
+    , slidesArray = new Array()
+    , currentSlideId
 
     /**
     * Class constructor from canvas' id.
@@ -31,16 +31,18 @@ function SolibClient (canvas, socket) {
         _canvas  = canvas
         _socket  = socket
         _ctx     = _canvas.getContext('2d')
-        _slidesArray = new Array()
-        _currentSlideId = 0
         _drawing = {
-            idSlide : _currentSlideId,
-            points  : []
+            idSlide : currentSlideId,
+            points  : new Array()
         }
         _canvas.addEventListener("mousedown", mouseDown)
         _canvas.addEventListener("mousemove", draw)
         window.addEventListener("mouseup", mouseUp)
     } __construct(canvas, socket);
+
+    this.setTeacher = function (boolean) {
+        isTeacher = boolean
+    }
 
     /**
     * Start the drawing when the mouse is pressed
@@ -54,7 +56,7 @@ function SolibClient (canvas, socket) {
             _ispainting      = true
             _oldX            = event.offsetX
             _oldY            = event.offsetY
-            _drawing.idSlide = _currentSlideId
+            _drawing.idSlide = currentSlideId
             _drawing.color   = $("#colorpicker").val()
             _drawing.radius  = document.getElementById('pencil_width').value
             _drawing.points.push({ x: _oldX, y: _oldY })
@@ -99,7 +101,6 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
-            // this.slidesArray[$("#" + this.currentSlideId).attr("data-position")].drawings.push(_drawing)
             _socket.emit('new_drawing', _drawing)
             _drawing.points = new Array()
         }
@@ -136,57 +137,16 @@ function SolibClient (canvas, socket) {
     * PUBLIC METHOD
     * Render a given slide and set the currentSlideId
     * to slide param's id.
-    *
+    * 
     * @method renderSlide
     * @param {slide} The slide object from SolibLesson
     * @return {void}
     */
     this.renderSlide = function (slide) {
-        _currentSlideId = slide.id
+        currentSlideId = slide.id
         _ctx.clearRect(0, 0, _canvas.width, _canvas.height)
         for (var d=0 ; d<slide.drawings.length ; d++) {
             this.renderDrawing(slide.drawings[d])
         }
-    }
-
-    /**
-    * PUBLIC METHOD
-    * Define user's rights
-    *
-    * @method setTeacher
-    * @param {bool} bool User is teacher
-    * @return {void}
-    */
-    this.setTeacher = function (bool) {
-        isTeacher = bool
-    }
-
-    /**
-    * PUBLIC METHOD
-    * Return current Slide ID
-    *
-    * @method getCurrentSlideId
-    * @return {int}
-    */
-    this.getCurrentSlideId = function () {
-        return _currentSlideId;
-    }
-
-    this.setCurrentSlideId = function (id) {
-        _currentSlideId = id
-    }
-
-    /**
-    * Return slides array
-    *
-    * @method getSlideArray
-    * @return {array}
-    */
-    this.getSlidesArray = function () {
-        return _slidesArray;
-    }
-
-    this.setSlidesArray = function (array) {
-        _slidesArray = array
     }
 }
