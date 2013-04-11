@@ -109,18 +109,21 @@ function SolibSQL (host, database, username, password) {
                         drawings : []
                     }
                     // Build drawings
-                    for (var d=0 ; d<rows[0].nbDrawings ; d++) {
-                        var points = rows[d].points.split(';')
-                        lesson.slides[s].drawings[d] = {
-                            radius  : rows[d].radius,
-                            color   : rows[d].color,
-                            idSlide : rows[s].idslide,
-                            points  : []
-                        } 
-                        // Build points
-                        for (var j=0 ; j<points.length ; j++) {
-                            lesson.slides[s].drawings[d].points.push({ x: points[j].split(',')[0], 
-                                                                       y: points[j].split(',')[1] });
+                    for (var d=0 ; d<rows[0].nbDrawings ; d++) { // TODO rows[DperS].nbDrawings returning the number of drawings per slide in SQL
+                        if(lesson.slides[s].id == rows[d].idslide) {
+                            var points = rows[d].points.split(';')
+                            lesson.slides[s].drawings.push({
+                                radius  : rows[d].radius,
+                                color   : rows[d].color,
+                                idSlide : rows[d].idslide,
+                                points  : []
+                            })
+                            // Build points
+                            for (var j=0 ; j < points.length ; j++) {
+                                // TODO don't forget to change the drawings[0] to drawings[DperS] when Request will change and be correct.
+                                lesson.slides[s].drawings[0].points.push({ x: points[j].split(',')[0],
+                                                                           y: points[j].split(',')[1] });
+                            }
                         }
                     }
                 }
