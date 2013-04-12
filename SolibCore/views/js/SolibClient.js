@@ -106,7 +106,7 @@ function SolibClient (canvas, socket) {
         if (_ispainting) {
             _ispainting = false
             _slidesArray[$("#" + _currentSlideId).attr("data-position")].drawings.push(_drawing)
-            _socket.emit('new_drawing', _drawing)
+            _socket.emit('new_drawing', { drawing: _drawing, slideposition: $("#" + _currentSlideId).attr("data-position") })
         }
     } mouseUp(event);
 

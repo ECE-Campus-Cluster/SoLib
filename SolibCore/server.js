@@ -123,26 +123,35 @@ sio.on('connection', function (socket) {
     socket.on('new_slide', function (data) {
         var slide = { position : data.position }
         solibSQL.insertSlide(session.lessonid, slide, function (slide) {
+            session.lesson.slides.push(slide)
             sio.sockets.emit('new_slide', slide) // send new slide to all clients
+        });
+    });
+
+    socket.on('clear_slide', function (data) {
+        solibSQL.clearSlide(data.idSlide, session.lessonid, function () {
+            sio.sockets.emit('clear_slide', { idSlide: data.idSlide })
         });
     });
 
     socket.on('remove_slide', function (data) {
         solibSQL.removeSlide(data.idSlide, function () {
-            for (var i=data.position ; i<session.lesson.slides.length ; i++)
+            for (var i=session.lesson.slides.length-1 ; i>data.position ; i--) {
                 session.lesson.slides[i].position--
+                var pos = session.lesson.slides[i].position
+                solibSQL.query("update slides set position = ? where id = ?", [pos, session.lesson.slides[i].id])
+            }
             session.lesson.slides.splice(data.position, 1)
-            for (i=0 ; i<session.lesson.slides.length ; i++)
-                console.log(i+" "+session.lesson.slides[i].position)
-            sio.sockets.emit('remove_slide', { slides: session.lesson.slides })
+            sio.sockets.emit('remove_slide', { slides: session.lesson.slides, idSlide: data.idSlide })
         });
     });
 
-    socket.on('new_drawing', function (drawing) {
+    socket.on('new_drawing', function (data) {
         if (session.user.isTeacher) {
-            drawing.idLesson = session.lessonid // Insert lesson id in object before DB insert
-            solibSQL.insertDrawing(drawing, function (result) {
-                socket.broadcast.emit('new_drawing', drawing)
+            data.drawing.idLesson = session.lessonid // Insert lesson id in object before DB insert
+            solibSQL.insertDrawing(data.drawing, function (result) {
+                session.lesson.slides[data.slideposition].drawings.push(data.drawing)
+                socket.broadcast.emit('new_drawing', data.drawing)
             });
         }
     });

@@ -27,18 +27,34 @@ window.onload = function () {
         // Teacher stuff
         solibClient.setTeacher(data.user.isTeacher)
         if (data.user.isTeacher) {
-            $(".dropdown-toggle").dropdown();
+            $(".dropdown-toggle").dropdown()
             $('.color').colorpicker().on('changeColor', function (ev) {
                 bodyStyle.backgroundColor = ev.color.toHex();
             });
             // Add new slide
             $("#new-slide").click(function () {
                 socket.emit("new_slide", { position: solibClient.getSlidesArray().length })
-                window.location.hash = solibClient.getSlidesArray().length
             });
-
+            // Clear slide
+            $("#clear").click(function () {
+                socket.emit("clear_slide", { idSlide: $("li[active=true]").attr("id") })
+            });
+            // Remove slide
             $("#remove").click(function () {
                 socket.emit("remove_slide", { idSlide: $("li[active=true]").attr("id"), position: $("li[active=true]").attr("data-position") })
+            });
+            $("#rubber").click(function () {
+                $('#colorpicker').attr("value", "#ffffff")
+                $("#color").css({ "background-color": "#ffffff" })
+            });
+            $("#small").click(function () {
+                $("#pencil_width").attr("value", "2")
+            });
+            $("#medium").click(function () {
+                $("#pencil_width").attr("value", "20")
+            });
+            $("#big").click(function () {
+                $("#pencil_width").attr("value", "50")
             });
         }
     });
@@ -74,12 +90,17 @@ window.onload = function () {
         });
     });
 
+    socket.on("clear_slide", function (data) {
+        solibClient.getSlidesArray()[$("#" + data.idSlide).attr("data-position")].drawings = []
+        if (solibClient.getCurrentSlideId() == data.idSlide)
+            solibClient.renderSlide(solibClient.getSlidesArray()[$("#" + data.idSlide).attr("data-position")])
+    });
+
     socket.on("remove_slide", function (data) {
         solibClient.setSlidesArray(data.slides)
         $("#slides").html('')
         for (var s=0 ; s<data.slides.length ; s++)
             appendToSlidesPreview(data.slides[s].id, data.slides[s].position)
-        //solibClient.renderSlide(solibClient.getC)
         $("ul.thumbnails#slides li.span12").click(function () {
             $("ul.thumbnails#slides li.span12").attr("active", false)
             $(this).attr("active", true);
