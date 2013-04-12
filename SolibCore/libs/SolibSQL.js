@@ -236,12 +236,25 @@ function SolibSQL (host, database, username, password) {
     *
     *
     */
-    this.clearSlide = function (idSlide, callback) {
+    this.clearSlide = function (idSlide, idLesson, callback) {
         _connection.query("DELETE FROM drawings where idslide = ?", [idSlide], function (err, result) {
             if (err)
                 console.log("Error on clear slide statement.\n" + err)
-            else if (callback && typeof(callback) === 'function')
-                callback(idSlide)
+            else {
+                // Quick fix for slide with no drawing bug. Forced to add drawing.
+                var fakePoints = [{ x: 0, y: 0 }]
+                var fakeDrawing = {
+                    idSlide  : idSlide,
+                    points   : fakePoints,
+                    idLesson : idLesson,
+                    radius   : 5,
+                    color    : '#ffffff'
+                }
+                solibSQL.insertDrawing(fakeDrawing, function (result) {
+                    if (callback && typeof(callback) === 'function')
+                        callback()
+                });
+            }
         });
     };
 

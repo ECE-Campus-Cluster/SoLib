@@ -36,6 +36,10 @@ window.onload = function () {
                 socket.emit("new_slide", { position: solibClient.getSlidesArray().length })
                 window.location.hash = solibClient.getSlidesArray().length
             });
+            // Clear slide
+            $("#clear").click(function () {
+                socket.emit("clear_slide", { idSlide: $("li[active=true]").attr("id") })
+            });
             // Remove slide
             $("#remove").click(function () {
                 socket.emit("remove_slide", { idSlide: $("li[active=true]").attr("id"), position: $("li[active=true]").attr("data-position") })
@@ -85,6 +89,12 @@ window.onload = function () {
             $(this).attr("active", true);
             solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
         });
+    });
+
+    socket.on("clear_slide", function (data) {
+        solibClient.getSlidesArray()[$("#" + data.idSlide).attr("data-position")].drawings = []
+        if (solibClient.getCurrentSlideId() == data.idSlide)
+            solibClient.renderSlide(solibClient.getSlidesArray()[$("#" + data.idSlide).attr("data-position")])
     });
 
     socket.on("remove_slide", function (data) {

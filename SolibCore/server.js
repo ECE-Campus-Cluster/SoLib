@@ -127,6 +127,12 @@ sio.on('connection', function (socket) {
         });
     });
 
+    socket.on('clear_slide', function (data) {
+        solibSQL.clearSlide(data.idSlide, session.lessonid, function () {
+            sio.sockets.emit('clear_slide', { idSlide: data.idSlide })
+        });
+    });
+
     socket.on('remove_slide', function (data) {
         solibSQL.removeSlide(data.idSlide, function () {
             for (var i=data.position ; i<session.lesson.slides.length ; i++)
