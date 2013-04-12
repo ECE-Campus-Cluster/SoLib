@@ -1,5 +1,5 @@
 /**
-* A class to manage sessions of connected users with Socket.IO
+* A class to manage sessions of connected users with Socket.IO,
 * assuming you have an id for each user. It handles different
 * sockets for each user (basically the number of opened tabs).
 *
@@ -15,9 +15,9 @@ function SocketSessions ()
 
 	/**
 	* Add a user if he's new or add a socket if
-	* he is already connected.
+	* he's already connected.
 	*
-	* method addUser
+	* @method addUser
 	* @param  {user} User Object
 	* @return {Array}
 	*/
@@ -34,11 +34,12 @@ function SocketSessions ()
 			this.connectedUsers.push(user)
 		}
 		if (callback && typeof(callback) === "function")
-			callback(user)
+			callback()
 	};
 
 	/**
-	* Remove a socket from a user.
+	* Remove a socket from a user. Remove the user too if
+	* his latest socket has been removed. 
 	*
 	* @method removeSocket
 	* @param  {socketID} id of the socket to remove
@@ -49,11 +50,13 @@ function SocketSessions ()
 			for (var j=0 ; j<this.connectedUsers[i].sockets.length ; j++) {
 				if (this.connectedUsers[i].sockets[j] == socketID) {
 					this.connectedUsers[i].sockets.splice(j, 1)
-					var islast = !this.connectedUsers[i].sockets.length > 0;
-					var user   = this.connectedUsers[i];
+					var islast = !this.connectedUsers[i].sockets.length > 0
+					var user   = this.connectedUsers[i]
 				}
 			}
 		}
+		if (islast)
+			this.removeUser(user)
 		if (callback && typeof(callback) === "function")
 			callback(islast, user)
 	};
@@ -65,14 +68,12 @@ function SocketSessions ()
 	* @param  {user} user object
 	* @return {void}
 	*/
-	this.removeUser = function  (user, callback) {
+	this.removeUser = function (user) {
 		for (var i=0 ; i<this.connectedUsers.length ; i++) {
 			if (this.connectedUsers[i].id == user.id)
 				this.connectedUsers.splice(i, 1)
 		}
-		if (callback && typeof(callback) === "function")
-			callback(islast, user)
 	};
 }
 
-exports.SocketSessions = SocketSessions;
+exports.SocketSessions = new SocketSessions()

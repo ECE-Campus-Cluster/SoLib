@@ -1,5 +1,4 @@
 // Node.js plugins
-//var path = require('path')
 var http  = require('http')
 , express = require('express')
 , app     = express()
@@ -8,10 +7,9 @@ var http  = require('http')
 // Solib tools
 , config         = require('./config')
 , SolibSQL       = require('./libs/SolibSQL').SolibSQL
-, SocketSessions = require('./libs/SocketSessions').SocketSessions
+, solibSessions  = require('./libs/SocketSessions').SocketSessions
 const hashStore  = 'solib_secret'
 
-solibSessions = new SocketSessions()
 solibSQL = new SolibSQL(config.DBHOST, config.DBNAME, config.DBUSERNAME, config.DBPASSWORD)
 
 /* Session & cookies express side */
@@ -48,15 +46,10 @@ app.post('/newlesson', function (req, res) {
         } else {
             console.log("Inserted course '%s'", req.param('name'))
             // Insert first empty slide
-            solibSQL.query("insert into slides(idlesson, position) values(?, ?)", [resultLesson.insertId, 0], function (resultSlide) {
-                 // Quick fix for slide with no drawing bug. Forced to add drawing.
-                var fakePoints = [{x: 0, y: 0}]
-                solibSQL.query("insert into drawings(idlesson, idslide, points) values(?, ?, ?)", [resultLesson.insertId, resultSlide.insertId, fakePoints], function (resultDrawing) {
-                    if (resultDrawing) {
-                        res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", 
-                            solibcoreid: resultLesson.insertId });
-                    }
-                });
+            var slide = { position : 0 }
+            solibSQL.insertSlide(resultLesson.insertId, slide, function (slide) {
+                if (slide)
+                    res.send(200, { text: "SolibCore: insterted course '" + req.param('name') + "'.", solibcoreid: resultLesson.insertId });
             });
         }
     });
@@ -66,19 +59,23 @@ app.get('/lesson', function (req, res) {
     if (req.param('lesson') && req.param('user')) {
         solibSQL.getLesson(req.param('lesson'), function (lesson) {
             if (lesson) {
-                solibSQL.getUser(req.param('user'), function (rows) {
-                    if (rows.length > 0) {
-                        // Connection established.
+                solibSQL.getUser(req.param('user'), function (user) {
+                    if (user.length > 0) { // Connection established.
                         req.session.user = {
-                            id  : rows[0].idmoodle,
-                            firstname : rows[0].firstname,
-                            lastname  : rows[0].lastname,
+                            id  : user[0].idmoodle,
+                            firstname : user[0].firstname,
+                            lastname  : user[0].lastname,
                             sockets   : []
                         }
                         req.session.lesson   = lesson
                         req.session.lessonid = req.param('lesson')
-                        res.render('index.html')
-                        console.log(req.session.user.lastname)
+                        if (req.session.lesson.authorId == req.session.user.id) {
+                            req.session.user.isTeacher = true
+                            res.render('teacher.html')
+                        } else {
+                            req.session.user.isTeacher = false
+                            res.render('student.html')
+                        }
                     } else {
                         res.send(403, "Access forbidden. You must login from your Moodle.")
                     }
@@ -117,33 +114,27 @@ sio.on('connection', function (socket) {
 
     // Add the user to the connected list
     solibSessions.addUser(session.user, socket.id, function () {
-        console.log(solibSessions.connectedUsers)
         sio.sockets.emit("list_users", solibSessions.connectedUsers); // send to all clients
     });
 
     // Send the lesson to the client
-    if (session.lesson) {
-        if (session.lesson.authorId == session.user.id) session.user.isTeacher = true
-        socket.emit("lesson_infos", session.lesson)
-    }
+    socket.emit("lesson_infos", { lesson: session.lesson, user: session.user })
     
     socket.on('new_slide', function (data) {
-        var slide = {
-            position : data.position
-        }
-        solibSQL.insertSlide(session.lessonid, slide, function (resultSlide) {
-            // Quick fix for slide with no drawing bug. Forced to add drawing.
-            var fakePoints = [{x: 0, y: 0}]
-            var drawing = {
-                idSlide  : resultSlide.insertId,
-                points   : fakePoints,
-                idLesson : session.lessonid,
-                radius   : 5,
-                color    : '#333333'
-            }
-            solibSQL.insertDrawing(drawing, function (result) {
-                sio.sockets.emit('new_slide', slide) // send new slide to all clients
-            });
+        var slide = { position : data.position }
+        solibSQL.insertSlide(session.lessonid, slide, function (slide) {
+            sio.sockets.emit('new_slide', slide) // send new slide to all clients
+        });
+    });
+
+    socket.on('remove_slide', function (data) {
+        solibSQL.removeSlide(data.idSlide, function () {
+            for (var i=data.position ; i<session.lesson.slides.length ; i++)
+                session.lesson.slides[i].position--
+            session.lesson.slides.splice(data.position, 1)
+            for (i=0 ; i<session.lesson.slides.length ; i++)
+                console.log(i+" "+session.lesson.slides[i].position)
+            sio.sockets.emit('remove_slide', { slides: session.lesson.slides })
         });
     });
 
@@ -159,10 +150,8 @@ sio.on('connection', function (socket) {
     // Disconnect event
     socket.on('disconnect', function () {
         solibSessions.removeSocket(socket.id, function (lastsocket, user) {
-            if (lastsocket) {
-                solibSessions.removeUser(user)
+            if (lastsocket)
                 socket.broadcast.emit("user_disconnected", user);
-            }
         });
     });
 });

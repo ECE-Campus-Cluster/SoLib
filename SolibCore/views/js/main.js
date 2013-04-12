@@ -1,17 +1,46 @@
 window.onload = function () {
-    var canvas     = document.getElementById("lessonCanvas")
-    , usersList    = document.getElementById("users")
-    , socket       = io.connect("http://solib.hopto.org:8080")
-    , solibClient  = new SolibClient(canvas, socket)
+    var canvas    = document.getElementById("lessonCanvas")
+    , usersList   = document.getElementById("users")
+    , socket      = io.connect("http://solib.hopto.org:8080")
+    , solibClient = new SolibClient(canvas, socket)
     //, solibSlide = new SolibSlide(canvas)
 
     // Socket.IO events handlers
-    socket.on("lesson_infos", function (lesson) {
-        document.getElementById("lesson_name").innerHTML = lesson.name
-        solibClient.slidesArray = lesson.slides
-        for (var s=0 ; s<lesson.slides.length ; s++)
-            appendToSlidesPreview(s)
-        solibClient.renderSlide(lesson.slides[0]) // Render first slide on loading
+    socket.on("lesson_infos", function (data) {
+        document.getElementById("lesson_name").innerHTML = data.lesson.name
+        solibClient.setSlidesArray(data.lesson.slides)
+
+        for (var s=0 ; s<data.lesson.slides.length ; s++)
+            appendToSlidesPreview(data.lesson.slides[s].id, data.lesson.slides[s].position)
+
+        // Render first slide on loading
+        solibClient.renderSlide(data.lesson.slides[0])
+        $("li[data-position=0]").attr("active", true)
+
+        // Binding click on current slide
+        $("ul.thumbnails#slides li.span12").click(function () {
+            $("ul.thumbnails#slides li.span12").attr("active", false)
+            $(this).attr("active", true)
+            solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
+        });
+
+        // Teacher stuff
+        solibClient.setTeacher(data.user.isTeacher)
+        if (data.user.isTeacher) {
+            $(".dropdown-toggle").dropdown();
+            $('.color').colorpicker().on('changeColor', function (ev) {
+                bodyStyle.backgroundColor = ev.color.toHex();
+            });
+            // Add new slide
+            $("#new-slide").click(function () {
+                socket.emit("new_slide", { position: solibClient.getSlidesArray().length })
+                window.location.hash = solibClient.getSlidesArray().length
+            });
+
+            $("#remove").click(function () {
+                socket.emit("remove_slide", { idSlide: $("li[active=true]").attr("id"), position: $("li[active=true]").attr("data-position") })
+            });
+        }
     });
 
     socket.on("list_users", function (users) {
@@ -29,34 +58,45 @@ window.onload = function () {
     });
 
     socket.on("new_drawing", function (drawing) {
-        // TODO add idSlide to drawing object
-        // Drawing has been made on current slide for current user
-        //if (drawing.idSlide == solibClient.currentSlideId)
+        if (drawing.idSlide == solibClient.getCurrentSlideId()) // Render drawing on current slide
             solibClient.renderDrawing(drawing)
-        // Drawing has been made on another slide
-        //else solibClient.slidesArray[drawing.idSlide].drawings.push(drawing)
+        solibClient.getSlidesArray()[$("#" + drawing.idSlide).attr("data-position")].drawings.push(drawing)
     });
 
     socket.on("new_slide", function (slide) {
-        solibClient.slidesArray.push(slide)
-        appendToSlidesPreview(solibClient.slidesArray.length - 1)
+        solibClient.getSlidesArray().push(slide)
+        appendToSlidesPreview(slide.id, solibClient.getSlidesArray().length - 1)
+
+        $("ul.thumbnails#slides li.span12").click(function () {
+            $("ul.thumbnails#slides li.span12").attr("active", false)
+            $(this).attr("active", true);
+            solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
+        });
     });
 
-    // Dropdown menu
-    $(".dropdown-toggle").dropdown();
-
-    // Add new slide
-    $("#new-slide").click(function () {
-        socket.emit("new_slide", { position: solibClient.slidesArray.length })
-        window.location.hash = solibClient.slidesArray.length
+    socket.on("remove_slide", function (data) {
+        solibClient.setSlidesArray(data.slides)
+        $("#slides").html('')
+        for (var s=0 ; s<data.slides.length ; s++)
+            appendToSlidesPreview(data.slides[s].id, data.slides[s].position)
+        //solibClient.renderSlide(solibClient.getC)
+        $("ul.thumbnails#slides li.span12").click(function () {
+            $("ul.thumbnails#slides li.span12").attr("active", false)
+            $(this).attr("active", true);
+            solibClient.renderSlide(solibClient.getSlidesArray()[$(this)[0].getAttribute("data-position")])
+        });
     });
 
-    // Change current slide
-    $(".thumbnail").click(function () {
-        console.log('slide click')
-        solibClient.renderSlide(solibClient.slidesArray[$(this).id])
-    });
+    // $("ul.thumbnails#slides").change(function() {
+
+    //     $("ul.thumbnails#slides li.span12").click(function () {
+    //         solibClient.renderSlide(solibClient.slidesArray[$(this)[0].getAttribute("data-position")])
+    //     });
+    // });
 }
+
+
+
 
 /**
 * Create a slide via createSlidePreview
@@ -65,9 +105,8 @@ window.onload = function () {
 * @param {int} id The slide id from DB, who will be the DOMElement id.
 * @return {void}
 */
-function appendToSlidesPreview (id) {
-    var newSlide = createSlidePreview(id)
-    document.getElementById('slides').appendChild(createSlidePreview(id))
+function appendToSlidesPreview (id, position) {
+    $('#slides').append(createSlidePreview(id, position))
 }
 
 /**
@@ -76,19 +115,20 @@ function appendToSlidesPreview (id) {
 * @param {int} id The id of the created element corresponding to the true slide id
 * @return {DOMElement} The thumbnail
 */
-function createSlidePreview (id) {
-    var newSlide   = document.createElement('li')
-    var thumbnail  = document.createElement('div')
-    var imgPreview = document.createElement('img')
-    var center     = document.createElement('center')
-    var title      = document.createElement('h3')
+function createSlidePreview (id, position) {
+    var newSlide    = document.createElement('li')
+    var thumbnail   = document.createElement('div')
+    var imgPreview  = document.createElement('img')
+    var center      = document.createElement('center')
+    var title       = document.createElement('h3')
 
     newSlide.className  = "span12"
     newSlide.id         = id
+    newSlide.setAttribute("data-position",position)
     thumbnail.className = "thumbnail"
     imgPreview.src      = "img/slide.png"
     imgPreview.width    = "55"
-    var idSlide         = parseInt(newSlide.id) + 1
+    var idSlide         = parseInt(newSlide.getAttribute("data-position")) + 1
     title.innerHTML     = "Slide " + idSlide
 
     center.appendChild(title)

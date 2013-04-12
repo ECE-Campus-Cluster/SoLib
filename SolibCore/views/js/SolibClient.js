@@ -7,6 +7,7 @@ function SolibClient (canvas, socket) {
 
     // Socket.IO stuff
     var _socket
+    , isTeacher = false
 
     // Canvas stuff
     var _canvas
@@ -14,8 +15,8 @@ function SolibClient (canvas, socket) {
     , _ispainting = false
     , _oldX, _oldY, _precision = SolibClient.PRECISION
     , _drawing // The drawing object to fill when a user draws on canvas
-    , slidesArray = new Array()
-    , currentSlideId
+    , _slidesArray
+    , _currentSlideId
 
     /**
     * Class constructor from canvas' id.
@@ -30,8 +31,11 @@ function SolibClient (canvas, socket) {
         _canvas  = canvas
         _socket  = socket
         _ctx     = _canvas.getContext('2d')
+        _slidesArray = new Array()
+        _currentSlideId = 0
         _drawing = {
-            points : new Array()
+            idSlide : _currentSlideId,
+            points  : []
         }
         _canvas.addEventListener("mousedown", mouseDown)
         _canvas.addEventListener("mousemove", draw)
@@ -46,13 +50,21 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     function mouseDown (event) {
-        _ispainting      = true
-        _oldX            = event.offsetX
-        _oldY            = event.offsetY
-        _drawing.idSlide = currentSlideId
-        _drawing.color   = "#cb3494"
-        _drawing.radius  = document.getElementById('pencil_width').value
-        _drawing.points.push({ x: _oldX, y: _oldY })
+        if (isTeacher) {
+            // ugly thing to fix last bug
+            _drawing = {
+                idSlide : _currentSlideId,
+                points  : []
+            }
+            _ispainting      = true
+            _oldX            = event.offsetX
+            _oldY            = event.offsetY
+            _drawing.idSlide = _currentSlideId
+            _drawing.color   = $("#colorpicker").val()
+            _drawing.radius  = document.getElementById('pencil_width').value
+            _drawing.points.splice(0, _drawing.points.length)
+            _drawing.points.push({ x: _oldX, y: _oldY })
+        }
     } mouseDown(event);
 
     /**
@@ -93,8 +105,8 @@ function SolibClient (canvas, socket) {
     function mouseUp (event) {
         if (_ispainting) {
             _ispainting = false
+            _slidesArray[$("#" + _currentSlideId).attr("data-position")].drawings.push(_drawing)
             _socket.emit('new_drawing', _drawing)
-            _drawing.points = new Array()
         }
     } mouseUp(event);
 
@@ -107,19 +119,21 @@ function SolibClient (canvas, socket) {
     * @return {void}
     */
     this.renderDrawing = function (drawing) {
-        _oldX = drawing.points[0].x
-        _oldY = drawing.points[0].y
-        for (var i=1 ; i<drawing.points.length ; i++) {
-            _ctx.beginPath()
-            _ctx.moveTo(_oldX, _oldY)
-            _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
-            _ctx.strokeStyle = drawing.color
-            _ctx.lineJoin    = "round"
-            _ctx.lineCap     = "round"
-            _ctx.lineWidth   = drawing.radius
-            _ctx.stroke()
-            _oldX = drawing.points[i].x
-            _oldY = drawing.points[i].y
+        if (drawing.points.length > 0) {
+            _oldX = drawing.points[0].x
+            _oldY = drawing.points[0].y
+            for (var i=1 ; i<drawing.points.length ; i++) {
+                _ctx.beginPath()
+                _ctx.moveTo(_oldX, _oldY)
+                _ctx.lineTo(drawing.points[i].x, drawing.points[i].y)
+                _ctx.strokeStyle = drawing.color
+                _ctx.lineJoin    = "round"
+                _ctx.lineCap     = "round"
+                _ctx.lineWidth   = drawing.radius
+                _ctx.stroke()
+                _oldX = drawing.points[i].x
+                _oldY = drawing.points[i].y
+            }
         }
     }
 
@@ -127,15 +141,57 @@ function SolibClient (canvas, socket) {
     * PUBLIC METHOD
     * Render a given slide and set the currentSlideId
     * to slide param's id.
-    * 
+    *
     * @method renderSlide
     * @param {slide} The slide object from SolibLesson
     * @return {void}
     */
     this.renderSlide = function (slide) {
-        currentSlideId = slide.id
+        _currentSlideId = slide.id
         _ctx.clearRect(0, 0, _canvas.width, _canvas.height)
-        for (var d=0 ; d<slide.drawings.length ; d++)
+        for (var d=0 ; d<slide.drawings.length ; d++) {
             this.renderDrawing(slide.drawings[d])
+        }
+    }
+
+    /**
+    * PUBLIC METHOD
+    * Define user's rights
+    *
+    * @method setTeacher
+    * @param {bool} bool User is teacher
+    * @return {void}
+    */
+    this.setTeacher = function (bool) {
+        isTeacher = bool
+    }
+
+    /**
+    * PUBLIC METHOD
+    * Return current Slide ID
+    *
+    * @method getCurrentSlideId
+    * @return {int}
+    */
+    this.getCurrentSlideId = function () {
+        return _currentSlideId;
+    }
+
+    this.setCurrentSlideId = function (id) {
+        _currentSlideId = id
+    }
+
+    /**
+    * Return slides array
+    *
+    * @method getSlideArray
+    * @return {array}
+    */
+    this.getSlidesArray = function () {
+        return _slidesArray;
+    }
+
+    this.setSlidesArray = function (array) {
+        _slidesArray = array
     }
 }

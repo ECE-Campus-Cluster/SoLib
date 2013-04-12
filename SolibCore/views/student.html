@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+       <meta charset="utf-8">
+        <title>Solib</title>
+        <link rel="icon" href="img/favicon.ico"> 
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootstrap-colorpicker.js"></script>
+        <script src="js/SolibClient.js"></script>
+        <script src="js/main.js"></script>
+        
+        <!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css"> -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/colorpicker.css">
+        <link rel="stylesheet" href="css/custom.css">
+    </head>
+    <body>
+        <center><h1 id="lesson_name"></h1></center>
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <div class="span2 well" id="slide-list">
+              <!-- Sidebar content //SLIDES-LIST -->
+              <ul class="thumbnails" id="slides"></ul>
+            </div>
+            <div class="span10 well student">
+              <!-- Body content -->
+              <canvas id="lessonCanvas" width="900" height="550">
+                Your browser doest not support the canvas element.
+              </canvas>
+            </div>
+          </div>
+        </div>
+        <div id="popopen" class="rightside connected-users" dataPopout="close" onclick="openConnectedUsers(this)">
+          <li id="chevron"><i class="icon-chevron-right icon-white"></i></li>
+          <h4>Connected users:</h4>
+          <table id="users"></table>
+        </div>
+    </body>
+</html>

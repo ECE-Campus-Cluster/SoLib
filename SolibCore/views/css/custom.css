@@ -49,7 +49,7 @@ div.connected-users {
   margin:0;
   background:white;
   border-color: #aaa;
-  height:575px;
+  height:555px;
   overflow-y:auto;
 
 }
@@ -58,7 +58,11 @@ div.connected-users {
   margin:0;
   background:white;
   border-color: #aaa;
-  height:575px;
+  height:560px;
+  border: 0;
+  box-shadow: none;
+  margin-left: 20px;
+  padding: 0;
 }
 
 #addNewSlide {
@@ -81,8 +85,11 @@ div.connected-users {
 {
   height : 20px;
   width : 75%;
-  background-color : #ccc;
+  background-color : white;
   padding: 10px 20px 20px 20px;
+  border: 0;
+  box-shadow: none;
+  padding-top:20px;
 }
 
 #couleurs 
@@ -121,4 +128,46 @@ div.connected-users {
 
 #pencil_width {
   width: 120px;
+}
+
+.input-append.color {
+  margin-bottom: 0;
+}
+
+.input-append.color input {
+  width: 75px;
+}
+ 
+.toolbar-container {
+  border:0;
+  background-color: white;
+  margin-bottom: 0;
+  height: 80px;
+  padding: 0;
+}
+
+#course-name {
+  border:0;
+  background-color: white;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+li[active=true] {
+  background-color:#ccc;
+}
+
+li#chevron {
+  float:left;
+  margin-left:-23px;
+  list-style: none;
+}
+
+li.rubber-size {
+  cursor: pointer;
+}
+
+.span10.well.student {
+  padding-left:50px;
 }
