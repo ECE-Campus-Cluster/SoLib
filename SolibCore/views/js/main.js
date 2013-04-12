@@ -34,7 +34,6 @@ window.onload = function () {
             // Add new slide
             $("#new-slide").click(function () {
                 socket.emit("new_slide", { position: solibClient.getSlidesArray().length })
-                window.location.hash = solibClient.getSlidesArray().length
             });
             // Clear slide
             $("#clear").click(function () {
@@ -102,7 +101,6 @@ window.onload = function () {
         $("#slides").html('')
         for (var s=0 ; s<data.slides.length ; s++)
             appendToSlidesPreview(data.slides[s].id, data.slides[s].position)
-        //solibClient.renderSlide(solibClient.getC)
         $("ul.thumbnails#slides li.span12").click(function () {
             $("ul.thumbnails#slides li.span12").attr("active", false)
             $(this).attr("active", true);
