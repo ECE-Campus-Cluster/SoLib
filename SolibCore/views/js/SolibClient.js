@@ -51,13 +51,18 @@ function SolibClient (canvas, socket) {
     */
     function mouseDown (event) {
         if (isTeacher) {
-            _drawing.points = new Array()
+            // ugly thing to fix last bug
+            _drawing = {
+                idSlide : _currentSlideId,
+                points  : []
+            }
             _ispainting      = true
             _oldX            = event.offsetX
             _oldY            = event.offsetY
             _drawing.idSlide = _currentSlideId
             _drawing.color   = $("#colorpicker").val()
             _drawing.radius  = document.getElementById('pencil_width').value
+            _drawing.points.splice(0, _drawing.points.length)
             _drawing.points.push({ x: _oldX, y: _oldY })
         }
     } mouseDown(event);
