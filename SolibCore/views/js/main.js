@@ -27,7 +27,7 @@ window.onload = function () {
         // Teacher stuff
         solibClient.setTeacher(data.user.isTeacher)
         if (data.user.isTeacher) {
-            $(".dropdown-toggle").dropdown();
+            $(".dropdown-toggle").dropdown()
             $('.color').colorpicker().on('changeColor', function (ev) {
                 bodyStyle.backgroundColor = ev.color.toHex();
             });
@@ -36,9 +36,22 @@ window.onload = function () {
                 socket.emit("new_slide", { position: solibClient.getSlidesArray().length })
                 window.location.hash = solibClient.getSlidesArray().length
             });
-
+            // Remove slide
             $("#remove").click(function () {
                 socket.emit("remove_slide", { idSlide: $("li[active=true]").attr("id"), position: $("li[active=true]").attr("data-position") })
+            });
+            $("#rubber").click(function () {
+                $('#colorpicker').attr("value", "#ffffff")
+                $("#color").css({ "background-color": "#ffffff" })
+            });
+            $("#small").click(function () {
+                $("#pencil_width").attr("value", "2")
+            });
+            $("#medium").click(function () {
+                $("#pencil_width").attr("value", "20")
+            });
+            $("#big").click(function () {
+                $("#pencil_width").attr("value", "50")
             });
         }
     });
